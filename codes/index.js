@@ -88,6 +88,20 @@ const i18n_text = {
 		ai_greeting_title: "AI 学习助理",
 		ai_greeting_text: "你好，我是 CircleBot。告诉我你想复习半径、弦、切线还是面积？",
 		open_chat: "打开聊天",
+		showcase_kicker: "Circle Geometry Studio",
+		showcase_line_1: "看清",
+		showcase_line_2: "圆的联系",
+		showcase_line_3: "从这里开始",
+		showcase_desc: "先观察关键关系，再进入规则、挑战和测验，把圆几何从静态公式变成可操作的思路。",
+		ai_preview_label: "AI 导学",
+		legend_radius_title: "半径",
+		legend_radius_desc: "圆心到圆周上一点的距离",
+		legend_diameter_title: "直径",
+		legend_diameter_desc: "经过圆心的最长弦",
+		legend_tangent_title: "切线",
+		legend_tangent_desc: "与半径在切点形成 90°",
+		legend_area_title: "面积",
+		legend_area_desc: "公式 A = πr²",
 		visual_note: "动态示意：半径 OA 随角度旋转，圆心到圆周距离保持不变",
 		rules_title: "Circle Rules Slide Show",
 		rules_subtitle: "4 个高频规则，课堂前 2 分钟快速热身",
@@ -106,6 +120,12 @@ const i18n_text = {
 		usp_2_desc: "支持中文/英文与白天/黑夜切换，适应不同学习习惯。",
 		usp_3_title: "即时反馈",
 		usp_3_desc: "AI 助理和表单反馈帮助你快速定位薄弱点。",
+		game_card_kicker: "Game Path",
+		game_card_title: "把规则放进图形挑战",
+		game_card_desc: "在拖动、判断与即时反馈中理解半径、切线和面积之间的联系。",
+		quiz_card_kicker: "Quiz Route",
+		quiz_card_title: "用分级题目检查掌握度",
+		quiz_card_desc: "从基础识别到公式应用，再到综合题，逐步定位你的薄弱环节。",
 		contact_title: "联系我们",
 		contact_subtitle: "对内容或功能有建议？欢迎留言给我们。",
 		contact_name: "姓名",
@@ -119,6 +139,8 @@ const i18n_text = {
 		ad_desc: "广告位：可接入教学文具、在线课程或学习 App 推广。",
 		chat_placeholder: "输入问题，如：弦和切线有什么区别？",
 		chat_send: "发送",
+		chat_with_ai: "Chat with AI",
+		back_to_top: "回到顶部",
 		footer_text: "EBU5315 第17组 · Circle Geometry Learning",
 		form_success: "已收到你的建议，我们会尽快回复。",
 		form_invalid: "请先完整填写姓名、邮箱和留言。",
@@ -145,6 +167,20 @@ const i18n_text = {
 		ai_greeting_title: "AI Learning Assistant",
 		ai_greeting_text: "Hi, I am CircleBot. Do you want to review radius, chord, tangent, or area first?",
 		open_chat: "Open Chat",
+		showcase_kicker: "Circle Geometry Studio",
+		showcase_line_1: "See",
+		showcase_line_2: "Circle Links",
+		showcase_line_3: "Start Here",
+		showcase_desc: "Observe the key relationships first, then move into rules, challenges, and quizzes that turn circle geometry into a usable method.",
+		ai_preview_label: "AI Guide",
+		legend_radius_title: "Radius",
+		legend_radius_desc: "Distance from the center to the circumference",
+		legend_diameter_title: "Diameter",
+		legend_diameter_desc: "The longest chord through the center",
+		legend_tangent_title: "Tangent",
+		legend_tangent_desc: "Forms a 90° angle with the radius at the touch point",
+		legend_area_title: "Area",
+		legend_area_desc: "Formula A = πr²",
 		visual_note: "Animated idea: radius OA rotates while distance from center to circumference stays constant",
 		rules_title: "Circle Rules Slide Show",
 		rules_subtitle: "4 high-frequency rules for a 2-minute warm-up",
@@ -163,6 +199,12 @@ const i18n_text = {
 		usp_2_desc: "Switch Chinese/English and day/night modes for different learning habits.",
 		usp_3_title: "Instant Feedback",
 		usp_3_desc: "AI assistant and contact feedback quickly reveal weak points.",
+		game_card_kicker: "Game Path",
+		game_card_title: "Apply rules in visual challenges",
+		game_card_desc: "Use dragging, judgment, and instant feedback to understand how radius, tangent, and area connect.",
+		quiz_card_kicker: "Quiz Route",
+		quiz_card_title: "Check mastery with level-based questions",
+		quiz_card_desc: "Move from recognition to formula use to mixed problems, and identify weak points step by step.",
 		contact_title: "Contact Us",
 		contact_subtitle: "Have ideas about content or features? Send us a message.",
 		contact_name: "Name",
@@ -176,6 +218,8 @@ const i18n_text = {
 		ad_desc: "Ad slot: stationery, online lessons, or learning app collaborations.",
 		chat_placeholder: "Ask a question, e.g. what is tangent vs chord?",
 		chat_send: "Send",
+		chat_with_ai: "Chat with AI",
+		back_to_top: "Back to Top",
 		footer_text: "EBU5315 Group 17 · Circle Geometry Learning",
 		form_success: "Thanks. Your suggestion has been sent.",
 		form_invalid: "Please complete name, email, and message first.",
@@ -205,6 +249,9 @@ const chat_close_btn = document.getElementById("chat_close_btn");
 const chat_messages = document.getElementById("chat_messages");
 const chat_input = document.getElementById("chat_input");
 const chat_send_btn = document.getElementById("chat_send_btn");
+const chat_fab_btn = document.getElementById("chat_fab_btn");
+const back_to_top_btn = document.getElementById("back_to_top_btn");
+const geometry_frame = document.querySelector(".geometry_frame");
 
 const contact_form = document.getElementById("contact_form");
 const name_input = document.getElementById("name_input");
@@ -262,6 +309,8 @@ function apply_language() {
 	if (chat_messages.children.length === 0) {
 		add_chat_message("bot", lang_dict.chat_welcome);
 	}
+
+	sync_geometry_board_state();
 }
 
 function apply_mode() {
@@ -269,6 +318,22 @@ function apply_mode() {
 	const locale = get_locale();
 	const lang_dict = i18n_text[locale];
 	mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+	sync_geometry_board_state();
+}
+
+function sync_geometry_board_state() {
+	if (!geometry_frame || !geometry_frame.contentWindow) {
+		return;
+	}
+
+	geometry_frame.contentWindow.postMessage(
+		{
+			type: "circlab_state",
+			night: is_night,
+			locale: get_locale()
+		},
+		"*"
+	);
 }
 
 function show_slide(next_index) {
@@ -376,6 +441,22 @@ function handle_contact_submit(event) {
 	contact_form.reset();
 }
 
+function update_back_to_top_visibility() {
+	if (!back_to_top_btn) {
+		return;
+	}
+
+	if (window.scrollY > 280) {
+		back_to_top_btn.classList.remove("hidden_btn");
+	} else {
+		back_to_top_btn.classList.add("hidden_btn");
+	}
+}
+
+function scroll_to_top() {
+	window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function register_events() {
 	language_toggle_btn.addEventListener("click", () => {
 		is_chinese = !is_chinese;
@@ -405,8 +486,10 @@ function register_events() {
 	});
 
 	chat_toggle_btn.addEventListener("click", open_chat_panel);
+	chat_fab_btn.addEventListener("click", open_chat_panel);
 	chat_close_btn.addEventListener("click", close_chat_panel);
 	chat_send_btn.addEventListener("click", handle_send_message);
+	back_to_top_btn.addEventListener("click", scroll_to_top);
 
 	chat_input.addEventListener("keydown", (event) => {
 		if (event.key === "Enter") {
@@ -414,7 +497,12 @@ function register_events() {
 		}
 	});
 
+	if (geometry_frame) {
+		geometry_frame.addEventListener("load", sync_geometry_board_state);
+	}
+
 	contact_form.addEventListener("submit", handle_contact_submit);
+	window.addEventListener("scroll", update_back_to_top_visibility, { passive: true });
 }
 
 function init_homepage() {
@@ -424,6 +512,7 @@ function init_homepage() {
 	show_slide(0);
 	start_slider_timer();
 	register_events();
+	update_back_to_top_visibility();
 }
 
 init_homepage();

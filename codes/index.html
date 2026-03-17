@@ -19,136 +19,155 @@
 			</div>
 		</div>
 
-		<nav class="main_nav" aria-label="Main menu">
-			<a href="#home" data-i18n="nav_home">主页</a>
-			<a href="./game/game.html" data-i18n="nav_game">游戏</a>
-			<a href="./quiz/quiz.html" data-i18n="nav_quiz">测验</a>
-		</nav>
-
 		<div class="control_group">
 			<button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
 			<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
 		</div>
 	</header>
 
-	<main>
-		<section id="home" class="hero_section fade_in_up">
-			<div class="hero_text">
-				<p class="hero_badge" data-i18n="hero_badge">Interactive Math-Learning Website</p>
-				<h1 data-i18n="hero_title">一站掌握圆几何核心规则</h1>
-				<p class="hero_subtitle" data-i18n="hero_subtitle">
-					通过动画、游戏挑战与分级测验，把 GCSE 圆相关几何从“记公式”变成“会应用”。
-				</p>
+	<div class="page_shell">
+		<aside class="side_nav fade_in_up" aria-label="Primary menu">
+			<a class="side_nav_link active" href="#home" data-i18n="nav_home">主页</a>
+			<a class="side_nav_link" href="./quiz/quiz.html" data-i18n="nav_quiz">测验</a>
+			<a class="side_nav_link" href="./game/game.html" data-i18n="nav_game">游戏</a>
+		</aside>
 
-				<div class="hero_cta_wrap">
-					<a class="primary_btn" href="./game/game.html" data-i18n="hero_cta_game">开始游戏挑战</a>
+		<main class="content_area">
+			<section id="home" class="showcase_panel fade_in_up">
+				<div class="showcase_visual">
+					<div class="geometry_frame_shell" aria-label="Circle geometry visual area">
+						<iframe class="geometry_frame" src="./geometry-board.html" title="Circle geometry board"></iframe>
+					</div>
+				</div>
+
+				<div class="showcase_copy">
+					<p class="showcase_kicker" data-i18n="showcase_kicker">Circle Geometry Studio</p>
+					<h1 class="showcase_title">
+						<span data-i18n="showcase_line_1">看清</span>
+						<span data-i18n="showcase_line_2">圆的联系</span>
+						<span data-i18n="showcase_line_3">从这里开始</span>
+					</h1>
+					<p class="showcase_desc" data-i18n="showcase_desc">先观察关键关系，再进入规则、挑战和测验，把圆几何从静态公式变成可操作的思路。</p>
+
+					<div class="hero_cta_wrap">
+						<a class="primary_btn" href="./game/game.html" data-i18n="hero_cta_game">开始游戏挑战</a>
+						<a class="secondary_btn" href="./quiz/quiz.html" data-i18n="hero_cta_quiz">进入分级测验</a>
+					</div>
+
+					<div class="ai_preview">
+						<p class="ai_preview_label" data-i18n="ai_preview_label">AI 导学</p>
+						<p id="ai_greeting_text" data-i18n="ai_greeting_text">你好，我是 CircleBot。告诉我你想复习半径、弦、切线还是面积？</p>
+						<button id="chat_toggle_btn" class="text_btn" type="button" data-i18n="open_chat">打开聊天</button>
+					</div>
+				</div>
+			</section>
+
+			<section class="dashboard_grid">
+				<section class="rule_section fade_in_up delay_1">
+					<div class="section_head">
+						<h2 data-i18n="rules_title">Circle Rules Slide Show</h2>
+						<p data-i18n="rules_subtitle">4 个高频规则，课堂前 2 分钟快速热身</p>
+					</div>
+
+					<div class="slider" aria-live="polite">
+						<article class="rule_slide active_slide">
+							<h3 data-i18n="slide_1_title">半径与直径</h3>
+							<p data-i18n="slide_1_desc">直径始终等于 2 倍半径，记作 d = 2r。</p>
+						</article>
+						<article class="rule_slide">
+							<h3 data-i18n="slide_2_title">周长公式</h3>
+							<p data-i18n="slide_2_desc">圆周长 C = 2πr，也可以写成 C = πd。</p>
+						</article>
+						<article class="rule_slide">
+							<h3 data-i18n="slide_3_title">面积公式</h3>
+							<p data-i18n="slide_3_desc">圆面积 A = πr²，注意单位是平方单位。</p>
+						</article>
+						<article class="rule_slide">
+							<h3 data-i18n="slide_4_title">切线性质</h3>
+							<p data-i18n="slide_4_desc">切线与过切点的半径互相垂直，夹角为 90°。</p>
+						</article>
+					</div>
+
+					<div class="slider_controls">
+						<button id="slide_prev_btn" class="ghost_btn" type="button" aria-label="previous slide">◀</button>
+						<div class="dot_group">
+							<button class="slide_dot active_dot" type="button" aria-label="slide 1"></button>
+							<button class="slide_dot" type="button" aria-label="slide 2"></button>
+							<button class="slide_dot" type="button" aria-label="slide 3"></button>
+							<button class="slide_dot" type="button" aria-label="slide 4"></button>
+						</div>
+						<button id="slide_next_btn" class="ghost_btn" type="button" aria-label="next slide">▶</button>
+					</div>
+				</section>
+
+				<section id="game-entry" class="quick_link_card fade_in_up delay_1">
+					<p class="card_kicker" data-i18n="game_card_kicker">Game Path</p>
+					<h2 data-i18n="game_card_title">把规则放进图形挑战</h2>
+					<p data-i18n="game_card_desc">在拖动、判断与即时反馈中理解半径、切线和面积之间的联系。</p>
+					<a class="secondary_btn" href="./game/game.html" data-i18n="hero_cta_game">开始游戏挑战</a>
+				</section>
+
+				<section id="quiz-entry" class="quick_link_card fade_in_up delay_2">
+					<p class="card_kicker" data-i18n="quiz_card_kicker">Quiz Route</p>
+					<h2 data-i18n="quiz_card_title">用分级题目检查掌握度</h2>
+					<p data-i18n="quiz_card_desc">从基础识别到公式应用，再到综合题，逐步定位你的薄弱环节。</p>
 					<a class="secondary_btn" href="./quiz/quiz.html" data-i18n="hero_cta_quiz">进入分级测验</a>
-				</div>
+				</section>
 
-				<div class="ai_greeting_card">
-					<h2 data-i18n="ai_greeting_title">AI 学习助理</h2>
-					<p id="ai_greeting_text" data-i18n="ai_greeting_text">你好，我是 CircleBot。告诉我你想复习半径、弦、切线还是面积？</p>
-					<button id="chat_toggle_btn" class="text_btn" type="button" data-i18n="open_chat">打开聊天</button>
-				</div>
-			</div>
+				<section class="usp_section fade_in_up delay_2">
+					<div class="section_head">
+						<h2 data-i18n="usp_title">What Makes CircleLab Different</h2>
+					</div>
 
-			<div class="hero_visual">
-				<div class="orbit_stage" aria-hidden="true">
-					<div class="orbit_circle"></div>
-					<div class="orbit_radius"></div>
-					<div class="orbit_point orbit_point_center"></div>
-					<div class="orbit_point orbit_point_edge"></div>
-					<span class="orbit_label orbit_label_center">O</span>
-					<span class="orbit_label orbit_label_edge">A</span>
-				</div>
-				<p class="visual_note" data-i18n="visual_note">动态示意：半径 OA 随角度旋转，圆心到圆周距离保持不变</p>
-			</div>
-		</section>
+					<div class="usp_grid">
+						<article class="usp_card">
+							<h3 data-i18n="usp_1_title">学-练-测闭环</h3>
+							<p data-i18n="usp_1_desc">首页看规则、游戏练应用、测验验掌握，学习路径清晰。</p>
+						</article>
+						<article class="usp_card">
+							<h3 data-i18n="usp_2_title">双语与昼夜模式</h3>
+							<p data-i18n="usp_2_desc">支持中文/英文与白天/黑夜切换，适应不同学习习惯。</p>
+						</article>
+						<article class="usp_card">
+							<h3 data-i18n="usp_3_title">即时反馈</h3>
+							<p data-i18n="usp_3_desc">AI 助理和表单反馈帮助你快速定位薄弱点。</p>
+						</article>
+					</div>
+				</section>
 
-		<section class="rule_section fade_in_up delay_1">
-			<div class="section_head">
-				<h2 data-i18n="rules_title">Circle Rules Slide Show</h2>
-				<p data-i18n="rules_subtitle">4 个高频规则，课堂前 2 分钟快速热身</p>
-			</div>
+				<section class="contact_section fade_in_up delay_3">
+					<div class="section_head">
+						<h2 data-i18n="contact_title">Contact Us</h2>
+						<p data-i18n="contact_subtitle">对内容或功能有建议？欢迎留言给我们。</p>
+					</div>
 
-			<div class="slider" aria-live="polite">
-				<article class="rule_slide active_slide">
-					<h3 data-i18n="slide_1_title">半径与直径</h3>
-					<p data-i18n="slide_1_desc">直径始终等于 2 倍半径，记作 d = 2r。</p>
-				</article>
-				<article class="rule_slide">
-					<h3 data-i18n="slide_2_title">周长公式</h3>
-					<p data-i18n="slide_2_desc">圆周长 C = 2πr，也可以写成 C = πd。</p>
-				</article>
-				<article class="rule_slide">
-					<h3 data-i18n="slide_3_title">面积公式</h3>
-					<p data-i18n="slide_3_desc">圆面积 A = πr²，注意单位是平方单位。</p>
-				</article>
-				<article class="rule_slide">
-					<h3 data-i18n="slide_4_title">切线性质</h3>
-					<p data-i18n="slide_4_desc">切线与过切点的半径互相垂直，夹角为 90°。</p>
-				</article>
-			</div>
+					<form id="contact_form" class="contact_form" novalidate>
+						<label for="name_input" data-i18n="contact_name">姓名</label>
+						<input id="name_input" name="name" type="text" required data-i18n-placeholder="contact_name_placeholder" placeholder="请输入姓名">
 
-			<div class="slider_controls">
-				<button id="slide_prev_btn" class="ghost_btn" type="button" aria-label="previous slide">◀</button>
-				<div class="dot_group">
-					<button class="slide_dot active_dot" type="button" aria-label="slide 1"></button>
-					<button class="slide_dot" type="button" aria-label="slide 2"></button>
-					<button class="slide_dot" type="button" aria-label="slide 3"></button>
-					<button class="slide_dot" type="button" aria-label="slide 4"></button>
-				</div>
-				<button id="slide_next_btn" class="ghost_btn" type="button" aria-label="next slide">▶</button>
-			</div>
-		</section>
+						<label for="email_input" data-i18n="contact_email">邮箱</label>
+						<input id="email_input" name="email" type="email" required data-i18n-placeholder="contact_email_placeholder" placeholder="请输入邮箱">
 
-		<section class="usp_section fade_in_up delay_2">
-			<div class="section_head">
-				<h2 data-i18n="usp_title">What Makes CircleLab Different</h2>
-			</div>
+						<label for="message_input" data-i18n="contact_message">留言</label>
+						<textarea id="message_input" name="message" rows="4" required data-i18n-placeholder="contact_message_placeholder" placeholder="请告诉我们你希望增加的圆几何内容"></textarea>
 
-			<div class="usp_grid">
-				<article class="usp_card">
-					<h3 data-i18n="usp_1_title">学-练-测闭环</h3>
-					<p data-i18n="usp_1_desc">首页看规则、游戏练应用、测验验掌握，学习路径清晰。</p>
-				</article>
-				<article class="usp_card">
-					<h3 data-i18n="usp_2_title">双语与昼夜模式</h3>
-					<p data-i18n="usp_2_desc">支持中文/英文与白天/黑夜切换，适应不同学习习惯。</p>
-				</article>
-				<article class="usp_card">
-					<h3 data-i18n="usp_3_title">即时反馈</h3>
-					<p data-i18n="usp_3_desc">AI 助理和表单反馈帮助你快速定位薄弱点。</p>
-				</article>
-			</div>
-		</section>
+						<button class="primary_btn" type="submit" data-i18n="contact_submit">提交</button>
+						<p id="contact_status" class="status_text" aria-live="polite"></p>
+					</form>
+				</section>
 
-		<section class="contact_section fade_in_up delay_3">
-			<div class="section_head">
-				<h2 data-i18n="contact_title">Contact Us</h2>
-				<p data-i18n="contact_subtitle">对内容或功能有建议？欢迎留言给我们。</p>
-			</div>
+				<section class="ad_section fade_in_up delay_3" aria-label="advertisement">
+					<p class="ad_title" data-i18n="ad_title">Sponsored Learning Pick</p>
+					<p data-i18n="ad_desc">广告位：可接入教学文具、在线课程或学习 App 推广。</p>
+				</section>
+			</section>
+		</main>
+	</div>
 
-			<form id="contact_form" class="contact_form" novalidate>
-				<label for="name_input" data-i18n="contact_name">姓名</label>
-				<input id="name_input" name="name" type="text" required data-i18n-placeholder="contact_name_placeholder" placeholder="请输入姓名">
-
-				<label for="email_input" data-i18n="contact_email">邮箱</label>
-				<input id="email_input" name="email" type="email" required data-i18n-placeholder="contact_email_placeholder" placeholder="请输入邮箱">
-
-				<label for="message_input" data-i18n="contact_message">留言</label>
-				<textarea id="message_input" name="message" rows="4" required data-i18n-placeholder="contact_message_placeholder" placeholder="请告诉我们你希望增加的圆几何内容"></textarea>
-
-				<button class="primary_btn" type="submit" data-i18n="contact_submit">提交</button>
-				<p id="contact_status" class="status_text" aria-live="polite"></p>
-			</form>
-		</section>
-
-		<section class="ad_section fade_in_up delay_3" aria-label="advertisement">
-			<p class="ad_title" data-i18n="ad_title">Sponsored Learning Pick</p>
-			<p data-i18n="ad_desc">广告位：可接入教学文具、在线课程或学习 App 推广。</p>
-		</section>
-	</main>
+	<div class="floating_actions" aria-label="floating action buttons">
+		<button id="back_to_top_btn" class="floating_btn hidden_btn" type="button" data-i18n="back_to_top">回到顶部</button>
+		<button id="chat_fab_btn" class="floating_btn" type="button" data-i18n="chat_with_ai">Chat with AI</button>
+	</div>
 
 	<aside id="chat_panel" class="chat_panel hidden_panel" aria-label="ai chat panel">
 		<div class="chat_head">

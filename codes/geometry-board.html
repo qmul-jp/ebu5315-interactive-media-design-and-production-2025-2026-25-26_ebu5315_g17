@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Circle Geometry Board</title>
+	<style>
+		:root {
+			--bg: #f5f8ff;
+			--panel: #ffffff;
+			--ink: #122247;
+			--muted: #526595;
+			--line: rgba(68, 113, 194, 0.3);
+			--main: #0d3273;
+			--accent: #4471c2;
+			--pink: #ea8fb5;
+			--green: #2c8d56;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+			color: var(--ink);
+			background:
+				radial-gradient(circle at 10% 10%, rgba(68, 113, 194, 0.14) 0, rgba(68, 113, 194, 0) 38%),
+				radial-gradient(circle at 90% 8%, rgba(232, 160, 191, 0.16) 0, rgba(232, 160, 191, 0) 36%),
+				var(--bg);
+			padding: 0.95rem;
+		}
+
+		body.night_mode {
+			--bg: #171f39;
+			--panel: #1f2a4a;
+			--ink: #edf2ff;
+			--muted: #c2d0f5;
+			--line: rgba(168, 188, 239, 0.26);
+			--main: #86a7ff;
+			--accent: #aac1ff;
+			--pink: #f0aecf;
+			--green: #9bd5b8;
+		}
+
+		.board_shell {
+			height: 100%;
+			min-height: 560px;
+			border: 1px solid var(--line);
+			background: var(--panel);
+			display: grid;
+			grid-template-rows: auto 1fr auto auto;
+		}
+
+		.board_head {
+			padding: 0.8rem 0.95rem 0.72rem;
+			border-bottom: 1px dashed var(--line);
+			display: grid;
+			gap: 0.24rem;
+		}
+
+		.chip {
+			font-size: 0.74rem;
+			font-weight: 800;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--accent);
+		}
+
+		.board_head h2 {
+			font-size: 1.12rem;
+			letter-spacing: 0.01em;
+		}
+
+		.subtitle {
+			font-size: 0.86rem;
+			color: var(--muted);
+		}
+
+		.diagram_wrap {
+			padding: 0.7rem 0.9rem 0.3rem;
+			display: grid;
+			align-items: center;
+		}
+
+		svg {
+			width: 100%;
+			height: 100%;
+			max-height: 370px;
+		}
+
+		.grid_minor {
+			fill: none;
+			stroke: rgba(91, 127, 202, 0.16);
+			stroke-width: 1;
+		}
+
+		.grid_major {
+			fill: none;
+			stroke: rgba(72, 108, 181, 0.3);
+			stroke-width: 1.2;
+		}
+
+		.ring {
+			fill: rgba(68, 113, 194, 0.1);
+			stroke: var(--main);
+			stroke-width: 3;
+		}
+
+		.sector {
+			fill: rgba(232, 160, 191, 0.42);
+		}
+
+		.radius {
+			stroke: var(--accent);
+			stroke-width: 4;
+		}
+
+		.diameter {
+			stroke: var(--main);
+			stroke-width: 3;
+			stroke-dasharray: 9 6;
+		}
+
+		.chord {
+			stroke: var(--pink);
+			stroke-width: 3;
+		}
+
+		.tangent {
+			stroke: var(--green);
+			stroke-width: 3;
+		}
+
+		.pt {
+			fill: var(--main);
+			stroke: #ffffff;
+			stroke-width: 2;
+		}
+
+		body.night_mode .pt {
+			stroke: #1b2442;
+		}
+
+		.label {
+			font-size: 15px;
+			font-weight: 700;
+			fill: var(--ink);
+		}
+
+		.formula_strip {
+			padding: 0.35rem 0.9rem 0.6rem;
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.5rem;
+		}
+
+		.formula_card {
+			border: 1px solid var(--line);
+			padding: 0.5rem 0.55rem;
+			display: grid;
+			gap: 0.16rem;
+		}
+
+		.formula_card span {
+			font-size: 0.72rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--muted);
+		}
+
+		.formula_card strong {
+			font-size: 0.9rem;
+		}
+
+		.legend {
+			padding: 0.12rem 0.9rem 0.88rem;
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.42rem 0.8rem;
+		}
+
+		.legend_item {
+			display: flex;
+			align-items: center;
+			gap: 0.45rem;
+			font-size: 0.84rem;
+			color: var(--muted);
+		}
+
+		.legend_mark {
+			width: 18px;
+			height: 4px;
+		}
+
+		.mark_radius { background: var(--accent); }
+		.mark_diameter { background: var(--main); }
+		.mark_chord { background: var(--pink); }
+		.mark_tangent { background: var(--green); }
+
+		@media (max-width: 760px) {
+			body {
+				padding: 0.62rem;
+			}
+
+			.board_shell {
+				min-height: 420px;
+			}
+
+			.formula_strip,
+			.legend {
+				grid-template-columns: 1fr;
+			}
+
+			svg {
+				max-height: 300px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<section class="board_shell" aria-label="Circle geometry board">
+		<header class="board_head">
+			<p class="chip" data-key="chip">独立图示</p>
+			<h2 data-key="title">圆几何结构图</h2>
+			<p class="subtitle" data-key="subtitle">先看核心关系，再进入游戏页做交互挑战。</p>
+		</header>
+
+		<div class="diagram_wrap" aria-hidden="true">
+			<svg viewBox="0 0 860 500" role="img" aria-label="Circle geometry diagram with key lines">
+				<defs>
+					<pattern id="minorGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+						<path class="grid_minor" d="M 24 0 L 0 0 0 24" />
+					</pattern>
+					<pattern id="majorGrid" width="96" height="96" patternUnits="userSpaceOnUse">
+						<rect width="96" height="96" fill="url(#minorGrid)" />
+						<path class="grid_major" d="M 96 0 L 0 0 0 96" />
+					</pattern>
+				</defs>
+				<rect x="32" y="24" width="796" height="448" rx="16" fill="url(#majorGrid)" />
+
+				<circle class="ring" cx="380" cy="255" r="150" />
+				<path class="sector" d="M 380 255 L 380 105 A 150 150 0 0 1 507 175 Z" />
+
+				<line class="diameter" x1="230" y1="255" x2="530" y2="255" />
+				<line class="radius" x1="380" y1="255" x2="380" y2="105" />
+				<line class="radius" x1="380" y1="255" x2="507" y2="175" />
+				<line class="chord" x1="288" y1="373" x2="507" y2="175" />
+				<line class="tangent" x1="507" y1="175" x2="694" y2="175" />
+
+				<circle class="pt" cx="380" cy="255" r="7" />
+				<circle class="pt" cx="380" cy="105" r="7" />
+				<circle class="pt" cx="507" cy="175" r="7" />
+				<circle class="pt" cx="288" cy="373" r="7" />
+				<circle class="pt" cx="230" cy="255" r="7" />
+
+				<text class="label" x="394" y="248">O</text>
+				<text class="label" x="392" y="98">A</text>
+				<text class="label" x="520" y="170">B</text>
+				<text class="label" x="300" y="389">C</text>
+				<text class="label" x="196" y="248">D</text>
+			</svg>
+		</div>
+
+		<div class="formula_strip" aria-label="key formulas">
+			<article class="formula_card">
+				<span data-key="f1_label">面积</span>
+				<strong>A = πr²</strong>
+			</article>
+			<article class="formula_card">
+				<span data-key="f2_label">周长</span>
+				<strong>C = 2πr</strong>
+			</article>
+			<article class="formula_card">
+				<span data-key="f3_label">直径</span>
+				<strong>d = 2r</strong>
+			</article>
+		</div>
+
+		<div class="legend" aria-label="diagram legend">
+			<div class="legend_item"><span class="legend_mark mark_radius"></span><span data-key="legend_radius">半径 OA / OB</span></div>
+			<div class="legend_item"><span class="legend_mark mark_diameter"></span><span data-key="legend_diameter">直径 D 到右侧圆周</span></div>
+			<div class="legend_item"><span class="legend_mark mark_chord"></span><span data-key="legend_chord">弦 C-B</span></div>
+			<div class="legend_item"><span class="legend_mark mark_tangent"></span><span data-key="legend_tangent">切线经过点 B</span></div>
+		</div>
+	</section>
+
+	<script>
+		const i18n = {
+			zh: {
+				chip: "独立图示",
+				title: "圆几何结构图",
+				subtitle: "先看核心关系，再进入游戏页做交互挑战。",
+				f1_label: "面积",
+				f2_label: "周长",
+				f3_label: "直径",
+				legend_radius: "半径 OA / OB",
+				legend_diameter: "直径 D 到右侧圆周",
+				legend_chord: "弦 C-B",
+				legend_tangent: "切线经过点 B"
+			},
+			en: {
+				chip: "Standalone Visual",
+				title: "Circle Geometry Structure",
+				subtitle: "Review the key relations first, then move to the game page for interactions.",
+				f1_label: "Area",
+				f2_label: "Circumference",
+				f3_label: "Diameter",
+				legend_radius: "Radius OA / OB",
+				legend_diameter: "Diameter from D to right arc",
+				legend_chord: "Chord C-B",
+				legend_tangent: "Tangent through point B"
+			}
+		};
+
+		function apply_locale(locale) {
+			const dict = i18n[locale] || i18n.zh;
+			document.documentElement.lang = locale === "en" ? "en" : "zh-CN";
+			document.querySelectorAll("[data-key]").forEach((el) => {
+				const key = el.getAttribute("data-key");
+				if (dict[key]) {
+					el.textContent = dict[key];
+				}
+			});
+		}
+
+		function apply_night_mode(is_night) {
+			document.body.classList.toggle("night_mode", Boolean(is_night));
+		}
+
+		window.addEventListener("message", (event) => {
+			const data = event.data;
+			if (!data || data.type !== "circlab_state") {
+				return;
+			}
+
+			apply_night_mode(data.night);
+			apply_locale(data.locale === "en" ? "en" : "zh");
+		});
+
+		apply_locale("zh");
+	</script>
+</body>
+</html>
