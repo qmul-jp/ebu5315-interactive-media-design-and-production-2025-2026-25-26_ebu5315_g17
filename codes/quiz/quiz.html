@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircleLab Quiz</title>
+  <link rel="stylesheet" href="./quiz.css" />
+</head>
+<body>
+  <div class="bg_orb bg_orb_left"></div>
+  <div class="bg_orb bg_orb_right"></div>
+
+  <header class="quiz_header">
+    <div class="brand_wrap">
+      <a class="brand_link" href="../index.html">◯ CircleLab</a>
+      <p class="brand_tag" data-i18n="brand_tag">GCSE 圆几何测验</p>
+    </div>
+
+    <div class="control_group">
+      <button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
+      <button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">
+        夜间模式
+      </button>
+    </div>
+  </header>
+
+  <main class="quiz_shell">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="../index.html" data-i18n="nav_home">主页</a>
+      <span>/</span>
+      <span data-i18n="nav_quiz">测验</span>
+    </nav>
+
+    <section class="hero_card">
+      <div class="hero_copy">
+        <p class="hero_kicker" data-i18n="quiz_kicker">Level-based Quiz</p>
+        <h1 data-i18n="quiz_title">圆几何分级测验</h1>
+        <p data-i18n="quiz_desc">
+          从基础识别到公式应用，逐步检查你对 circle geometry 的掌握情况。
+        </p>
+      </div>
+      <div class="hero_actions">
+        <a class="secondary_btn" href="../index.html" data-i18n="back_home">返回主页</a>
+      </div>
+    </section>
+
+    <section class="level_card">
+      <div class="section_head">
+        <h2 data-i18n="level_title">选择难度</h2>
+        <p data-i18n="level_desc">先选一个 level，然后开始答题。</p>
+      </div>
+
+      <div class="level_grid">
+        <button class="level_btn" data-level="1" type="button">
+          <span class="level_name" data-i18n="level_1">Level 1 · 基础</span>
+          <span class="level_hint" data-i18n="level_1_hint">半径 / 直径 / 基本概念</span>
+        </button>
+
+        <button class="level_btn" data-level="2" type="button">
+          <span class="level_name" data-i18n="level_2">Level 2 · 进阶</span>
+          <span class="level_hint" data-i18n="level_2_hint">周长 / 面积 / 切线</span>
+        </button>
+
+        <button class="level_btn" data-level="3" type="button">
+          <span class="level_name" data-i18n="level_3">Level 3 · 挑战</span>
+          <span class="level_hint" data-i18n="level_3_hint">综合应用 / 推理题</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="quiz_card">
+      <div class="quiz_topbar">
+        <div>
+          <p class="meta_text" id="current_level_text">Level 1</p>
+          <h2 data-i18n="question_title">题目</h2>
+        </div>
+        <div class="quiz_meta">
+          <span id="progress_text">0 / 0</span>
+          <span id="score_text">Score: 0</span>
+        </div>
+      </div>
+
+      <div class="progress_track" aria-hidden="true">
+        <div id="progress_fill" class="progress_fill"></div>
+      </div>
+
+      <div class="question_panel">
+        <p id="question_text" class="question_text" data-i18n="loading_questions">
+          正在加载题库...
+        </p>
+
+        <div id="options_wrap" class="options_wrap"></div>
+
+        <div class="action_row">
+          <button id="submit_btn" class="primary_btn" type="button" data-i18n="submit_answer">
+            提交答案
+          </button>
+          <button id="next_btn" class="secondary_btn" type="button" data-i18n="next_question">
+            下一题
+          </button>
+          <button id="restart_btn" class="secondary_btn" type="button" data-i18n="restart_level">
+            重做本关
+          </button>
+        </div>
+
+        <div id="feedback_box" class="feedback_box" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="result_card" class="result_card hidden">
+      <p class="hero_kicker" data-i18n="result_kicker">Result</p>
+      <h2 data-i18n="result_title">本关完成</h2>
+      <p id="final_score_text" class="final_score_text">0 / 0</p>
+      <p id="final_message_text" class="final_message_text"></p>
+      <div class="action_row center_actions">
+        <button id="retry_result_btn" class="primary_btn" type="button" data-i18n="restart_level">
+          重做本关
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../config.js"></script>
+  <script src="./quiz.js"></script>
+</body>
+</html>
