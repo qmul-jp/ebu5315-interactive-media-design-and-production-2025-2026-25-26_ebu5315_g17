@@ -3,59 +3,184 @@
     "id": "l1_q1",
     "level": 1,
     "zh": {
-      "question": "直径和半径的关系是什么？",
-      "options": ["直径 = 半径", "直径 = 2 × 半径", "半径 = 2 × 直径", "它们没有固定关系"],
-      "explanation": "直径通过圆心，并且长度恒为半径的两倍。"
+      "question": "弦是指圆上任意两点之间的什么？",
+      "options": ["线段", "直线", "弧", "圆心"],
+      "explanation": "弦是连接圆上两点的线段。"
     },
     "en": {
-      "question": "What is the relationship between diameter and radius?",
-      "options": ["Diameter = radius", "Diameter = 2 × radius", "Radius = 2 × diameter", "No fixed relationship"],
-      "explanation": "The diameter passes through the center and is always twice the radius."
+      "question": "What is a chord in a circle?",
+      "options": ["Line segment", "Straight line", "Arc", "Center"],
+      "explanation": "A chord is a line segment connecting two points on a circle."
     },
-    "answer": 1
+    "answer": 0
   },
   {
     "id": "l1_q2",
     "level": 1,
     "zh": {
-      "question": "半径指的是哪一段距离？",
-      "options": ["圆上任意两点之间", "圆心到圆周上一点", "切线长度", "弦的一半"],
-      "explanation": "半径就是圆心到圆周上一点的线段长度。"
+      "question": "圆心是圆的什么位置？",
+      "options": ["圆上一点", "圆内一点", "圆外一点", "圆的中心点"],
+      "explanation": "圆心是圆的中心点。"
     },
     "en": {
-      "question": "What is a radius?",
-      "options": ["Distance between any two points on the circle", "Distance from the center to a point on the circle", "Length of a tangent", "Half of any chord"],
-      "explanation": "A radius is the line segment from the center to a point on the circle."
+      "question": "What is the center of a circle?",
+      "options": [
+        "A point on the circle",
+        "A point inside the circle",
+        "A point outside the circle",
+        "The center of the circle"
+      ],
+      "explanation": "The center of a circle is the central point of the circle."
     },
-    "answer": 1
+    "answer": 3
   },
   {
     "id": "l1_q3",
     "level": 1,
     "zh": {
-      "question": "下面哪一个一定经过圆心？",
-      "options": ["弦", "切线", "直径", "圆周"],
-      "explanation": "直径是经过圆心并连接圆上两点的特殊弦。"
+      "question": "圆周是指圆的什么？",
+      "options": ["圆的周长", "圆的内部", "圆的边界", "圆的直径"],
+      "explanation": "圆周是圆的边界。"
     },
     "en": {
-      "question": "Which one must pass through the center of a circle?",
-      "options": ["Chord", "Tangent", "Diameter", "Circumference"],
-      "explanation": "A diameter is a special chord that passes through the center."
+      "question": "What is the circumference of a circle?",
+      "options": [
+        "The perimeter of the circle",
+        "The interior of the circle",
+        "The boundary of the circle",
+        "The diameter of the circle"
+      ],
+      "explanation": "The circumference is the boundary of the circle."
     },
     "answer": 2
+  },
+  {
+    "id": "l1_q4",
+    "level": 1,
+    "zh": {
+      "question": "圆有多少条对称轴？",
+      "options": ["1条", "2条", "无数条", "0条"],
+      "explanation": "圆有无数条对称轴。"
+    },
+    "en": {
+      "question": "How many axes of symmetry does a circle have?",
+      "options": ["1", "2", "Infinite", "0"],
+      "explanation": "A circle has infinite axes of symmetry."
+    },
+    "answer": 2
+  },
+  {
+    "id": "l1_q5",
+    "level": 1,
+    "zh": {
+      "question": "半圆的弧长是整圆周长的多少？",
+      "options": ["1/2", "1/3", "1/4", "1/5"],
+      "explanation": "半圆的弧长是整圆周长的一半。"
+    },
+    "en": {
+      "question": "What fraction of the circumference is the arc length of a semicircle?",
+      "options": ["1/2", "1/3", "1/4", "1/5"],
+      "explanation": "The arc length of a semicircle is half of the circumference."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l1_q6",
+    "level": 1,
+    "zh": {
+      "question": "以下哪个不是圆的基本元素？",
+      "options": ["半径", "直径", "弦", "对角线"],
+      "explanation": "对角线是多边形的概念，不是圆的基本元素。"
+    },
+    "en": {
+      "question": "Which of the following is not a basic element of a circle?",
+      "options": ["Radius", "Diameter", "Chord", "Diagonal"],
+      "explanation": "A diagonal is a concept of polygons, not a basic element of a circle."
+    },
+    "answer": 3
+  },
+  {
+    "id": "l1_q7",
+    "level": 1,
+    "zh": {
+      "question": "圆心到圆上任意一点的距离是否相等？",
+      "options": ["是", "否", "视情况而定", "不一定"],
+      "explanation": "圆心到圆上任意一点的距离都等于半径，所以相等。"
+    },
+    "en": {
+      "question": "Is the distance from the center to any point on the circle equal?",
+      "options": ["Yes", "No", "Depends on the situation", "Not necessarily"],
+      "explanation": "The distance from the center to any point on the circle is equal to the radius."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l1_q8",
+    "level": 1,
+    "zh": {
+      "question": "直径是弦吗？",
+      "options": ["是", "否", "有时是", "不是"],
+      "explanation": "直径是经过圆心的弦，所以是弦。"
+    },
+    "en": {
+      "question": "Is a diameter a chord?",
+      "options": ["Yes", "No", "Sometimes", "Not"],
+      "explanation": "A diameter is a chord that passes through the center, so it is a chord."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l1_q9",
+    "level": 1,
+    "zh": {
+      "question": "一个圆有几个圆心？",
+      "options": ["1个", "2个", "3个", "无数个"],
+      "explanation": "一个圆只有一个圆心。"
+    },
+    "en": {
+      "question": "How many centers does a circle have?",
+      "options": ["1", "2", "3", "Infinite"],
+      "explanation": "A circle has only one center."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l1_q10",
+    "level": 1,
+    "zh": {
+      "question": "以下哪项描述正确？",
+      "options": [
+        "圆心到圆上任意一点的距离相等",
+        "圆心到圆外任意一点的距离相等",
+        "圆心到圆内任意一点的距离相等",
+        "圆心到圆上任意一点的距离不等"
+      ],
+      "explanation": "圆心到圆上任意一点的距离都等于半径，所以相等。"
+    },
+    "en": {
+      "question": "Which statement is correct?",
+      "options": [
+        "The distance from the center to any point on the circle is equal",
+        "The distance from the center to any point outside the circle is equal",
+        "The distance from the center to any point inside the circle is equal",
+        "The distance from the center to any point on the circle is not equal"
+      ],
+      "explanation": "The distance from the center to any point on the circle is equal to the radius."
+    },
+    "answer": 0
   },
   {
     "id": "l2_q1",
     "level": 2,
     "zh": {
-      "question": "半径 r = 4 时，圆周长是多少？",
-      "options": ["4π", "8π", "16π", "2π"],
-      "explanation": "圆周长公式是 C = 2πr，所以 C = 2π × 4 = 8π。"
+      "question": "直径d=6时，圆周长是多少？",
+      "options": ["3π", "6π", "12π", "24π"],
+      "explanation": "C=πd=6π"
     },
     "en": {
-      "question": "If radius r = 4, what is the circumference?",
-      "options": ["4π", "8π", "16π", "2π"],
-      "explanation": "Circumference formula: C = 2πr, so C = 2π × 4 = 8π."
+      "question": "If the diameter d=6, what is the circumference?",
+      "options": ["3π", "6π", "12π", "24π"],
+      "explanation": "Circumference formula: C=πd=6π"
     },
     "answer": 1
   },
@@ -63,14 +188,14 @@
     "id": "l2_q2",
     "level": 2,
     "zh": {
-      "question": "半径 r = 3 时，圆面积是多少？",
-      "options": ["3π", "6π", "9π", "12π"],
-      "explanation": "面积公式是 A = πr²，所以 A = π × 3² = 9π。"
+      "question": "半径r=5时，圆面积是多少？",
+      "options": ["5π", "10π", "25π", "50π"],
+      "explanation": "A=πr²=25π"
     },
     "en": {
-      "question": "If radius r = 3, what is the area of the circle?",
-      "options": ["3π", "6π", "9π", "12π"],
-      "explanation": "Area formula: A = πr², so A = π × 3² = 9π."
+      "question": "If radius r=5, what is the area of the circle?",
+      "options": ["5π", "10π", "25π", "50π"],
+      "explanation": "Area formula: A=πr²=25π"
     },
     "answer": 2
   },
@@ -78,59 +203,289 @@
     "id": "l2_q3",
     "level": 2,
     "zh": {
-      "question": "如果圆的直径是 10，那么半径是多少？",
-      "options": ["10", "20", "5", "2"],
-      "explanation": "半径等于直径的一半，所以 10 ÷ 2 = 5。"
+      "question": "周长C=10π时，半径是多少？",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "C=2πr → r=5"
     },
     "en": {
-      "question": "If the diameter of a circle is 10, what is its radius?",
-      "options": ["10", "20", "5", "2"],
-      "explanation": "The radius is half the diameter, so 10 ÷ 2 = 5."
+      "question": "If the circumference C=10π, what is the radius?",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "Circumference formula: C=2πr → r=5"
+    },
+    "answer": 0
+  },
+  {
+    "id": "l2_q4",
+    "level": 2,
+    "zh": {
+      "question": "面积A=16π时，直径是多少？",
+      "options": ["4", "8", "16", "32"],
+      "explanation": "A=πr²=16π → r=4 → d=8"
+    },
+    "en": {
+      "question": "If the area A=16π, what is the diameter?",
+      "options": ["4", "8", "16", "32"],
+      "explanation": "Area formula: A=πr²=16π → r=4 → d=8"
+    },
+    "answer": 1
+  },
+  {
+    "id": "l2_q5",
+    "level": 2,
+    "zh": {
+      "question": "直径d=8，面积是多少？",
+      "options": ["8π", "16π", "32π", "64π"],
+      "explanation": "r=4, A=16π"
+    },
+    "en": {
+      "question": "If the diameter d=8, what is the area?",
+      "options": ["8π", "16π", "32π", "64π"],
+      "explanation": "r=4, A=πr²=16π"
+    },
+    "answer": 1
+  },
+  {
+    "id": "l2_q6",
+    "level": 2,
+    "zh": {
+      "question": "周长C=20π，半径是多少？",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "r=10"
+    },
+    "en": {
+      "question": "If the circumference C=20π, what is the radius?",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "C=2πr → r=10"
+    },
+    "answer": 1
+  },
+  {
+    "id": "l2_q7",
+    "level": 2,
+    "zh": {
+      "question": "半径r=√7，面积是多少？",
+      "options": ["7π", "14π", "21π", "28π"],
+      "explanation": "A=π*(√7)²=7π"
+    },
+    "en": {
+      "question": "If radius r=√7, what is the area?",
+      "options": ["7π", "14π", "21π", "28π"],
+      "explanation": "Area formula: A=πr²=π*(√7)²=7π"
+    },
+    "answer": 0
+  },
+  {
+    "id": "l2_q8",
+    "level": 2,
+    "zh": {
+      "question": "半径r=1.5，周长是多少？",
+      "options": ["1.5π", "2π", "3π", "4π"],
+      "explanation": "C=2π*1.5=3π"
+    },
+    "en": {
+      "question": "If radius r=1.5, what is the circumference?",
+      "options": ["1.5π", "2π", "3π", "4π"],
+      "explanation": "Circumference formula: C=2πr=3π"
     },
     "answer": 2
+  },
+  {
+    "id": "l2_q9",
+    "level": 2,
+    "zh": {
+      "question": "面积A=25π，直径是多少？",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "r=5, d=10"
+    },
+    "en": {
+      "question": "If the area A=25π, what is the diameter?",
+      "options": ["5", "10", "15", "20"],
+      "explanation": "A=πr²=25π → r=5 → d=10"
+    },
+    "answer": 1
+  },
+  {
+    "id": "l2_q10",
+    "level": 2,
+    "zh": {
+      "question": "圆的周长是12π，半径是多少？",
+      "options": ["6", "12", "3", "24"],
+      "explanation": "r=6"
+    },
+    "en": {
+      "question": "If the circumference is 12π, what is the radius?",
+      "options": ["6", "12", "3", "24"],
+      "explanation": "C=2πr → r=6"
+    },
+    "answer": 0
   },
   {
     "id": "l3_q1",
     "level": 3,
     "zh": {
-      "question": "切线与经过切点的半径所夹的角是多少？",
-      "options": ["45°", "60°", "90°", "180°"],
-      "explanation": "圆的切线与经过切点的半径互相垂直，所以夹角为 90°。"
+      "question": "从圆外一点引出的两条切线长度关系？",
+      "options": ["相等", "不相等", "取决于切点", "无法确定"],
+      "explanation": "从圆外一点引出的两条切线长度相等。"
     },
     "en": {
-      "question": "What angle is formed between a tangent and the radius at the point of contact?",
-      "options": ["45°", "60°", "90°", "180°"],
-      "explanation": "A tangent is perpendicular to the radius at the point of contact, so the angle is 90°."
+      "question": "What is the relationship between the lengths of two tangents drawn from an external point to a circle?",
+      "options": [
+        "Equal",
+        "Not equal",
+        "Depends on the point of tangency",
+        "Cannot be determined"
+      ],
+      "explanation": "The lengths of two tangents drawn from an external point to a circle are equal."
     },
-    "answer": 2
+    "answer": 0
   },
   {
     "id": "l3_q2",
     "level": 3,
     "zh": {
-      "question": "下列哪一个说法是正确的？",
-      "options": ["所有弦都是直径", "所有直径都是弦", "切线一定经过圆心", "半径一定比直径长"],
-      "explanation": "直径是经过圆心的特殊弦，因此所有直径都是弦，但并非所有弦都是直径。"
+      "question": "圆心角与对应圆周角的关系？",
+      "options": [
+        "圆心角是圆周角的2倍",
+        "圆周角是圆心角的2倍",
+        "相等",
+        "无关系"
+      ],
+      "explanation": "圆心角是圆周角的2倍。"
     },
     "en": {
-      "question": "Which statement is correct?",
-      "options": ["All chords are diameters", "All diameters are chords", "A tangent always passes through the center", "A radius is longer than a diameter"],
-      "explanation": "A diameter is a special chord that passes through the center, so every diameter is a chord."
+      "question": "What is the relationship between a central angle and its corresponding inscribed angle?",
+      "options": [
+        "The central angle is twice the inscribed angle",
+        "The inscribed angle is twice the central angle",
+        "Equal",
+        "No relationship"
+      ],
+      "explanation": "The central angle is twice the inscribed angle."
     },
-    "answer": 1
+    "answer": 0
   },
   {
     "id": "l3_q3",
     "level": 3,
     "zh": {
-      "question": "半圆所对的圆周角通常是多少？",
-      "options": ["30°", "45°", "90°", "120°"],
-      "explanation": "半圆所对的圆周角是直角，这是经典圆几何结论。"
+      "question": "圆内接四边形的对角和是多少？",
+      "options": ["90°", "180°", "270°", "360°"],
+      "explanation": "对角和为180°。"
     },
     "en": {
-      "question": "What is the angle in a semicircle?",
-      "options": ["30°", "45°", "90°", "120°"],
-      "explanation": "The angle in a semicircle is a right angle, which is a classic circle theorem."
+      "question": "What is the sum of opposite angles in a cyclic quadrilateral?",
+      "options": ["90°", "180°", "270°", "360°"],
+      "explanation": "The sum of opposite angles in a cyclic quadrilateral is 180°."
+    },
+    "answer": 1
+  },
+  {
+    "id": "l3_q4",
+    "level": 3,
+    "zh": {
+      "question": "弦长8，圆心到弦距离3，半径是多少？",
+      "options": ["4", "5", "6", "7"],
+      "explanation": "r=√(3²+4²)=5"
+    },
+    "en": {
+      "question": "If the length of a chord is 8 and the distance from the center to the chord is 3, what is the radius?",
+      "options": ["4", "5", "6", "7"],
+      "explanation": "Radius r=√(3² + (8/2)²)=√(9+16)=5"
+    },
+    "answer": 1
+  },
+  {
+    "id": "l3_q5",
+    "level": 3,
+    "zh": {
+      "question": "半径10，弦长16，圆心到弦距离是多少？",
+      "options": ["6", "8", "10", "12"],
+      "explanation": "距离=√(10²-8²)=6"
+    },
+    "en": {
+      "question": "If the radius is 10 and the chord length is 16, what is the distance from the center to the chord?",
+      "options": ["6", "8", "10", "12"],
+      "explanation": "Distance=√(10² - (16/2)²)=√(100-64)=6"
+    },
+    "answer": 0
+  },
+  {
+    "id": "l3_q6",
+    "level": 3,
+    "zh": {
+      "question": "直角三角形的外接圆半径是斜边的多少？",
+      "options": ["1/2", "1/3", "1/4", "2/3"],
+      "explanation": "外接圆半径是斜边的一半。"
+    },
+    "en": {
+      "question": "What fraction of the hypotenuse is the circumradius of a right-angled triangle?",
+      "options": ["1/2", "1/3", "1/4", "2/3"],
+      "explanation": "The circumradius of a right-angled triangle is half the hypotenuse."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l3_q7",
+    "level": 3,
+    "zh": {
+      "question": "两条弦相交，相交的两段的乘积关系？",
+      "options": ["相等", "和为直径", "和为半径", "乘积相等"],
+      "explanation": "相交弦定理，乘积相等。"
+    },
+    "en": {
+      "question": "When two chords intersect, what is the relationship between the products of the segments?",
+      "options": [
+        "Equal",
+        "Sum equals diameter",
+        "Sum equals radius",
+        "Products are equal"
+      ],
+      "explanation": "According to the intersecting chords theorem, the products of the segments are equal."
+    },
+    "answer": 3
+  },
+  {
+    "id": "l3_q8",
+    "level": 3,
+    "zh": {
+      "question": "圆心角60°，对应弧长是周长的多少？",
+      "options": ["1/6", "1/4", "1/3", "1/2"],
+      "explanation": "60/360=1/6"
+    },
+    "en": {
+      "question": "What fraction of the circumference is the arc length corresponding to a central angle of 60°?",
+      "options": ["1/6", "1/4", "1/3", "1/2"],
+      "explanation": "The fraction is 60°/360°=1/6."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l3_q9",
+    "level": 3,
+    "zh": {
+      "question": "圆心角90°，对应扇形面积是圆面积的多少？",
+      "options": ["1/4", "1/3", "1/2", "1/6"],
+      "explanation": "90/360=1/4"
+    },
+    "en": {
+      "question": "What fraction of the area of the circle is the area of a sector with a central angle of 90°?",
+      "options": ["1/4", "1/3", "1/2", "1/6"],
+      "explanation": "The fraction is 90°/360°=1/4."
+    },
+    "answer": 0
+  },
+  {
+    "id": "l3_q10",
+    "level": 3,
+    "zh": {
+      "question": "半径5，圆心角120°，扇形面积是多少？",
+      "options": ["5π/3", "10π/3", "25π/3", "50π/3"],
+      "explanation": "A=(120/360π5²=25π/3"
+    },
+    "en": {
+      "question": "If the radius is 5 and the central angle is 120°, what is the area of the sector?",
+      "options": ["5π/3", "10π/3", "25π/3", "50π/3"],
+      "explanation": "Sector area = (120/360π5² = (1/3)*25π = 25π/3"
     },
     "answer": 2
   }
