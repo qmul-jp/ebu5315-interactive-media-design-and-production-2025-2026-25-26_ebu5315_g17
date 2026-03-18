@@ -36,7 +36,7 @@
 				radial-gradient(circle at 10% 10%, rgba(68, 113, 194, 0.14) 0, rgba(68, 113, 194, 0) 38%),
 				radial-gradient(circle at 90% 8%, rgba(232, 160, 191, 0.16) 0, rgba(232, 160, 191, 0) 36%),
 				var(--bg);
-			padding: 0.95rem;
+			padding: 0.58rem;
 		}
 
 		body.night_mode {
@@ -53,7 +53,7 @@
 
 		.board_shell {
 			height: 100%;
-			min-height: 560px;
+			min-height: 680px;
 			border: 1px solid var(--line);
 			background: var(--panel);
 			display: grid;
@@ -61,7 +61,7 @@
 		}
 
 		.board_head {
-			padding: 0.8rem 0.95rem 0.72rem;
+			padding: 0.62rem 0.8rem 0.56rem;
 			border-bottom: 1px dashed var(--line);
 			display: grid;
 			gap: 0.24rem;
@@ -86,78 +86,35 @@
 		}
 
 		.diagram_wrap {
-			padding: 0.7rem 0.9rem 0.3rem;
+			padding: 0.45rem 0.7rem 0.36rem;
 			display: grid;
 			align-items: center;
 		}
 
-		svg {
+		.geogebra_wrap {
+			display: grid;
+			gap: 0.4rem;
+		}
+
+		#ggb-element {
 			width: 100%;
-			height: 100%;
-			max-height: 370px;
+			min-height: 560px;
+			border: 1px solid var(--line);
+			background: #ffffff;
 		}
 
-		.grid_minor {
-			fill: none;
-			stroke: rgba(91, 127, 202, 0.16);
-			stroke-width: 1;
+		#ggb-status {
+			font-size: 0.82rem;
+			color: var(--muted);
+			padding: 0 0.12rem;
 		}
 
-		.grid_major {
-			fill: none;
-			stroke: rgba(72, 108, 181, 0.3);
-			stroke-width: 1.2;
-		}
-
-		.ring {
-			fill: rgba(68, 113, 194, 0.1);
-			stroke: var(--main);
-			stroke-width: 3;
-		}
-
-		.sector {
-			fill: rgba(232, 160, 191, 0.42);
-		}
-
-		.radius {
-			stroke: var(--accent);
-			stroke-width: 4;
-		}
-
-		.diameter {
-			stroke: var(--main);
-			stroke-width: 3;
-			stroke-dasharray: 9 6;
-		}
-
-		.chord {
-			stroke: var(--pink);
-			stroke-width: 3;
-		}
-
-		.tangent {
-			stroke: var(--green);
-			stroke-width: 3;
-		}
-
-		.pt {
-			fill: var(--main);
-			stroke: #ffffff;
-			stroke-width: 2;
-		}
-
-		body.night_mode .pt {
-			stroke: #1b2442;
-		}
-
-		.label {
-			font-size: 15px;
-			font-weight: 700;
-			fill: var(--ink);
+		#ggb-status.error {
+			color: #ca3f67;
 		}
 
 		.formula_strip {
-			padding: 0.35rem 0.9rem 0.6rem;
+			padding: 0.18rem 0.7rem 0.44rem;
 			display: grid;
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 0.5rem;
@@ -183,7 +140,7 @@
 		}
 
 		.legend {
-			padding: 0.12rem 0.9rem 0.88rem;
+			padding: 0.06rem 0.7rem 0.56rem;
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.42rem 0.8rem;
@@ -209,11 +166,11 @@
 
 		@media (max-width: 760px) {
 			body {
-				padding: 0.62rem;
+				padding: 0.42rem;
 			}
 
 			.board_shell {
-				min-height: 420px;
+				min-height: 520px;
 			}
 
 			.formula_strip,
@@ -221,8 +178,8 @@
 				grid-template-columns: 1fr;
 			}
 
-			svg {
-				max-height: 300px;
+			#ggb-element {
+				min-height: 420px;
 			}
 		}
 	</style>
@@ -231,44 +188,15 @@
 	<section class="board_shell" aria-label="Circle geometry board">
 		<header class="board_head">
 			<p class="chip" data-key="chip">独立图示</p>
-			<h2 data-key="title">圆几何结构图</h2>
-			<p class="subtitle" data-key="subtitle">先看核心关系，再进入游戏页做交互挑战。</p>
+			<h2 data-key="title">GeoGebra 圆几何交互控件</h2>
+			<p class="subtitle" data-key="subtitle">课堂展示模式：仅保留核心交互，弦 FG 与直径 DE 已明确分离展示。</p>
 		</header>
 
-		<div class="diagram_wrap" aria-hidden="true">
-			<svg viewBox="0 0 860 500" role="img" aria-label="Circle geometry diagram with key lines">
-				<defs>
-					<pattern id="minorGrid" width="24" height="24" patternUnits="userSpaceOnUse">
-						<path class="grid_minor" d="M 24 0 L 0 0 0 24" />
-					</pattern>
-					<pattern id="majorGrid" width="96" height="96" patternUnits="userSpaceOnUse">
-						<rect width="96" height="96" fill="url(#minorGrid)" />
-						<path class="grid_major" d="M 96 0 L 0 0 0 96" />
-					</pattern>
-				</defs>
-				<rect x="32" y="24" width="796" height="448" rx="16" fill="url(#majorGrid)" />
-
-				<circle class="ring" cx="380" cy="255" r="150" />
-				<path class="sector" d="M 380 255 L 380 105 A 150 150 0 0 1 507 175 Z" />
-
-				<line class="diameter" x1="230" y1="255" x2="530" y2="255" />
-				<line class="radius" x1="380" y1="255" x2="380" y2="105" />
-				<line class="radius" x1="380" y1="255" x2="507" y2="175" />
-				<line class="chord" x1="288" y1="373" x2="507" y2="175" />
-				<line class="tangent" x1="507" y1="175" x2="694" y2="175" />
-
-				<circle class="pt" cx="380" cy="255" r="7" />
-				<circle class="pt" cx="380" cy="105" r="7" />
-				<circle class="pt" cx="507" cy="175" r="7" />
-				<circle class="pt" cx="288" cy="373" r="7" />
-				<circle class="pt" cx="230" cy="255" r="7" />
-
-				<text class="label" x="394" y="248">O</text>
-				<text class="label" x="392" y="98">A</text>
-				<text class="label" x="520" y="170">B</text>
-				<text class="label" x="300" y="389">C</text>
-				<text class="label" x="196" y="248">D</text>
-			</svg>
+		<div class="diagram_wrap" aria-label="GeoGebra interactive circle board">
+			<div class="geogebra_wrap">
+				<div id="ggb-element"></div>
+				<p id="ggb-status" data-key="status_loading">正在加载 GeoGebra 交互控件...</p>
+			</div>
 		</div>
 
 		<div class="formula_strip" aria-label="key formulas">
@@ -288,43 +216,64 @@
 
 		<div class="legend" aria-label="diagram legend">
 			<div class="legend_item"><span class="legend_mark mark_radius"></span><span data-key="legend_radius">半径 OA / OB</span></div>
-			<div class="legend_item"><span class="legend_mark mark_diameter"></span><span data-key="legend_diameter">直径 D 到右侧圆周</span></div>
-			<div class="legend_item"><span class="legend_mark mark_chord"></span><span data-key="legend_chord">弦 C-B</span></div>
+			<div class="legend_item"><span class="legend_mark mark_diameter"></span><span data-key="legend_diameter">直径 DE（经过圆心）</span></div>
+			<div class="legend_item"><span class="legend_mark mark_chord"></span><span data-key="legend_chord">弦 FG（不经过圆心）</span></div>
 			<div class="legend_item"><span class="legend_mark mark_tangent"></span><span data-key="legend_tangent">切线经过点 B</span></div>
 		</div>
 	</section>
 
+	<script src="https://cdn.geogebra.org/apps/deployggb.js"></script>
 	<script>
 		const i18n = {
 			zh: {
 				chip: "独立图示",
-				title: "圆几何结构图",
-				subtitle: "先看核心关系，再进入游戏页做交互挑战。",
+				title: "GeoGebra 圆几何交互控件",
+				subtitle: "课堂展示模式：仅保留核心交互，弦 FG 与直径 DE 已明确分离展示。",
+				status_loading: "正在加载 GeoGebra 交互控件...",
+				status_error: "GeoGebra 加载失败，请检查网络后刷新页面。",
 				f1_label: "面积",
 				f2_label: "周长",
 				f3_label: "直径",
 				legend_radius: "半径 OA / OB",
-				legend_diameter: "直径 D 到右侧圆周",
-				legend_chord: "弦 C-B",
+				legend_diameter: "直径 DE（经过圆心）",
+				legend_chord: "弦 FG（不经过圆心）",
 				legend_tangent: "切线经过点 B"
 			},
 			en: {
 				chip: "Standalone Visual",
-				title: "Circle Geometry Structure",
-				subtitle: "Review the key relations first, then move to the game page for interactions.",
+				title: "GeoGebra Circle Geometry Widget",
+				subtitle: "Classroom mode keeps only essential interactions, with chord FG clearly separated from diameter DE.",
+				status_loading: "Loading GeoGebra interactive widget...",
+				status_error: "GeoGebra failed to load. Please check your network and refresh.",
 				f1_label: "Area",
 				f2_label: "Circumference",
 				f3_label: "Diameter",
 				legend_radius: "Radius OA / OB",
-				legend_diameter: "Diameter from D to right arc",
-				legend_chord: "Chord C-B",
+				legend_diameter: "Diameter DE (through center)",
+				legend_chord: "Chord FG (off-center)",
 				legend_tangent: "Tangent through point B"
 			}
 		};
 
+		const state = {
+			locale: "zh",
+			night: false
+		};
+
+		let current_applet_locale = "";
+
+		function get_dict() {
+			return i18n[state.locale] || i18n.zh;
+		}
+
+		function get_applet_language() {
+			return state.locale === "en" ? "en" : "zh-CN";
+		}
+
 		function apply_locale(locale) {
-			const dict = i18n[locale] || i18n.zh;
-			document.documentElement.lang = locale === "en" ? "en" : "zh-CN";
+			state.locale = locale === "en" ? "en" : "zh";
+			const dict = get_dict();
+			document.documentElement.lang = state.locale === "en" ? "en" : "zh-CN";
 			document.querySelectorAll("[data-key]").forEach((el) => {
 				const key = el.getAttribute("data-key");
 				if (dict[key]) {
@@ -334,7 +283,188 @@
 		}
 
 		function apply_night_mode(is_night) {
-			document.body.classList.toggle("night_mode", Boolean(is_night));
+			state.night = Boolean(is_night);
+			document.body.classList.toggle("night_mode", state.night);
+		}
+
+		function show_status_error() {
+			const dict = get_dict();
+			const status = document.getElementById("ggb-status");
+			status.textContent = dict.status_error;
+			status.classList.add("error");
+			status.hidden = false;
+		}
+
+		function get_applet_size() {
+			const host = document.getElementById("ggb-element");
+			const box = host.getBoundingClientRect();
+			const width = Math.max(320, Math.floor(box.width || 760));
+			const height = Math.max(360, Math.floor(box.height || 430));
+			return { width, height };
+		}
+
+		function seed_circle_scene(api, size) {
+			if (typeof api.setErrorDialogsActive === "function") {
+				api.setErrorDialogsActive(false);
+			}
+
+			const base_commands = [
+				"O=(0,0)",
+				"c=Circle(O,5)",
+				"D=Point(c)",
+				"A=D",
+				"E=Rotate(D,180°,O)",
+				"B=Point(c)",
+				"F=Point(c)",
+				"G=Rotate(F,70°,O)",
+				"radius1=Segment(O,A)",
+				"radius2=Segment(O,B)",
+				"diameter=Segment(D,E)",
+				"chord=Segment(F,G)"
+			];
+
+			base_commands.forEach((cmd) => {
+				const ok = api.evalCommand(cmd);
+				if (!ok) {
+					throw new Error(`GeoGebra command failed: ${cmd}`);
+				}
+			});
+
+			const sector_ok = api.evalCommand("sector=Sector(c,A,B)") || api.evalCommand("sector=CircularSector(O,A,B)");
+			if (!sector_ok) {
+				throw new Error("GeoGebra sector command failed");
+			}
+
+			const tangent_ok = api.evalCommand("tangentB=PerpendicularLine(B,Line(O,B))") || api.evalCommand("tangentB=Tangent(B,c)");
+			if (!tangent_ok) {
+				throw new Error("GeoGebra tangent command failed");
+			}
+
+			const colors = {
+				radius1: [68, 113, 194],
+				radius2: [68, 113, 194],
+				diameter: [13, 50, 115],
+				chord: [234, 143, 181],
+				tangentB: [44, 141, 86],
+				sector: [232, 160, 191]
+			};
+
+			if (typeof api.setColor === "function") {
+				Object.entries(colors).forEach(([name, color]) => {
+					api.setColor(name, color[0], color[1], color[2]);
+				});
+			}
+
+			if (typeof api.setLineStyle === "function") {
+				api.setLineStyle("diameter", 2);
+				api.setLineStyle("chord", 0);
+			}
+
+			if (typeof api.setLineThickness === "function") {
+				api.setLineThickness("diameter", 5);
+				api.setLineThickness("chord", 6);
+				api.setLineThickness("radius1", 4);
+				api.setLineThickness("radius2", 4);
+			}
+
+			if (typeof api.setFilling === "function") {
+				api.setFilling("sector", 0.42);
+			}
+
+			if (typeof api.setPointSize === "function") {
+				["O", "A", "B", "D", "E", "F", "G"].forEach((point_name) => {
+					api.setPointSize(point_name, 5);
+				});
+			}
+
+			if (typeof api.setLabelVisible === "function") {
+				api.setLabelVisible("diameter", true);
+				api.setLabelVisible("chord", true);
+			}
+
+			if (typeof api.setCaption === "function") {
+				const diameter_caption = state.locale === "en" ? "Diameter DE" : "直径 DE";
+				const chord_caption = state.locale === "en" ? "Chord FG" : "弦 FG";
+				api.setCaption("diameter", diameter_caption);
+				api.setCaption("chord", chord_caption);
+			}
+
+			if (typeof api.setLabelStyle === "function") {
+				api.setLabelStyle("diameter", 2);
+				api.setLabelStyle("chord", 2);
+			}
+
+			if (typeof api.setAxesVisible === "function") {
+				api.setAxesVisible(1, false, false);
+			}
+
+			if (typeof api.setGridVisible === "function") {
+				api.setGridVisible(1, true);
+			}
+
+			if (typeof api.setCoordSystem === "function") {
+				const safe_width = Math.max(1, size.width);
+				const safe_height = Math.max(1, size.height);
+				const x_span = 20;
+				const y_span = x_span * (safe_height / safe_width);
+				api.setCoordSystem(-10, 10, -y_span / 2, y_span / 2);
+			}
+		}
+
+		function mount_geogebra(force_reload) {
+			if (typeof window.GGBApplet !== "function") {
+				show_status_error();
+				return;
+			}
+
+			if (!force_reload && current_applet_locale === state.locale) {
+				return;
+			}
+
+			const host = document.getElementById("ggb-element");
+			const status = document.getElementById("ggb-status");
+			const dict = get_dict();
+			const size = get_applet_size();
+
+			host.innerHTML = "";
+			status.hidden = false;
+			status.classList.remove("error");
+			status.textContent = dict.status_loading;
+
+			const parameters = {
+				appName: "classic",
+				perspective: "G",
+				width: size.width,
+				height: size.height,
+				showToolBar: false,
+				showToolBarHelp: false,
+				showAlgebraInput: false,
+				showAlgebraView: false,
+				showMenuBar: false,
+				showResetIcon: true,
+				enableLabelDrags: true,
+				enableShiftDragZoom: true,
+				enableRightClick: false,
+				showZoomButtons: false,
+				enableUndoRedo: false,
+				language: get_applet_language(),
+				appletOnLoad: function(api) {
+					try {
+						if (typeof api.setPerspective === "function") {
+							api.setPerspective("G");
+						}
+						seed_circle_scene(api, size);
+						current_applet_locale = state.locale;
+						status.hidden = true;
+					} catch (error) {
+						console.error(error);
+						show_status_error();
+					}
+				}
+			};
+
+			const applet = new window.GGBApplet(parameters, true);
+			applet.inject("ggb-element");
 		}
 
 		window.addEventListener("message", (event) => {
@@ -343,11 +473,21 @@
 				return;
 			}
 
+			const next_locale = data.locale === "en" ? "en" : "zh";
+			const locale_changed = next_locale !== state.locale;
+
 			apply_night_mode(data.night);
-			apply_locale(data.locale === "en" ? "en" : "zh");
+			apply_locale(next_locale);
+
+			if (locale_changed) {
+				mount_geogebra(true);
+			}
 		});
 
-		apply_locale("zh");
+		window.addEventListener("load", () => {
+			apply_locale("zh");
+			mount_geogebra(true);
+		});
 	</script>
 </body>
 </html>

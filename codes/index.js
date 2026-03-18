@@ -168,8 +168,8 @@ const i18n_text = {
 		ai_greeting_text: "Hi, I am CircleBot. Do you want to review radius, chord, tangent, or area first?",
 		open_chat: "Open Chat",
 		showcase_kicker: "Circle Geometry Studio",
-		showcase_line_1: "See",
-		showcase_line_2: "Circle Links",
+		showcase_line_1: "See Clearly",
+		showcase_line_2: "How Circles Connect",
 		showcase_line_3: "Start Here",
 		showcase_desc: "Observe the key relationships first, then move into rules, challenges, and quizzes that turn circle geometry into a usable method.",
 		ai_preview_label: "AI Guide",
@@ -300,6 +300,18 @@ function apply_language() {
 		const key_name = element.getAttribute("data-i18n-placeholder");
 		if (lang_dict[key_name]) {
 			element.setAttribute("placeholder", lang_dict[key_name]);
+		}
+	});
+
+	document.querySelectorAll(".side_nav_link").forEach((link_element) => {
+		const tooltip = link_element.querySelector(".side_nav_tooltip[data-i18n]");
+		if (!tooltip) {
+			return;
+		}
+
+		const key_name = tooltip.getAttribute("data-i18n");
+		if (key_name && lang_dict[key_name]) {
+			link_element.setAttribute("aria-label", lang_dict[key_name]);
 		}
 	});
 
