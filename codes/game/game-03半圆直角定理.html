@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<<<<<<< HEAD
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 - Semicircle Right Angle Theorem | Circle Geometry</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .navbar {
+      background-color: #0066cc;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 24px;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+    
+    .card-content {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .reset-button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    
+    .reset-button:hover {
+      background-color: #004d99;
+    }
+    
+    .highlight {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    
+    .example {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div>CircleLab | Interactive Math Learning</div>
+    <div>
+      <a href="#home">主页</a>
+      <a href="./quiz/quiz.html">测验</a>
+      <a href="./game/game.html">游戏</a>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="card">
+      <h1 class="card-title">03 - Semicircle Right Angle Theorem</h1>
+      
+      <h2 class="card-title">📘 Basic Definition</h2>
+      <p>An inscribed angle that intercepts a semicircle is a right angle (90°).</p>
+      
+      <h2 class="card-title">📐 Theorem Content</h2>
+      <p>If an inscribed angle intercepts a semicircle (180° arc), then the angle is 90°.</p>
+      <p>Conversely, if an inscribed angle is 90°, it intercepts a semicircle.</p>
+      
+      <h2 class="card-title">📌 Important Corollary</h2>
+      <p>This is a special case of the Inscribed Angle Theorem (½ × 180° = 90°).</p>
+      
+      <div class="highlight">
+        <strong>Key Insight:</strong> Any triangle inscribed in a semicircle is a right triangle.
+      </div>
+      
+      <h2 class="card-title">🛠️ Interactive Simulation</h2>
+      <div class="card-content">
+        <div id="angle-display">∠ABC: 0°</div>
+        <div id="arc-display">弧AC: 0°</div>
+        <button class="reset-button" onclick="resetRightAngle()">Reset</button>
+      </div>
+      
+      <div class="example">
+        <strong>Example 1:</strong> In a semicircle, any inscribed angle will always be 90°.
+      </div>
+      
+      <h2 class="card-title">🌍 Real-World Application</h2>
+      <p>Used in construction to ensure right angles when laying out circular foundations or in the design of circular arches and bridges.</p>
+      
+      <h2 class="card-title">📜 Historical Context</h2>
+      <p>Known to ancient Greek mathematicians as a consequence of the Inscribed Angle Theorem. Mentioned in Euclid's Elements (Book III, Proposition 31).</p>
+      
+      <h2 class="card-title">❓ Practice Problems</h2>
+      <p>1. If ∠ABC is inscribed in a semicircle, what is its measure?</p>
+      <p>2. A triangle inscribed in a circle has a 90° angle. What can you say about the side opposite this angle?</p>
+      <p>3. In a circle with diameter AB, point C is on the circle. If ∠ACB = 90°, what is the measure of arc AB?</p>
+      
+      <h2 class="card-title">⚠️ Common Mistakes</h2>
+      <p>• Assuming all right angles in circles are from semicircles (not true for all right angles)</p>
+      <p>• Confusing this with the Central Angle Theorem</p>
+      <p>• Forgetting the diameter must be the hypotenuse of the right triangle</p>
+      
+      <h2 class="card-title">🔍 Interactive Challenge</h2>
+      <p>Drag point C around the circle to see how the angle changes when it's not on the semicircle.</p>
+      
+      <div class="highlight">
+        <strong>Hint:</strong> The angle is 90° only when the intercepted arc is exactly 180° (a semicircle).
+      </div>
+      
+      <p style="margin-top: 20px; color: #666; font-style: italic;">Note: This theorem is a special case with powerful applications in geometry and engineering.</p>
+    </div>
+  </div>
+  
+  <script>
+    function resetRightAngle() {
+      document.getElementById('angle-display').textContent = '∠ABC: 0°';
+      document.getElementById('arc-display').textContent = '弧AC: 0°';
+    }
+  </script>
+</body>
+</html>
+=======
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>03 - 半圆直角定理 | 03 - Semicircle Right Angle Theorem</title>
+
+    <!-- ===================== CSS 样式部分 ===================== -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .lang-btn {
+            position: absolute;
+            top: 22px;
+            right: 28px;
+            padding: 8px 16px;
+            background: rgba(255,255,250);
+            color: #1d4ed8;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .card {
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .card-def {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+        }
+        .card-theorem {
+            border-left: 4px solid #10b981;
+            background: #ecfdf5;
+        }
+        .card-corollary {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .card p {
+            font-size: 16px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .card ul {
+            padding-left: 24px;
+        }
+
+        .card li {
+            font-size: 16px;
+            color: #374151;
+            line-height: 1.9;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin: 40px 0;
+            padding: 24px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        canvas {
+            background: #fff;
+            border-radius: 8px;
+            touch-action: none;
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 15px;
+            bottom: 15px;
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #dc2626;
+        }
+
+        .data-panel {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translate(30px, -50%);
+            text-align: left;
+            font-size: 16px;
+            line-height: 2;
+            min-width: 190px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            letter-spacing: 0.2px;
+        }
+        .data-panel .blue { 
+            color: #2563eb; 
+            font-weight: 600; 
+        }
+
+        .canvas-tip {
+            margin-top: 16px;
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.6;
+            letter-spacing: 0.2px;
+        }
+
+        .zh, .en { display: none; }
+        :lang(zh) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
+    </style>
+</head>
+
+<!-- ===================== HTML 结构部分 ===================== -->
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="zh">03 - 半圆直角定理</span>
+                <span class="en">03 - Semicircle Right Angle Theorem</span>
+            </h1>
+            <button class="lang-btn" id="langBtn">EN</button>
+        </div>
+
+        <div class="content">
+            <div class="card card-def">
+                <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
+                <p><span class="zh">顶点在圆上，两边与圆相交的角，叫做圆周角。</span>
+                <span class="en">An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle.</span></p>
+            </div>
+
+            <div class="card card-theorem">
+                <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
+                <p><span class="zh"><strong>在任意一个圆中：</strong></span><span class="en"><strong>In any circle:</strong></span></p>
+                <ul>
+                    <li><span class="zh">半圆（直径）所对的圆周角一定是直角</span><span class="en">The inscribed angle of a semicircle is always a right angle</span></li>
+                    <li><span class="zh">直径所对的圆周角恒等于 90°</span><span class="en">The inscribed angle subtended by a diameter is always 90°</span></li>
+                </ul>
+            </div>
+
+            <div class="card card-corollary">
+                <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
+                <p><span class="zh">如果三角形的一条边是圆的直径，且第三个顶点在圆上，该三角形一定是直角三角形。</span>
+                <span class="en">If one side of a triangle is the diameter of a circle and the third vertex lies on the circle, the triangle must be a right triangle.</span></p>
+            </div>
+
+            <div class="canvas-wrapper">
+                <div class="canvas-container">
+                    <canvas id="canvas" width="540" height="440"></canvas>
+                    <button class="reset-btn" id="resetBtn">重置</button>
+                    <div class="data-panel">
+                        <div class="blue">∠ACB：<span id="ang1">0°</span></div>
+                    </div>
+                </div>
+                <div class="canvas-tip">
+                    <span class="zh">🔹 拖动圆上的点 A、B、C 任意移动，靠近直径两端会自动吸附</span>
+                    <span class="en">🔹 Drag points A, B, C on the circle</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== JavaScript 逻辑部分 ===================== -->
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const langBtn = document.getElementById('langBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+
+        const diamRight = 0;
+        const diamLeft = Math.PI;
+        const snapDistance = 10;
+
+        const initialPoints = {
+          A: { angle: diamLeft },
+          B: { angle: diamRight },
+          C: { angle: 3 * Math.PI / 2 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+          return {
+            x: cx + radius * Math.cos(angle),
+            y: cy + radius * Math.sin(angle)
+          };
+        }
+
+        function snapAngle(angle) {
+          const snapRad = snapDistance / radius;
+          if (Math.abs(angle - diamRight) < snapRad) return diamRight;
+          if (Math.abs(angle - diamLeft) < snapRad) return diamLeft;
+          return angle;
+        }
+
+        function drawRightAngleSymbol(C, A, B) {
+          const size = 14;
+          const vecCA = { x: A.x - C.x, y: A.y - C.y };
+          const vecCB = { x: B.x - C.x, y: B.y - C.y };
+          const lenCA = Math.hypot(vecCA.x, vecCA.y);
+          const lenCB = Math.hypot(vecCB.x, vecCB.y);
+
+          const p1 = {
+            x: C.x + (vecCA.x / lenCA) * size,
+            y: C.y + (vecCA.y / lenCA) * size
+          };
+          const p2 = {
+            x: C.x + (vecCB.x / lenCB) * size,
+            y: C.y + (vecCB.y / lenCB) * size
+          };
+
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(C.x, C.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          // 画圆
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.strokeStyle = '#333';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // 虚线直径
+          ctx.save();
+          ctx.setLineDash([5, 3]);
+          ctx.strokeStyle = '#999';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(cx - radius, cy);
+          ctx.lineTo(cx + radius, cy);
+          ctx.stroke();
+          ctx.restore();
+
+          // 圆心
+          ctx.beginPath();
+          ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#000';
+          ctx.fill();
+          ctx.font = '16px Arial';
+          ctx.fillText('O', cx, cy - 18);
+
+          const pos = {
+            A: getPosition(points.A.angle),
+            B: getPosition(points.B.angle),
+            C: getPosition(points.C.angle)
+          };
+
+          // 画线
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#666';
+          ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+
+          // 计算角度
+          let arcAB = Math.abs(points.B.angle - points.A.angle);
+          if (arcAB > Math.PI) arcAB = 2 * Math.PI - arcAB;
+          const degC = Math.round(arcAB / 2 * 180 / Math.PI);
+
+          // 绘制直角符号
+          if (degC === 90) {
+            drawRightAngleSymbol(pos.C, pos.A, pos.B);
+          }
+
+          // 画点
+          for (const k in pos) {
+            ctx.beginPath();
+            ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            ctx.font = '18px Arial';
+            ctx.fillText(k, pos[k].x, pos[k].y - 18);
+          }
+
+          document.getElementById('ang1').textContent = degC + '°';
+        }
+
+        // 鼠标事件
+        function getMousePos(e) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+          };
+        }
+
+        function checkHit(mx, my) {
+          for (const key in points) {
+            const p = getPosition(points[key].angle);
+            const d = Math.hypot(mx - p.x, my - p.y);
+            if (d < 16) return key;
+          }
+          return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+          const m = getMousePos(e);
+          dragging = checkHit(m.x, m.y);
+          if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!dragging) {
+            const m = getMousePos(e);
+            hoverPoint = checkHit(m.x, m.y);
+            canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+            draw();
+            return;
+          }
+          const m = getMousePos(e);
+          const angle = Math.atan2(m.y - cy, m.x - cx);
+          points[dragging].angle = snapAngle(angle);
+          draw();
+        });
+
+        window.addEventListener('mouseup', () => {
+          dragging = null;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+          hoverPoint = null;
+          draw();
+        });
+
+        // 重置
+        resetBtn.onclick = () => {
+          points = JSON.parse(JSON.stringify(initialPoints));
+          draw();
+        };
+
+        // 双语
+        langBtn.onclick = () => {
+          const h = document.documentElement;
+          if (h.lang === 'zh-CN') {
+            h.lang = 'en';
+            langBtn.textContent = '中文';
+            resetBtn.textContent = 'Reset';
+          } else {
+            h.lang = 'zh-CN';
+            langBtn.textContent = 'EN';
+            resetBtn.textContent = '重置';
+          }
+        };
+
+        draw();
+    </script>
+</body>
+</html>
+>>>>>>> c3dcf9d (feat: update game.html,game-01 ~ game-06)

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<<<<<<< HEAD
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01 - Central Angle Theorem | Circle Geometry</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .navbar {
+      background-color: #0066cc;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 24px;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+    
+    .card-content {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .reset-button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    
+    .reset-button:hover {
+      background-color: #004d99;
+    }
+    
+    .highlight {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    
+    .example {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div>CircleLab | Interactive Math Learning</div>
+    <div>
+      <a href="#home">主页</a>
+      <a href="./quiz/quiz.html">测验</a>
+      <a href="./game/game.html">游戏</a>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="card">
+      <h1 class="card-title">01 - Central Angle Theorem</h1>
+      
+      <h2 class="card-title">📘 Basic Definition</h2>
+      <p>Vertex at the center, both sides intersecting the circle, the angle is called a central angle.</p>
+      <p>A central angle is an angle whose vertex is the center of a circle.</p>
+      
+      <h2 class="card-title">📐 Theorem Content</h2>
+      <p>In the same or congruent circles:</p>
+      <p>Equal central angles ⇔ Equal intercepted arcs</p>
+      <p>Equal central angles ⇔ Equal chords</p>
+      
+      <h2 class="card-title">📌 Important Corollary</h2>
+      <p>If any one pair (angle, arc, chord) is equal, the other two are equal.</p>
+      
+      <div class="highlight">
+        <strong>Key Insight:</strong> The measure of a central angle is equal to the measure of its intercepted arc.
+      </div>
+      
+      <h2 class="card-title">🛠️ Interactive Simulation</h2>
+      <div class="card-content">
+        <div id="angle-display">∠AOB: 0°</div>
+        <div id="arc-display">弧AB: 0°</div>
+        <div id="angle-display2">∠COD: 0°</div>
+        <div id="arc-display2">弧CD: 0°</div>
+        <button class="reset-button" onclick="resetAngle()">Reset</button>
+      </div>
+      
+      <div class="example">
+        <strong>Example 1:</strong> If ∠AOB = 60°, then arc AB = 60°.
+      </div>
+      
+      <h2 class="card-title">🌍 Real-World Application</h2>
+      <p>Engineers use this theorem when designing circular structures like bridges and domes. For example, calculating the angle for structural supports in a circular arch.</p>
+      
+      <h2 class="card-title">📜 Historical Context</h2>
+      <p>First documented by Euclid in "Elements" (c. 300 BCE). This theorem is foundational for all circle geometry.</p>
+      
+      <h2 class="card-title">❓ Practice Problems</h2>
+      <p>1. If the central angle is 90°, what is the measure of its intercepted arc?</p>
+      <p>2. Two central angles are congruent. What can you say about their intercepted arcs?</p>
+      <p>3. In a circle with radius 10 cm, a central angle of 120° intercepts an arc. Calculate the arc length.</p>
+      
+      <h2 class="card-title">⚠️ Common Mistakes</h2>
+      <p>• Confusing central angles with inscribed angles</p>
+      <p>• Forgetting the theorem only applies to angles in the same circle</p>
+      <p>• Misidentifying the intercepted arc (it's the arc between the two points on the circle)</p>
+      
+      <h2 class="card-title">🔍 Interactive Challenge</h2>
+      <p>Drag points A, B, C, D to create equal central angles. Observe how the arcs change when angles are equal.</p>
+      
+      <div class="highlight">
+        <strong>Hint:</strong> The central angle is always equal to its intercepted arc measure in degrees.
+      </div>
+      
+      <p style="margin-top: 20px; color: #666; font-style: italic;">Note: This simulation is simplified for educational purposes. Actual circle geometry involves more complex relationships.</p>
+    </div>
+  </div>
+  
+  <script>
+    function resetAngle() {
+      document.getElementById('angle-display').textContent = '∠AOB: 0°';
+      document.getElementById('arc-display').textContent = '弧AB: 0°';
+      document.getElementById('angle-display2').textContent = '∠COD: 0°';
+      document.getElementById('arc-display2').textContent = '弧CD: 0°';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add drag functionality to points
+      const points = document.querySelectorAll('.simulation-point');
+      points.forEach(point => {
+        point.addEventListener('mousedown', startDrag);
+      });
+      
+      function startDrag(e) {
+        e.preventDefault();
+        const point = e.target;
+        const rect = document.getElementById('simulation-container').getBoundingClientRect();
+        
+        function move(e) {
+          const x = e.clientX - rect.left - 4;
+          const y = e.clientY - rect.top - 4;
+          point.style.left = x + 'px';
+          point.style.top = y + 'px';
+        }
+        
+        function stopDrag() {
+          document.removeEventListener('mousemove', move);
+          document.removeEventListener('mouseup', stopDrag);
+        }
+        
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup', stopDrag);
+      }
+    });
+  </script>
+</body>
+</html>
+=======
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01-圆心角定理 | 01-Central Angle Theorem</title>
+
+<!-- ==================
+ ============================ -->
+<!-- ================= CSS 样式部分 ================= -->
+<!-- ============================================== -->
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+    padding: 32px;
+    text-align: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.lang-btn {
+    position: absolute;
+    top: 22px;
+    right: 28px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.content {
+    padding: 40px;
+}
+
+.card {
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    line-height: 1.7;
+}
+
+.card-def {
+    border-left: 4px solid #3b82f6;
+    background: #eff6ff;
+}
+.card-theorem {
+    border-left: 4px solid #10b981;
+    background: #ecfdf5;
+}
+.card-corollary {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+}
+
+.card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card p {
+    font-size: 16px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 8px;
+}
+
+.card ul {
+    padding-left: 22px;
+}
+.card li {
+    font-size: 16px;
+    color: #374151;
+    line-height: 1.9;
+    margin-bottom: 6px;
+}
+
+.canvas-wrapper {
+    position: relative;
+    text-align: center;
+    margin: 40px 0;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.canvas-container {
+    position: relative;
+    display: inline-block;
+}
+
+canvas {
+    background: #fff;
+    border-radius: 8px;
+    touch-action: none;
+}
+
+.reset-btn {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    padding: 8px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+.reset-btn:hover {
+    background: #dc2626;
+}
+
+.data-panel {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translate(30px, -50%);
+    text-align: left;
+    font-size: 16px;
+    line-height: 2;
+    min-width: 190px;
+    padding: 14px 18px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+.data-panel .blue { 
+    color: #2563eb; 
+    font-weight: 600; 
+}
+.data-panel .green { 
+    color: #059669; 
+    font-weight: 600; 
+}
+
+.canvas-tip {
+    margin-top: 16px;
+    font-size: 15px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.zh, .en { display: none; }
+:lang(zh) .zh { display: initial; }
+:lang(en) .en { display: initial; }
+</style>
+</head>
+
+<!-- ============================================== -->
+<!-- ================= HTML 结构部分 ================= -->
+<!-- ============================================== -->
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="zh">01-圆心角定理</span>
+            <span class="en">01-Central Angle Theorem</span>
+        </h1>
+        <button class="lang-btn" id="langBtn">EN</button>
+    </div>
+
+    <div class="content">
+        <div class="card card-def">
+            <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
+            <p><span class="zh">顶点在圆心，两边与圆周相交的角叫做圆心角。</span><span class="en">A central angle is an angle whose vertex is the center of a circle.</span></p>
+            <p><span class="zh">圆心角的度数等于它所对劣弧的度数。</span><span class="en">The measure of a central angle equals its minor arc.</span></p>
+        </div>
+
+        <div class="card card-theorem">
+            <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
+            <p><span class="zh"><strong>在同圆或等圆中：</strong></span><span class="en"><strong>In the same or congruent circles:</strong></span></p>
+            <ul>
+                <li><span class="zh">相等的圆心角 ⇔ 所对的弧相等</span><span class="en">Equal central angles ⇔ Equal intercepted arcs</span></li>
+                <li><span class="zh">相等的圆心角 ⇔ 所对的弦相等</span><span class="en">Equal central angles ⇔ Equal chords</span></li>
+            </ul>
+        </div>
+
+        <div class="card card-corollary">
+            <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
+            <p><span class="zh">圆心角、弧、弦三组量中，<strong>任意一组相等</strong>，其余两组也分别相等。</span>
+            <span class="en">If any one pair (angle, arc, chord) is equal, the other two are equal.</span></p>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <canvas id="canvas" width="540" height="440"></canvas>
+                <button class="reset-btn" id="resetBtn">重置</button>
+                <div class="data-panel">
+                    <div class="blue">∠AOB: <span id="ang1">0°</span></div>
+                    <div class="blue">弧AB: <span id="arc1">0</span></div>
+                    <div class="green">∠COD: <span id="ang2">0°</span></div>
+                    <div class="green">弧CD: <span id="arc2">0</span></div>
+                </div>
+            </div>
+            <div class="canvas-tip">
+                <span class="zh">🔹 拖动圆上的点 A、B、C、D 观察圆心角与弧的关系</span>
+                <span class="en">🔹 Drag points A, B, C, D on the circle</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================== -->
+<!-- ================= JS 脚本部分 ================== -->
+<!-- ============================================== -->
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const langBtn = document.getElementById('langBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+const cx = 270, cy = 220;
+const radius = 160;
+const unitR = 1;
+
+const initialPoints = {
+    A: { angle: 0 },
+    B: { angle: Math.PI / 3 },
+    C: { angle: Math.PI },
+    D: { angle: Math.PI + Math.PI / 3 }
+};
+
+let points = JSON.parse(JSON.stringify(initialPoints));
+let dragging = null;
+let hoverPoint = null;
+
+function getPosition(angle) {
+    return {
+        x: cx + radius * Math.cos(angle),
+        y: cy + radius * Math.sin(angle)
+    };
+}
+
+function getMinorAngle(a1, a2) {
+    let diff = Math.abs(a2 - a1);
+    if (diff > Math.PI) diff = 2 * Math.PI - diff;
+    diff = Math.abs(diff);
+    return {
+        rad: diff,
+        deg: Math.round(diff * 180 / Math.PI)
+    };
+}
+
+function getArcLength(rad) {
+    return (unitR * Math.abs(rad)).toFixed(2);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+    ctx.font = '16px Arial';
+    ctx.fillText('O', cx, cy - 18);
+
+    const pos = {};
+    for (let key in points) {
+        pos[key] = getPosition(points[key].angle);
+    }
+
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#666';
+    for (let key in pos) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(pos[key].x, pos[key].y);
+        ctx.stroke();
+    }
+
+    const angleAOB = getMinorAngle(points.A.angle, points.B.angle);
+    const angleCOD = getMinorAngle(points.C.angle, points.D.angle);
+    
+    for (let key in pos) {
+        ctx.beginPath();
+        ctx.arc(pos[key].x, pos[key].y, hoverPoint === key ? 8 : 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.font = '18px Arial';
+        ctx.fillText(key, pos[key].x, pos[key].y - 18);
+    }
+
+    document.getElementById('ang1').textContent = angleAOB.deg + '°';
+    document.getElementById('arc1').textContent = getArcLength(angleAOB.rad);
+    document.getElementById('ang2').textContent = angleCOD.deg + '°';
+    document.getElementById('arc2').textContent = getArcLength(angleCOD.rad);
+}
+
+function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
+}
+
+function checkHit(mx, my) {
+    for (let key in points) {
+        const p = getPosition(points[key].angle);
+        const distance = Math.hypot(mx - p.x, my - p.y);
+        if (distance < 16) return key;
+    }
+    return null;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+    const mouse = getMousePos(e);
+    const hit = checkHit(mouse.x, mouse.y);
+    if (hit) {
+        dragging = hit;
+        canvas.style.cursor = 'grabbing';
+    }
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!dragging) {
+        const mouse = getMousePos(e);
+        hoverPoint = checkHit(mouse.x, mouse.y);
+        canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+        draw();
+        return;
+    }
+    const mouse = getMousePos(e);
+    points[dragging].angle = Math.atan2(mouse.y - cy, mouse.x - cx);
+    draw();
+});
+
+window.addEventListener('mouseup', () => {
+    if (dragging) {
+        dragging = null;
+        canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+    }
+});
+
+canvas.addEventListener('mouseleave', () => {
+    hoverPoint = null;
+    draw();
+});
+
+resetBtn.onclick = () => {
+    points = JSON.parse(JSON.stringify(initialPoints));
+    draw();
+};
+
+langBtn.onclick = () => {
+    const html = document.documentElement;
+    if (html.lang === 'zh-CN') {
+        html.lang = 'en';
+        langBtn.textContent = '中文';
+        resetBtn.textContent = 'Reset';
+    } else {
+        html.lang = 'zh-CN';
+        langBtn.textContent = 'EN';
+        resetBtn.textContent = '重置';
+    }
+};
+
+draw();
+</script>
+</body>
+</html>
+>>>>>>> c3dcf9d (feat: update game.html,game-01 ~ game-06)
