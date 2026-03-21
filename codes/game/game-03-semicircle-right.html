@@ -5,21 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>03 - 半圆直角定理 | Semicircle Right Angle Theorem</title>
 
-    <!-- CSS 样式部分（调整为紧凑版，对齐04样式） -->
+    <!-- CSS 样式部分（调整为和02一致的颜色、排版） -->
     <style>
-        /* 返回按钮样式 - 对齐04的紧凑样式 */
+        /* 主题颜色变量 */
+        :root {
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #374151;
+            --text_color_night: #e5e7eb;
+            --border_color: #e5e7eb;
+            --border_color_night: #272e48;
+        }
+
+        /* 黑夜模式 */
+        body.night {
+            background-color: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+        body.night .container {
+            background: var(--bg_color_night);
+        }
+        body.night .canvas-wrapper {
+            background: var(--bg_color_night);
+        }
+        body.night canvas {
+            background: var(--bg_color_night);
+            border-color: var(--border_color_night);
+        }
+        body.night .card-def {
+            background: #162349;
+            color: var(--text_color_night);
+        }
+        body.night .card-theorem {
+            background: #14293f;
+            color: var(--text_color_night);
+        }
+        body.night .card-corollary {
+            background: #2c2442;
+            color: var(--text_color_night);
+        }
+        body.night .card p, 
+        body.night .card li,
+        body.night .canvas-tip,
+        body.night .data-panel {
+            color: var(--text_color_night);
+        }
+
+        /* 返回按钮样式 - 对齐02的紧凑样式 */
         .back-btn {
             text-align: center;
             margin: 1rem 0;
             padding-top: 1rem;
-            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            border-top: 2px solid rgba(68, 113, 194, 0.3);
             display: flex;
             justify-content: center;
             gap: 0.8rem;
         }
         .back-btn a {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
             color: white;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
@@ -37,114 +84,124 @@
         }
 
         body {
-            background-color: #f0f2f5;
-            padding: 20px 10px; /* 缩小body内边距 */
+            background-color: var(--bg_color);
+            padding: 20px 10px;
+            transition: background-color 0.3s ease;
         }
 
         .container {
             max-width: 960px;
             margin: 0 auto;
-            background: #fff;
+            background: var(--bg_color);
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.06);
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
         .header {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
             color: #fff;
-            padding: 20px; /* 缩小header内边距 */
+            padding: 20px;
             text-align: center;
             position: relative;
         }
 
         .header h1 {
-            font-size: 24px; /* 缩小标题字体 */
+            font-size: 24px;
             font-weight: 600;
-            letter-spacing: 0.5px; /* 缩小字间距 */
+            letter-spacing: 0.5px;
         }
 
-        .lang-btn {
+        .control-btn {
             position: absolute;
-            top: 15px; /* 调整位置 */
-            right: 20px; /* 调整位置 */
-            padding: 6px 12px; /* 缩小按钮内边距 */
-            background: rgba(255,255,255,0.25); /* 对齐04的背景透明度 */
-            color: white; /* 改为白色文字 */
-            border: 1px solid rgba(255,255,255,0.4); /* 增加边框 */
-            border-radius: 6px; /* 缩小圆角 */
+            top: 15px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px; /* 缩小字体 */
+            font-size: 14px;
             font-weight: 500;
             transition: 0.2s;
         }
-        .lang-btn:hover {
-            background: rgba(255,255,255,0.4); /* 调整hover样式 */
+        .control-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        /* 按钮间距保持不变，防止英文重叠 */
+        .lang-btn {
+            right: 180px;
+        }
+        .mode-btn {
+            right: 20px;
         }
 
         .content {
-            padding: 24px 20px; /* 缩小内容区内边距 */
+            padding: 24px 20px;
         }
 
         .card {
-            border-radius: 8px; /* 缩小圆角 */
-            padding: 16px 20px; /* 缩小卡片内边距 */
-            margin-bottom: 16px; /* 缩小卡片间距 */
-            line-height: 1.5; /* 缩小行高 */
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .card-def {
-            border-left: 4px solid #3b82f6;
-            background: #eff6ff; /* 对齐04的浅色背景 */
+            border-left: 4px solid var(--theme_color);
+            background: rgba(13, 50, 115, 0.05);
         }
         .card-theorem {
-            border-left: 4px solid #10b981; /* 微调绿色系，对齐04 */
-            background: #ecfdf5; /* 对齐04的浅色背景 */
+            border-left: 4px solid var(--sub_color);
+            background: rgba(68, 113, 194, 0.05);
         }
         .card-corollary {
-            border-left: 4px solid #f59e0b;
-            background: #fffbeb;
+            border-left: 4px solid var(--highlight_color);
+            background: rgba(232, 160, 191, 0.05);
         }
 
         .card h3 {
             font-size: 20px;
             font-weight: 600;
-            margin-bottom: 8px; /* 缩小标题下间距 */
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 6px; /* 缩小图标间距 */
-            letter-spacing: 0.3px; /* 缩小字间距 */
+            gap: 6px;
+            letter-spacing: 0.3px;
         }
 
         .card p {
-            font-size: 15px; /* 缩小字体 */
-            color: #374151; /* 调整文字颜色 */
-            line-height: 1.5; /* 缩小行高 */
-            margin-bottom: 8px; /* 缩小段落间距 */
-            letter-spacing: 0.2px; /* 缩小字间距 */
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
         }
 
         .card ul {
-            padding-left: 20px; /* 缩小列表缩进 */
+            padding-left: 20px;
         }
 
         .card li {
-            font-size: 15px; /* 缩小字体 */
-            color: #374151; /* 调整文字颜色 */
-            line-height: 1.5; /* 缩小行高 */
-            margin-bottom: 6px; /* 缩小列表项间距 */
-            letter-spacing: 0.2px; /* 缩小字间距 */
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.5;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
         }
 
-        /* 画布样式（紧凑版，对齐04） */
+        /* 画布样式（对齐02的紧凑版） */
         .canvas-wrapper {
             position: relative;
             text-align: center;
-            margin-top: 24px; /* 调整画布上间距 */
-            padding: 16px; /* 缩小画布内边距 */
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px; /* 缩小圆角 */
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--bg_color);
+            border: 1px solid var(--border_color);
+            border-radius: 8px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .canvas-container {
@@ -153,54 +210,58 @@
         }
 
         canvas {
-            background: #fff;
-            border-radius: 6px; /* 缩小圆角 */
+            background: var(--bg_color);
+            border-radius: 6px;
             touch-action: none;
-            border: 1px solid #eee; /* 增加边框，对齐04 */
+            border: 1px solid var(--border_color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .reset-btn {
             position: absolute;
-            left: 10px; /* 调整位置 */
-            bottom: 10px; /* 调整位置 */
-            padding: 6px 12px; /* 缩小按钮内边距 */
-            background: #ef4444;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 12px;
+            background: var(--theme_color);
             color: white;
             border: none;
-            border-radius: 4px; /* 缩小圆角 */
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px; /* 缩小字体 */
+            font-size: 14px;
             transition: 0.2s;
         }
         .reset-btn:hover {
-            background: #dc2626;
+            background: var(--sub_color);
         }
 
-        /* 数据面板调整为紧凑样式 */
+        /* 数据面板调整为和02一致的紧凑样式 */
         .data-panel {
             position: absolute;
             left: 100%;
             top: 50%;
             transform: translate(30px, -50%);
             text-align: left;
-            font-size: 15px; /* 缩小字体 */
-            line-height: 1.8; /* 缩小行高 */
-            min-width: 200px; /* 缩小最小宽度 */
+            font-size: 15px;
+            line-height: 1.8;
+            min-width: 200px;
             background: transparent;
             border: none;
             padding: 0;
-            letter-spacing: 0.2px; /* 缩小字间距 */
+            letter-spacing: 0.2px;
+            color: var(--text_color);
+            transition: color 0.3s ease;
         }
         .data-panel .blue { 
-            color: #2563eb; 
+            color: var(--sub_color); 
             font-weight: 600; 
         }
 
         .canvas-tip {
-            margin-top: 12px; /* 缩小提示文字上间距 */
-            font-size: 15px; /* 缩小字体 */
-            color: #6b7280; /* 调整文字颜色 */
-            line-height: 1.4; /* 缩小行高 */
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.4;
+            transition: color 0.3s ease;
         }
 
         .zh, .en { display: none; }
@@ -209,7 +270,7 @@
     </style>
 </head>
 
-<!-- HTML 结构部分（保持功能不变，对齐04的文本结构） -->
+<!-- HTML 结构部分（增加模式切换按钮，对齐02的按钮样式） -->
 <body>
     <div class="container">
         <div class="header">
@@ -217,10 +278,11 @@
                 <span class="zh">03 - 半圆直角定理</span>
                 <span class="en">03 - Semicircle Right Angle Theorem</span>
             </h1>
-            <button class="lang-btn" id="langBtn">EN</button>
+            <button class="control-btn lang-btn" id="langBtn">English</button>
+            <button class="control-btn mode-btn" id="modeBtn">☀️ 白天模式</button>
         </div>
 
-        <!-- 返回按钮区域（支持中英文切换，对齐04样式） -->
+        <!-- 返回按钮区域（对齐02样式） -->
         <div class="back-btn">
             <a href="../index.html">
                 <span class="zh">← 返回主页</span>
@@ -276,19 +338,20 @@
         </div>
     </div>
 
-    <!-- JavaScript 逻辑部分（功能保持不变） -->
+    <!-- JavaScript 逻辑部分（增加黑夜模式，对齐02的按钮逻辑，其他功能不变） -->
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const langBtn = document.getElementById('langBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const modeBtn = document.getElementById('modeBtn');
 
         const cx = 270, cy = 220;
         const radius = 160;
 
         const diamRight = 0;
         const diamLeft = Math.PI;
-        const snapDistance = 9; // 对齐04的吸附距离
+        const snapDistance = 8; // 对齐02的吸附距离
 
         const initialPoints = {
           A: { angle: diamLeft },
@@ -299,6 +362,8 @@
         let points = JSON.parse(JSON.stringify(initialPoints));
         let dragging = null;
         let hoverPoint = null;
+        let isNightMode = false;
+        let isChinese = true;
 
         function getPosition(angle) {
           return {
@@ -318,6 +383,14 @@
             return diamLeft;
           }
           return angle;
+        }
+
+        function updateModeBtnText() {
+            if (isChinese) {
+                modeBtn.textContent = isNightMode ? '🌙 黑夜模式' : '☀️ 白天模式';
+            } else {
+                modeBtn.textContent = isNightMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+            }
         }
 
         function drawRightAngleSymbol(C, A, B) {
@@ -340,7 +413,7 @@
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(C.x, C.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = '#000';
+          ctx.strokeStyle = isNightMode ? '#e5e7eb' : '#000';
           ctx.lineWidth = 1.5;
           ctx.stroke();
         }
@@ -350,17 +423,20 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
+          const strokeColor = isNightMode ? '#e5e7eb' : '#333';
+          const fillColor = isNightMode ? '#e5e7eb' : '#000';
+
           // 画圆
           ctx.beginPath();
           ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = '#333';
+          ctx.strokeStyle = strokeColor;
           ctx.lineWidth = 2;
           ctx.stroke();
 
           // 虚线直径
           ctx.save();
           ctx.setLineDash([5, 3]);
-          ctx.strokeStyle = '#999';
+          ctx.strokeStyle = isNightMode ? '#94a3b8' : '#999';
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(cx - radius, cy);
@@ -370,12 +446,12 @@
 
           // 圆心
           ctx.beginPath();
-          ctx.arc(cx, cy, 3, 0, Math.PI * 2); // 缩小圆心点，对齐04
-          ctx.fillStyle = '#333';
+          ctx.arc(cx, cy, 5, 0, Math.PI * 2); // 对齐02的圆心大小
+          ctx.fillStyle = fillColor;
           ctx.fill();
           ctx.font = '16px Arial';
-          ctx.fillStyle = '#333';
-          ctx.fillText('O', cx + 12, cy + 5); // 调整圆心文字位置，对齐04
+          ctx.fillStyle = fillColor;
+          ctx.fillText('O', cx, cy - 18); // 对齐02的圆心文字位置
 
           const pos = {
             A: getPosition(points.A.angle),
@@ -385,7 +461,7 @@
 
           // 画线
           ctx.lineWidth = 1.5;
-          ctx.strokeStyle = '#666';
+          ctx.strokeStyle = isNightMode ? '#94a3b8' : '#666';
           ctx.beginPath(); 
           ctx.moveTo(pos.A.x, pos.A.y); 
           ctx.lineTo(pos.C.x, pos.C.y); 
@@ -408,10 +484,10 @@
             const p = pos[k];
             ctx.beginPath();
             ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
-            ctx.fillStyle = '#000';
+            ctx.fillStyle = fillColor;
             ctx.fill();
             ctx.font = '18px Arial';
-            ctx.fillStyle = '#000';
+            ctx.fillStyle = fillColor;
             ctx.fillText(k, p.x, p.y - 18);
           });
 
@@ -478,13 +554,22 @@
             // 切换到英文
             html.lang = 'en';
             langBtn.textContent = '中文';
-            resetBtn.innerHTML = '<span class="zh">重置图形</span><span class="en">Reset</span>';
+            isChinese = false;
           } else {
             // 切换到中文
             html.lang = 'zh-CN';
-            langBtn.textContent = 'EN';
-            resetBtn.innerHTML = '<span class="zh">重置图形</span><span class="en">Reset</span>';
+            langBtn.textContent = 'English';
+            isChinese = true;
           }
+          updateModeBtnText();
+          draw();
+        };
+
+        // 黑夜/白天模式切换
+        modeBtn.onclick = () => {
+          isNightMode = !isNightMode;
+          document.body.classList.toggle('night', isNightMode);
+          updateModeBtnText();
           draw();
         };
 

@@ -8,19 +8,66 @@
 
     <!-- ====================== CSS 样式部分 ====================== -->
     <style>
-        /* 返回按钮样式 - 支持两个按钮并排 + 语言切换 */
+        /* 主题颜色变量 */
+        :root {
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #374151;
+            --text_color_night: #e5e7eb;
+            --border_color: #e5e7eb;
+            --border_color_night: #272e48;
+        }
+
+        /* 黑夜模式 */
+        body.night {
+            background-color: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+        body.night .container {
+            background: var(--bg_color_night);
+        }
+        body.night .canvas-wrapper {
+            background: var(--bg_color_night);
+        }
+        body.night canvas {
+            background: var(--bg_color_night);
+            border-color: var(--border_color_night);
+        }
+        body.night .card-def {
+            background: #162349;
+            color: var(--text_color_night);
+        }
+        body.night .card-theorem {
+            background: #14293f;
+            color: var(--text_color_night);
+        }
+        body.night .card-corollary {
+            background: #2c2442;
+            color: var(--text_color_night);
+        }
+        body.night .card p, 
+        body.night .card li,
+        body.night .canvas-tip,
+        body.night .data-panel {
+            color: var(--text_color_night);
+        }
+
+        /* 返回按钮样式（紧凑版） */
         .back-btn {
             text-align: center;
             margin: 1rem 0;
             padding-top: 1rem;
-            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            border-top: 2px solid rgba(68, 113, 194, 0.3);
             display: flex;
             justify-content: center;
             gap: 0.8rem;
         }
         .back-btn a {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
             color: white;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
@@ -37,23 +84,26 @@
             font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
         }
 
+        /* 紧凑排版核心修改 */
         body {
-            background-color: #f0f2f5;
+            background-color: var(--bg_color);
             padding: 20px 10px;
+            transition: background-color 0.3s ease;
         }
 
         .container {
             max-width: 960px;
             margin: 0 auto;
-            background: #fff;
+            background: var(--bg_color);
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.06);
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
         .header {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-            color: white;
+            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
+            color: #fff;
             padding: 20px;
             text-align: center;
             position: relative;
@@ -65,10 +115,9 @@
             letter-spacing: 0.5px;
         }
 
-        .lang-btn {
+        .control-btn {
             position: absolute;
             top: 15px;
-            right: 20px;
             padding: 6px 12px;
             background: rgba(255,255,255,0.25);
             color: white;
@@ -76,30 +125,45 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .control-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        /* 按钮间距保持不变，防止英文重叠 */
+        .lang-btn {
+            right: 180px;
+        }
+        .mode-btn {
+            right: 20px;
         }
 
+        /* 紧凑内容区 */
         .content {
             padding: 24px 20px;
         }
 
+        /* 紧凑卡片排版 */
         .card {
             border-radius: 8px;
             padding: 16px 20px;
             margin-bottom: 16px;
             line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .card-def {
-            border-left: 4px solid #3b82f6;
-            background: #eff6ff;
+            border-left: 4px solid var(--theme_color);
+            background: rgba(13, 50, 115, 0.05);
         }
         .card-theorem {
-            border-left: 4px solid #10b981;
-            background: #ecfdf5;
+            border-left: 4px solid var(--sub_color);
+            background: rgba(68, 113, 194, 0.05);
         }
         .card-corollary {
-            border-left: 4px solid #f59e0b;
-            background: #fffbeb;
+            border-left: 4px solid var(--highlight_color);
+            background: rgba(232, 160, 191, 0.05);
         }
 
         .card h3 {
@@ -114,7 +178,7 @@
 
         .card p {
             font-size: 15px;
-            color: #374151;
+            color: var(--text_color);
             line-height: 1.5;
             margin-bottom: 8px;
             letter-spacing: 0.2px;
@@ -123,22 +187,25 @@
         .card ul {
             padding-left: 20px;
         }
+
         .card li {
             font-size: 15px;
-            color: #374151;
+            color: var(--text_color);
             line-height: 1.5;
             margin-bottom: 6px;
             letter-spacing: 0.2px;
         }
 
+        /* 紧凑画布区域 */
         .canvas-wrapper {
             position: relative;
             text-align: center;
             margin-top: 24px;
             padding: 16px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
+            background: var(--bg_color);
+            border: 1px solid var(--border_color);
             border-radius: 8px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .canvas-container {
@@ -147,9 +214,11 @@
         }
 
         canvas {
-            background: #fff;
+            background: var(--bg_color);
             border-radius: 6px;
             touch-action: none;
+            border: 1px solid var(--border_color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .reset-btn {
@@ -157,7 +226,7 @@
             left: 10px;
             bottom: 10px;
             padding: 6px 12px;
-            background: #ef4444;
+            background: var(--theme_color);
             color: white;
             border: none;
             border-radius: 4px;
@@ -166,7 +235,7 @@
             transition: 0.2s;
         }
         .reset-btn:hover {
-            background: #dc2626;
+            background: var(--sub_color);
         }
 
         .data-panel {
@@ -176,24 +245,27 @@
             text-align: left;
             font-size: 15px;
             padding: 8px 10px;
-            background: #f9fafb;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.2px;
+            color: var(--text_color);
+            transition: color 0.3s ease;
         }
         .data-panel .blue { 
-            color: #2563eb; 
+            color: var(--sub_color); 
             font-weight: 600; 
         }
 
         .canvas-tip {
             margin-top: 12px;
             font-size: 15px;
-            color: #6b7280;
+            color: var(--text_color);
             line-height: 1.4;
+            transition: color 0.3s ease;
         }
 
         .zh, .en { display: none; }
-        :lang(zh) .zh { display: initial; }
+        :lang(zh-CN) .zh { display: initial; }
         :lang(en) .en { display: initial; }
     </style>
 </head>
@@ -205,7 +277,8 @@
             <span class="zh">06 - 切线长定理</span>
             <span class="en">06 - Tangent Length Theorem</span>
         </h1>
-        <button class="lang-btn" id="langBtn">EN</button>
+        <button class="control-btn lang-btn" id="langBtn">English</button>
+        <button class="control-btn mode-btn" id="modeBtn">☀️ 白天模式</button>
     </div>
 
     <div class="back-btn">
@@ -229,6 +302,7 @@
         <div class="card card-theorem">
             <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
             <p class="zh"><strong>在任意一个圆中：</strong></p>
+            <p class="en"><strong>In any circle:</strong></p>
             <ul>
                 <li class="zh">从圆外一点引圆的两条切线，它们的切线长相等。</li>
                 <li class="en">The two tangent segments from a single external point to a circle are equal in length.</li>
@@ -245,7 +319,7 @@
             <div class="canvas-container">
                 <canvas id="geometryCanvas" width="880" height="400"></canvas>
                 <button class="reset-btn" id="resetBtn">
-                    <span class="zh">重置图形</span>
+                    <span class="zh">重置</span>
                     <span class="en">Reset</span>
                 </button>
                 <div class="data-panel">
@@ -263,6 +337,7 @@
 <!-- ====================== JavaScript 逻辑部分 ====================== -->
 <script>
     const langBtn = document.getElementById('langBtn');
+    const modeBtn = document.getElementById('modeBtn');
     const canvas = document.getElementById('geometryCanvas');
     const ctx = canvas.getContext('2d');
     const resetBtn = document.getElementById('resetBtn');
@@ -274,6 +349,16 @@
     const rDraw = r * scale;
     let P = { x: O.x + 2.5 * scale, y: O.y };
     let isDragging = false;
+    let isNightMode = false;
+    let isChinese = true;
+
+    function updateModeBtnText() {
+        if (isChinese) {
+            modeBtn.textContent = isNightMode ? '🌙 黑夜模式' : '☀️ 白天模式';
+        } else {
+            modeBtn.textContent = isNightMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+        }
+    }
 
     function clampP() {
         P.x = Math.max(5, Math.min(875, P.x));
@@ -311,27 +396,36 @@
         ctx.clearRect(0, 0, 880, 400);
         const { A, B, pa } = getData();
 
-        ctx.strokeStyle = '#000';
+        const strokeColor = isNightMode ? '#e5e7eb' : '#333';
+        const fillColor = isNightMode ? '#e5e7eb' : '#000';
+        const dashColor = isNightMode ? '#94a3b8' : '#999';
+
+        ctx.strokeStyle = strokeColor;
         ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y); ctx.stroke();
 
         ctx.setLineDash([5, 3]);
+        ctx.strokeStyle = dashColor;
+        ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(A.x, A.y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(B.x, B.y); ctx.stroke();
         ctx.setLineDash([]);
 
         ctx.beginPath();
         ctx.arc(O.x, O.y, rDraw, 0, Math.PI * 2);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = fillColor;
         ctx.beginPath(); ctx.arc(O.x, O.y, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(P.x, P.y, 6, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(A.x, A.y, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(B.x, B.y, 4, 0, Math.PI * 2); ctx.fill();
 
         ctx.font = '15px Arial';
+        ctx.fillStyle = fillColor;
         ctx.fillText('O', O.x + 8, O.y + 4);
         ctx.fillText('P', P.x + 8, P.y + 4);
         ctx.fillText('A', A.x + 8, A.y + 4);
@@ -380,11 +474,24 @@
     });
 
     langBtn.onclick = () => {
-        document.documentElement.lang = document.documentElement.lang === 'zh-CN' ? 'en' : 'zh-CN';
-        langBtn.textContent = document.documentElement.lang === 'zh-CN' ? 'EN' : '中文';
-        resetBtn.innerHTML = document.documentElement.lang === 'zh-CN' 
-            ? '<span class="zh">重置图形</span><span class="en">Reset</span>' 
-            : '<span class="zh">重置图形</span><span class="en">Reset</span>';
+        const html = document.documentElement;
+        if (html.lang === 'zh-CN') {
+            html.lang = 'en';
+            langBtn.textContent = '中文';
+            isChinese = false;
+        } else {
+            html.lang = 'zh-CN';
+            langBtn.textContent = 'English';
+            isChinese = true;
+        }
+        updateModeBtnText();
+        draw();
+    };
+
+    modeBtn.onclick = () => {
+        isNightMode = !isNightMode;
+        document.body.classList.toggle('night', isNightMode);
+        updateModeBtnText();
         draw();
     };
 
