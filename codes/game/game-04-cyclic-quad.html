@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04 - 圆内接四边形定理 | Cyclic Quadrilateral Theorem</title>
+
+    <!-- CSS 样式部分（调整为紧凑版，对齐05样式） -->
+    <style>
+        /* 返回按钮样式 - 对齐05的紧凑样式 */
+        .back-btn {
+            text-align: center;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        .back-btn a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px 10px; /* 缩小body内边距 */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: #fff;
+            padding: 20px; /* 缩小header内边距 */
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px; /* 缩小标题字体 */
+            font-weight: 600;
+            letter-spacing: 0.5px; /* 缩小字间距 */
+        }
+
+        .lang-btn {
+            position: absolute;
+            top: 15px; /* 调整位置 */
+            right: 20px; /* 调整位置 */
+            padding: 6px 12px; /* 缩小按钮内边距 */
+            background: rgba(255,255,255,0.25); /* 对齐05的背景透明度 */
+            color: white; /* 改为白色文字 */
+            border: 1px solid rgba(255,255,255,0.4); /* 增加边框 */
+            border-radius: 6px; /* 缩小圆角 */
+            cursor: pointer;
+            font-size: 14px; /* 缩小字体 */
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.4); /* 调整hover样式 */
+        }
+
+        .content {
+            padding: 24px 20px; /* 缩小内容区内边距 */
+        }
+
+        .card {
+            border-radius: 8px; /* 缩小圆角 */
+            padding: 16px 20px; /* 缩小卡片内边距 */
+            margin-bottom: 16px; /* 缩小卡片间距 */
+            line-height: 1.5; /* 缩小行高 */
+        }
+
+        .card-def {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff; /* 对齐05的浅色背景 */
+        }
+        .card-theorem {
+            border-left: 4px solid #10b981; /* 微调绿色系，对齐05 */
+            background: #ecfdf5; /* 对齐05的浅色背景 */
+        }
+        .card-corollary {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px; /* 缩小标题下间距 */
+            display: flex;
+            align-items: center;
+            gap: 6px; /* 缩小图标间距 */
+            letter-spacing: 0.3px; /* 缩小字间距 */
+        }
+
+        .card p {
+            font-size: 15px; /* 缩小字体 */
+            color: #374151; /* 调整文字颜色 */
+            line-height: 1.5; /* 缩小行高 */
+            margin-bottom: 8px; /* 缩小段落间距 */
+            letter-spacing: 0.2px; /* 缩小字间距 */
+        }
+
+        .card ul {
+            padding-left: 20px; /* 缩小列表缩进 */
+        }
+
+        .card li {
+            font-size: 15px; /* 缩小字体 */
+            color: #374151; /* 调整文字颜色 */
+            line-height: 1.5; /* 缩小行高 */
+            margin-bottom: 6px; /* 缩小列表项间距 */
+            letter-spacing: 0.2px; /* 缩小字间距 */
+        }
+
+        /* 画布样式（紧凑版，对齐05） */
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin-top: 24px; /* 调整画布上间距 */
+            padding: 16px; /* 缩小画布内边距 */
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px; /* 缩小圆角 */
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        canvas {
+            background: #fff;
+            border-radius: 6px; /* 缩小圆角 */
+            touch-action: none;
+            border: 1px solid #eee; /* 增加边框，对齐05 */
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 10px; /* 调整位置 */
+            bottom: 10px; /* 调整位置 */
+            padding: 6px 12px; /* 缩小按钮内边距 */
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px; /* 缩小圆角 */
+            cursor: pointer;
+            font-size: 14px; /* 缩小字体 */
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #dc2626;
+        }
+
+        /* 数据面板调整为紧凑样式 */
+        .data-panel {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translate(30px, -50%);
+            text-align: left;
+            font-size: 15px; /* 缩小字体 */
+            line-height: 1.8; /* 缩小行高 */
+            min-width: 200px; /* 缩小最小宽度 */
+            background: transparent;
+            border: none;
+            padding: 0;
+            letter-spacing: 0.2px; /* 缩小字间距 */
+        }
+        .data-panel .blue { 
+            color: #2563eb; 
+            font-weight: 600; 
+        }
+        .data-panel .green {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .canvas-tip {
+            margin-top: 12px; /* 缩小提示文字上间距 */
+            font-size: 15px; /* 缩小字体 */
+            color: #6b7280; /* 调整文字颜色 */
+            line-height: 1.4; /* 缩小行高 */
+        }
+
+        .zh, .en { display: none; }
+        :lang(zh-CN) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
+    </style>
+</head>
+
+<!-- HTML 结构部分（保持功能不变） -->
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="zh">04 - 圆内接四边形定理</span>
+            <span class="en">04 - Cyclic Quadrilateral Theorem</span>
+        </h1>
+        <button class="lang-btn" id="langBtn">EN</button>
+    </div>
+
+    <!-- 顶部返回按钮区域（支持中英文切换） -->
+    <div class="back-btn">
+        <a href="../index.html">
+            <span class="zh">← 返回主页</span>
+            <span class="en">← Back to Home</span>
+        </a>
+        <a href="./game.html">
+            <span class="zh">← 返回游戏界面</span>
+            <span class="en">← Back to Game Interface</span>
+        </a>
+    </div>
+
+    <div class="content">
+        <div class="card card-def">
+            <h3><span class="zh">📘 基本定义</span><span class="en">Definition</span></h3>
+            <p class="zh">四个顶点都在同一个圆上，且按顺时针依次为 A、B、C、D 的四边形，叫做圆内接四边形。</p>
+            <p class="en">A quadrilateral with vertices A, B, C, D in clockwise order on a circle is called a cyclic quadrilateral.</p>
+        </div>
+
+        <div class="card card-theorem">
+            <h3><span class="zh">📐 定理内容</span><span class="en">Theorem</span></h3>
+            <p class="zh"><strong>在任意一个圆中：</strong></p>
+            <p class="en"><strong>In any circle:</strong></p>
+            <ul>
+                <li class="zh">圆内接四边形的对角互补，即对角之和等于 180°</li>
+                <li class="en">The opposite angles of a cyclic quadrilateral are supplementary, summing to 180°.</li>
+            </ul>
+        </div>
+
+        <div class="card card-corollary">
+            <h3><span class="zh">📌 重要推论</span><span class="en">Corollary</span></h3>
+            <p class="zh">如果一个四边形的一组对角互补，那么这个四边形内接于一个圆。</p>
+            <p class="en">If a pair of opposite angles of a quadrilateral are supplementary, the quadrilateral is cyclic.</p>
+        </div>
+
+        <!-- 交互式图形区域 -->
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <canvas id="canvas" width="540" height="440"></canvas>
+                <button class="reset-btn" id="resetBtn">
+                    <span class="zh">重置图形</span>
+                    <span class="en">Reset</span>
+                </button>
+                <div class="data-panel">
+                    <div class="blue">∠ABC：<span id="angB">0</span>°</div>
+                    <div class="blue">∠BCD：<span id="angC">0</span>°</div>
+                    <div class="blue">∠CDA：<span id="angD">0</span>°</div>
+                    <div class="blue">∠DAB：<span id="angA">0</span>°</div>
+                    <br>
+                    <div class="green">∠DAB + ∠BCD = <span id="sum1">0</span>°</div>
+                    <div class="green">∠ABC + ∠CDA = <span id="sum2">0</span>°</div>
+                </div>
+            </div>
+            <p class="canvas-tip">
+                <span class="zh">🔹 拖动圆上的点 A、B、C、D 任意移动，靠近直径两端会自动吸附</span>
+                <span class="en">🔹 Drag points A, B, C, D on the circle</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 交互部分（功能完全不变） -->
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const langBtn = document.getElementById('langBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+const cx = 270, cy = 220;
+const radius = 160;
+
+const diamRight = 0;
+const diamLeft = Math.PI;
+const snapDistance = 9;
+
+const initialPoints = {
+  A: 5 * Math.PI / 4,
+  B: 7 * Math.PI / 4,
+  C: Math.PI / 4,
+  D: 3 * Math.PI / 4
+};
+
+let points = JSON.parse(JSON.stringify(initialPoints));
+let dragging = null;
+let hoverPoint = null;
+
+function snapAngle(angle) {
+  const diffRight = Math.abs(angle - diamRight);
+  const diffLeft = Math.abs(angle - diamLeft);
+  
+  if (diffRight < snapDistance / radius || (2*Math.PI - diffRight) < snapDistance / radius) {
+    return diamRight;
+  }
+  if (diffLeft < snapDistance / radius || (2*Math.PI - diffLeft) < snapDistance / radius) {
+    return diamLeft;
+  }
+  return angle;
+}
+
+function getPosition(key) {
+  const angle = points[key];
+  return {
+    x: cx + radius * Math.cos(angle),
+    y: cy + radius * Math.sin(angle)
+  };
+}
+
+function angleAtPoint(M, P, Q) {
+  const m = getPosition(M);
+  const p = getPosition(P);
+  const q = getPosition(Q);
+  const v1 = { x: p.x - m.x, y: p.y - m.y };
+  const v2 = { x: q.x - m.x, y: q.y - m.y };
+  const dot = v1.x * v2.x + v1.y * v2.y;
+  const mod1 = Math.hypot(v1.x, v1.y);
+  const mod2 = Math.hypot(v2.x, v2.y);
+  const cos = Math.max(-1, Math.min(1, dot / (mod1 * mod2)));
+  return Math.acos(cos) * 180 / Math.PI;
+}
+
+function calculateAllAngles() {
+  const DAB = angleAtPoint('A', 'D', 'B');
+  const ABC = angleAtPoint('B', 'A', 'C');
+  const BCD = angleAtPoint('C', 'B', 'D');
+  const CDA = angleAtPoint('D', 'C', 'A');
+
+  return {
+    DAB: Math.round(DAB),
+    ABC: Math.round(ABC),
+    BCD: Math.round(BCD),
+    CDA: Math.round(CDA)
+  };
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.save();
+  ctx.setLineDash([5, 3]);
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - radius, cy);
+  ctx.lineTo(cx + radius, cy);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#333';
+  ctx.fill();
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#333';
+  ctx.fillText('O', cx + 12, cy + 5);
+
+  const A = getPosition('A');
+  const B = getPosition('B');
+  const C = getPosition('C');
+  const D = getPosition('D');
+
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#666';
+  ctx.beginPath();
+  ctx.moveTo(A.x, A.y);
+  ctx.lineTo(B.x, B.y);
+  ctx.lineTo(C.x, C.y);
+  ctx.lineTo(D.x, D.y);
+  ctx.closePath();
+  ctx.stroke();
+
+  const keys = ['A', 'B', 'C', 'D'];
+  keys.forEach(k => {
+    const p = getPosition(k);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+    ctx.font = '18px Arial';
+    ctx.fillStyle = '#000';
+    ctx.fillText(k, p.x, p.y - 18);
+  });
+
+  const ag = calculateAllAngles();
+  document.getElementById('angA').textContent = ag.DAB;
+  document.getElementById('angB').textContent = ag.ABC;
+  document.getElementById('angC').textContent = ag.BCD;
+  document.getElementById('angD').textContent = ag.CDA;
+  document.getElementById('sum1').textContent = ag.DAB + ag.BCD;
+  document.getElementById('sum2').textContent = ag.ABC + ag.CDA;
+}
+
+function getMousePos(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
+function checkHit(mx, my) {
+  const keys = ['A', 'B', 'C', 'D'];
+  for (const k of keys) {
+    const p = getPosition(k);
+    const d = Math.hypot(mx - p.x, my - p.y);
+    if (d < 16) return k;
+  }
+  return null;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  const m = getMousePos(e);
+  dragging = checkHit(m.x, m.y);
+  if (dragging) canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!dragging) {
+    const m = getMousePos(e);
+    hoverPoint = checkHit(m.x, m.y);
+    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+    draw();
+    return;
+  }
+  const m = getMousePos(e);
+  let rawAngle = Math.atan2(m.y - cy, m.x - cx);
+  points[dragging] = snapAngle(rawAngle);
+  draw();
+});
+
+window.addEventListener('mouseup', () => {
+  dragging = null;
+});
+
+canvas.addEventListener('mouseleave', () => {
+  hoverPoint = null;
+  draw();
+});
+
+resetBtn.onclick = () => {
+  points = JSON.parse(JSON.stringify(initialPoints));
+  draw();
+};
+
+langBtn.onclick = () => {
+  const html = document.documentElement;
+  if (html.lang === 'zh-CN') {
+    // 切换到英文
+    html.lang = 'en';
+    langBtn.textContent = '中文';
+    // 同步重置按钮文字
+    resetBtn.innerHTML = '<span class="zh">重置图形</span><span class="en">Reset</span>';
+  } else {
+    // 切换到中文
+    html.lang = 'zh-CN';
+    langBtn.textContent = 'EN';
+    // 同步重置按钮文字
+    resetBtn.innerHTML = '<span class="zh">重置图形</span><span class="en">Reset</span>';
+  }
+  draw();
+};
+
+// 初始化绘制
+draw();
+</script>
+</body>
+</html>

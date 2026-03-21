@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
@@ -443,3 +444,415 @@
 </body>
 </html>
 >>>>>>> c3dcf9d (feat: update game.html,game-01 ~ game-06)
+=======
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircleLab | 几何定理游戏中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .lang-toggle, .theme-toggle {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .lang-toggle:hover, .theme-toggle:hover {
+            background: #764ba2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .page-header .subtitle {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: block;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .game-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .game-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+            line-height: 1.4;
+        }
+
+        .game-card p {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .game-card .number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            line-height: 35px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .game-card .description {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #eee;
+        }
+
+        .game-card.placeholder {
+            background: rgba(255,255,255,0.2);
+            border: 2px dashed rgba(255,255,255,0.5);
+            color: white;
+        }
+
+        .game-card.placeholder h3,
+        .game-card.placeholder p,
+        .game-card.placeholder .description {
+            color: white;
+        }
+
+        .game-card.placeholder .number {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .game-card.placeholder:hover {
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .footer p {
+            margin: 0.3rem 0;
+        }
+
+        @media (max-width: 1100px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(26, 26, 46, 0.95);
+        }
+
+        body.dark-mode .nav-links a {
+            color: white;
+        }
+
+        body.dark-mode .game-card {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        body.dark-mode .game-card p,
+        body.dark-mode .game-card .description {
+            color: #aaa;
+        }
+
+        body.dark-mode .game-card h3 {
+            color: #a0a0ff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <!-- 修改 1：Logo 链接 -->
+        <a href="../index.html" class="logo">
+            ◯ CircleLab
+        </a>
+        <div class="nav-links">
+            <!-- 修改 2：主页链接 -->
+            <a href="../index.html">主页</a>
+            <a href="../quiz/quiz.html">测验</a>
+            <a href="./game.html">游戏</a>
+        </div>
+        <div class="nav-buttons">
+            <button class="lang-toggle" onclick="toggleLang()">EN/中文</button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙 夜间模式</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🎮 几何定理游戏中心</h1>
+            <p>Circle Geometry Theorem Games</p>
+            <p class="subtitle">选择定理开始互动学习 | Select a theorem to start interactive learning</p>
+        </div>
+
+        <div class="game-grid">
+            <!-- 第一行 -->
+            <a href="game-01-central-angle.html" class="game-card">
+                <span class="number">01</span>
+                <span class="icon">📐</span>
+                <h3>圆心角定理</h3>
+                <p>Central Angle Theorem</p>
+                <p class="description">探索圆心角与弧、弦的关系</p>
+            </a>
+
+            <a href="game-02-inscribed-angle.html" class="game-card">
+                <span class="number">02</span>
+                <span class="icon">🔵</span>
+                <h3>同弧圆周角定理</h3>
+                <p>Inscribed Angle Theorem</p>
+                <p class="description">同弧所对圆周角相等</p>
+            </a>
+
+            <a href="game-03-semicircle-right.html" class="game-card">
+                <span class="number">03</span>
+                <span class="icon">📏</span>
+                <h3>半圆直角定理</h3>
+                <p>Semicircle Right Angle</p>
+                <p class="description">直径所对圆周角为90°</p>
+            </a>
+
+            <a href="game-04-cyclic-quad.html" class="game-card">
+                <span class="number">04</span>
+                <span class="icon">◼️</span>
+                <h3>圆内接四边形定理</h3>
+                <p>Cyclic Quadrilateral</p>
+                <p class="description">对角互补等于180°</p>
+            </a>
+
+            <!-- 第二行 -->
+            <a href="game-05-tangent-radius.html" class="game-card">
+                <span class="number">05</span>
+                <span class="icon">📍</span>
+                <h3>切线半径垂直定理</h3>
+                <p>Tangent ⊥ Radius</p>
+                <p class="description">切线垂直于过切点半径</p>
+            </a>
+
+            <a href="game-06-tangent-length.html" class="game-card">
+                <span class="number">06</span>
+                <span class="icon">✂️</span>
+                <h3>切线长定理</h3>
+                <p>Tangent Length Theorem</p>
+                <p class="description">圆外一点引两条切线长相等</p>
+            </a>
+
+            <!-- 预留位置 -->
+            <div class="game-card placeholder">
+                <span class="number">07</span>
+                <span class="icon">🔜</span>
+                <h3>即将上线</h3>
+                <p>Coming Soon</p>
+                <p class="description">新定理游戏中...</p>
+            </div>
+
+            <div class="game-card placeholder">
+                <span class="number">08</span>
+                <span class="icon">🔜</span>
+                <h3>即将上线</h3>
+                <p>Coming Soon</p>
+                <p class="description">新定理游戏中...</p>
+            </div>
+        </div>
+
+        <div class="back-section">
+            <!-- 修改 3：返回主页按钮 -->
+            <a href="../index.html" class="back-btn">← 返回主页 Back to Home</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>EBU5315 Group 17 · Circle Geometry Learning</p>
+        <p>CircleLab © 2024</p>
+    </footer>
+
+    <script>
+        let isChinese = true;
+        function toggleLang() {
+            isChinese = !isChinese;
+            const elements = document.querySelectorAll('[data-en]');
+            elements.forEach(el => {
+                if (isChinese) {
+                    el.textContent = el.getAttribute('data-zh') || el.textContent;
+                } else {
+                    el.textContent = el.getAttribute('data-en') || el.textContent;
+                }
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️ 白天模式';
+            } else {
+                btn.textContent = '🌙 夜间模式';
+            }
+        }
+    </script>
+</body>
+</html>
+>>>>>>> Stashed changes

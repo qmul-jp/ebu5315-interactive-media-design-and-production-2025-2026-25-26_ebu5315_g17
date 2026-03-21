@@ -1,0 +1,394 @@
+<!-- ====================== HTML 结构部分 ====================== -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06 - 切线长定理 | 06 - Tangent Length Theorem</title>
+
+    <!-- ====================== CSS 样式部分 ====================== -->
+    <style>
+        /* 返回按钮样式 - 支持两个按钮并排 + 语言切换 */
+        .back-btn {
+            text-align: center;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(102, 126, 234, 0.3);
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        .back-btn a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .lang-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 24px 20px;
+        }
+
+        .card {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .card-def {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+        }
+        .card-theorem {
+            border-left: 4px solid #10b981;
+            background: #ecfdf5;
+        }
+        .card-corollary {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #374151;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+        .card li {
+            font-size: 15px;
+            color: #374151;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        canvas {
+            background: #fff;
+            border-radius: 6px;
+            touch-action: none;
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: #dc2626;
+        }
+
+        .data-panel {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            text-align: left;
+            font-size: 15px;
+            padding: 8px 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        .data-panel .blue { 
+            color: #2563eb; 
+            font-weight: 600; 
+        }
+
+        .canvas-tip {
+            margin-top: 12px;
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .zh, .en { display: none; }
+        :lang(zh) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="zh">06 - 切线长定理</span>
+            <span class="en">06 - Tangent Length Theorem</span>
+        </h1>
+        <button class="lang-btn" id="langBtn">EN</button>
+    </div>
+
+    <div class="back-btn">
+        <a href="../index.html">
+            <span class="zh">← 返回主页</span>
+            <span class="en">← Back to Home</span>
+        </a>
+        <a href="./game.html">
+            <span class="zh">← 返回游戏界面</span>
+            <span class="en">← Back to Game Interface</span>
+        </a>
+    </div>
+
+    <div class="content">
+        <div class="card card-def">
+            <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
+            <p class="zh">从圆外一点向圆作切线，该点与切点之间的线段长度，叫做这点到圆的切线长。</p>
+            <p class="en">The length of the segment from an external point to the point of tangency is called the tangent length from the point to the circle.</p>
+        </div>
+
+        <div class="card card-theorem">
+            <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
+            <p class="zh"><strong>在任意一个圆中：</strong></p>
+            <ul>
+                <li class="zh">从圆外一点引圆的两条切线，它们的切线长相等。</li>
+                <li class="en">The two tangent segments from a single external point to a circle are equal in length.</li>
+            </ul>
+        </div>
+
+        <div class="card card-corollary">
+            <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
+            <p class="zh">圆心与圆外一点的连线，平分这一点所引的两条切线的夹角，并且垂直平分两条切点的连线。</p>
+            <p class="en">The line from the center to an external point bisects the angle between the two tangents and is the perpendicular bisector of the chord joining the points of contact.</p>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <canvas id="geometryCanvas" width="880" height="400"></canvas>
+                <button class="reset-btn" id="resetBtn">
+                    <span class="zh">重置图形</span>
+                    <span class="en">Reset</span>
+                </button>
+                <div class="data-panel">
+                    <div class="blue">PA = PB = <span id="val">0.000</span></div>
+                </div>
+            </div>
+            <p class="canvas-tip">
+                <span class="zh">🔹 拖动点 P 来观察切线长的变化</span>
+                <span class="en">🔹 Drag point P to observe the change of tangent length</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== JavaScript 逻辑部分 ====================== -->
+<script>
+    const langBtn = document.getElementById('langBtn');
+    const canvas = document.getElementById('geometryCanvas');
+    const ctx = canvas.getContext('2d');
+    const resetBtn = document.getElementById('resetBtn');
+    const val = document.getElementById('val');
+
+    const scale = 110;
+    const O = { x: 440, y: 200 };
+    const r = 1;
+    const rDraw = r * scale;
+    let P = { x: O.x + 2.5 * scale, y: O.y };
+    let isDragging = false;
+
+    function clampP() {
+        P.x = Math.max(5, Math.min(875, P.x));
+        P.y = Math.max(5, Math.min(395, P.y));
+
+        const dx = P.x - O.x;
+        const dy = P.y - O.y;
+        const d = Math.hypot(dx, dy);
+        const min = rDraw + 15;
+        if (d < min) {
+            P.x = O.x + dx / d * min;
+            P.y = O.y + dy / d * min;
+        }
+    }
+
+    function getData() {
+        const dx = P.x - O.x;
+        const dy = P.y - O.y;
+        const op = Math.hypot(dx, dy) / scale;
+        const pa = Math.sqrt(op * op - 1);
+        const ang = Math.atan2(dy, dx);
+        const th = Math.acos(1 / op);
+        const A = {
+            x: O.x + rDraw * Math.cos(ang - th),
+            y: O.y + rDraw * Math.sin(ang - th)
+        };
+        const B = {
+            x: O.x + rDraw * Math.cos(ang + th),
+            y: O.y + rDraw * Math.sin(ang + th)
+        };
+        return { A, B, pa };
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, 880, 400);
+        const { A, B, pa } = getData();
+
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+
+        ctx.setLineDash([5, 3]);
+        ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(A.x, A.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.arc(O.x, O.y, rDraw, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#000';
+        ctx.beginPath(); ctx.arc(O.x, O.y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(P.x, P.y, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(A.x, A.y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(B.x, B.y, 4, 0, Math.PI * 2); ctx.fill();
+
+        ctx.font = '15px Arial';
+        ctx.fillText('O', O.x + 8, O.y + 4);
+        ctx.fillText('P', P.x + 8, P.y + 4);
+        ctx.fillText('A', A.x + 8, A.y + 4);
+        ctx.fillText('B', B.x + 8, B.y + 4);
+
+        val.textContent = pa.toFixed(3);
+    }
+
+    canvas.addEventListener('mousedown', e => {
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        if (Math.hypot(x - P.x, y - P.y) < 15) {
+            isDragging = true;
+            canvas.style.cursor = 'grabbing';
+        }
+    });
+
+    canvas.addEventListener('mousemove', e => {
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+
+        if (isDragging) {
+            P.x = x;
+            P.y = y;
+            clampP();
+            draw();
+        } else {
+            if (Math.hypot(x - P.x, y - P.y) < 15) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    });
+
+    resetBtn.addEventListener('click', () => {
+        P = { x: O.x + 2.5 * scale, y: O.y };
+        draw();
+    });
+
+    langBtn.onclick = () => {
+        document.documentElement.lang = document.documentElement.lang === 'zh-CN' ? 'en' : 'zh-CN';
+        langBtn.textContent = document.documentElement.lang === 'zh-CN' ? 'EN' : '中文';
+        resetBtn.innerHTML = document.documentElement.lang === 'zh-CN' 
+            ? '<span class="zh">重置图形</span><span class="en">Reset</span>' 
+            : '<span class="zh">重置图形</span><span class="en">Reset</span>';
+        draw();
+    };
+
+    draw();
+</script>
+</body>
+</html>
