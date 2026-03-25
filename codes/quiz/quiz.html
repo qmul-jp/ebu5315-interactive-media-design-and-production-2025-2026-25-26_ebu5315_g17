@@ -44,31 +44,32 @@
       </div>
     </section>
 
-    <section class="level_card">
-      <div class="section_head">
-        <h2 data-i18n="level_title">选择难度</h2>
-        <p data-i18n="level_desc">先选一个 level，然后开始答题。</p>
-      </div>
+    <div class="quiz_workspace">
+      <aside class="level_card">
+        <div class="section_head">
+          <h2 data-i18n="level_title">选择难度</h2>
+          <p data-i18n="level_desc">先选一个 level，然后开始答题。</p>
+        </div>
 
-      <div class="level_grid">
-        <button class="level_btn" data-level="1" type="button">
-          <span class="level_name" data-i18n="level_1">Level 1 · 基础</span>
-          <span class="level_hint" data-i18n="level_1_hint">半径 / 直径 / 基本概念</span>
-        </button>
+        <div class="level_grid">
+          <button class="level_btn" data-level="1" type="button">
+            <span class="level_name" data-i18n="level_1">Level 1 · 基础</span>
+            <span class="level_hint" data-i18n="level_1_hint">半径 / 直径 / 基本概念</span>
+          </button>
 
-        <button class="level_btn" data-level="2" type="button">
-          <span class="level_name" data-i18n="level_2">Level 2 · 进阶</span>
-          <span class="level_hint" data-i18n="level_2_hint">周长 / 面积 / 切线</span>
-        </button>
+          <button class="level_btn" data-level="2" type="button">
+            <span class="level_name" data-i18n="level_2">Level 2 · 进阶</span>
+            <span class="level_hint" data-i18n="level_2_hint">周长 / 面积 / 切线</span>
+          </button>
 
-        <button class="level_btn" data-level="3" type="button">
-          <span class="level_name" data-i18n="level_3">Level 3 · 挑战</span>
-          <span class="level_hint" data-i18n="level_3_hint">综合应用 / 推理题</span>
-        </button>
-      </div>
-    </section>
+          <button class="level_btn" data-level="3" type="button">
+            <span class="level_name" data-i18n="level_3">Level 3 · 挑战</span>
+            <span class="level_hint" data-i18n="level_3_hint">综合应用 / 推理题</span>
+          </button>
+        </div>
+      </aside>
 
-    <section class="quiz_card">
+      <section class="quiz_card">
       <div class="quiz_topbar">
         <div>
           <p class="meta_text" id="current_level_text">Level 1</p>
@@ -106,6 +107,7 @@
         <div id="feedback_box" class="feedback_box" aria-live="polite"></div>
       </div>
     </section>
+    </div>
 
     <section id="result_card" class="result_card hidden">
       <p class="hero_kicker" data-i18n="result_kicker">Result</p>
