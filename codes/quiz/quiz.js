@@ -18,17 +18,19 @@ const default_config = {
     "--body_bg_night_orb_left": "rgba(62, 84, 138, 0.16)",
     "--body_bg_night_orb_right": "rgba(120, 102, 128, 0.12)",
     "--secondary_btn_bg_day": "#ffffff",
-    "--secondary_btn_bg_night": "rgba(255, 255, 255, 0.08)"
-  }
+    "--secondary_btn_bg_night": "rgba(255, 255, 255, 0.08)",
+  },
 };
 
 const runtime_config = window.app_config || default_config;
 
 const theme_color = runtime_config.theme_color || default_config.theme_color;
 const sub_color = runtime_config.sub_color || default_config.sub_color;
-const highlight_color = runtime_config.highlight_color || default_config.highlight_color;
+const highlight_color =
+  runtime_config.highlight_color || default_config.highlight_color;
 const bg_color = runtime_config.bg_color || default_config.bg_color;
-const bg_color_night = runtime_config.bg_color_night || default_config.bg_color_night;
+const bg_color_night =
+  runtime_config.bg_color_night || default_config.bg_color_night;
 
 const config_css_vars =
   runtime_config.css_vars && typeof runtime_config.css_vars === "object"
@@ -54,7 +56,8 @@ const i18n_text = {
     nav_quiz: "测验",
     quiz_kicker: "Level-based Quiz",
     quiz_title: "圆几何分级测验",
-    quiz_desc: "从基础识别到公式应用，逐步检查你对 circle geometry 的掌握情况。",
+    quiz_desc:
+      "从基础识别到公式应用，逐步检查你对 circle geometry 的掌握情况。",
     back_home: "返回主页",
     level_title: "选择难度",
     level_desc: "先选一个 level，然后开始答题。",
@@ -81,7 +84,7 @@ const i18n_text = {
     explanation_label: "解析",
     final_good: "不错，你已经掌握了这一关的大部分内容。",
     final_great: "很棒，这一关你几乎全对了！",
-    final_retry: "再试一次会更稳，你已经接近掌握了。"
+    final_retry: "再试一次会更稳，你已经接近掌握了。",
   },
   en: {
     brand_tag: "GCSE Circle Geometry Quiz",
@@ -91,7 +94,8 @@ const i18n_text = {
     nav_quiz: "Quiz",
     quiz_kicker: "Level-based Quiz",
     quiz_title: "Circle Geometry Level Quiz",
-    quiz_desc: "Move from basic recognition to formula use and check your mastery step by step.",
+    quiz_desc:
+      "Move from basic recognition to formula use and check your mastery step by step.",
     back_home: "Back to Home",
     level_title: "Choose a Level",
     level_desc: "Pick one level first, then start answering.",
@@ -118,8 +122,8 @@ const i18n_text = {
     explanation_label: "Explanation",
     final_good: "Nice work. You understood most of this level.",
     final_great: "Excellent. You almost got everything right!",
-    final_retry: "Try again once more. You are close to mastering it."
-  }
+    final_retry: "Try again once more. You are close to mastering it.",
+  },
 };
 
 const root_element = document.documentElement;
@@ -153,7 +157,7 @@ const state = {
   current_index: 0,
   selected_option_index: null,
   score: 0,
-  answered: false
+  answered: false,
 };
 
 function set_theme_variables() {
@@ -211,7 +215,9 @@ function apply_language() {
   });
 
   language_toggle_btn.textContent = is_chinese ? "EN" : "中文";
-  mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+  mode_toggle_btn.textContent = is_night
+    ? lang_dict.mode_night
+    : lang_dict.mode_day;
 
   update_meta();
   render_question();
@@ -221,11 +227,15 @@ function apply_language() {
 
 function apply_mode() {
   body_element.classList.toggle("night_mode", is_night);
-  mode_toggle_btn.textContent = is_night ? get_text("mode_night") : get_text("mode_day");
+  mode_toggle_btn.textContent = is_night
+    ? get_text("mode_night")
+    : get_text("mode_day");
 }
 
 function build_level_questions(level) {
-  return shuffle_array(state.question_bank.filter((item) => item.level === level));
+  return shuffle_array(
+    state.question_bank.filter((item) => item.level === level),
+  );
 }
 
 function reset_level_state(level) {
@@ -241,7 +251,10 @@ function set_level(level) {
   reset_level_state(level);
 
   level_buttons.forEach((button) => {
-    button.classList.toggle("active_level", Number(button.dataset.level) === level);
+    button.classList.toggle(
+      "active_level",
+      Number(button.dataset.level) === level,
+    );
   });
 
   result_card.classList.add("hidden");
@@ -305,7 +318,10 @@ function render_question() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "option_btn";
-    button.setAttribute("aria-pressed", state.selected_option_index === index ? "true" : "false");
+    button.setAttribute(
+      "aria-pressed",
+      state.selected_option_index === index ? "true" : "false",
+    );
 
     if (state.selected_option_index === index) {
       button.classList.add("selected");
@@ -353,7 +369,10 @@ function render_feedback() {
   const question = get_current_question();
 
   if (!question || !state.answered) {
-    if (feedback_box.className !== "feedback_box wrong_text" || feedback_box.textContent !== get_text("choose_first")) {
+    if (
+      feedback_box.className !== "feedback_box wrong_text" ||
+      feedback_box.textContent !== get_text("choose_first")
+    ) {
       feedback_box.className = "feedback_box";
       feedback_box.textContent = "";
     }
@@ -441,12 +460,23 @@ async function initialise_quiz() {
 
   try {
     const loaded_questions = await load_question_bank();
-    state.question_bank = Array.isArray(loaded_questions) ? loaded_questions : [];
+    state.question_bank = Array.isArray(loaded_questions)
+      ? loaded_questions
+      : [];
     set_level(1);
     apply_language();
   } catch (error) {
     console.error(error);
-    question_text.textContent = get_text("load_error");
+    const is_file_protocol = window.location.protocol === "file:";
+    const error_message = is_file_protocol
+      ? "题库加载失败：你现在是直接打开本地文件。请使用 Live Server 运行。"
+      : get_text("load_error");
+
+    question_text.textContent = error_message;
+    options_wrap.innerHTML = "";
+    feedback_box.className = "feedback_box wrong_text";
+    feedback_box.textContent = error_message;
+    update_action_buttons();
     options_wrap.innerHTML = "";
     feedback_box.className = "feedback_box wrong_text";
     feedback_box.textContent = get_text("load_error");

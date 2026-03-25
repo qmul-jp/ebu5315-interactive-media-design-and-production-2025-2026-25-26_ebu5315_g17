@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02-同弧圆周角定理 | 02-Inscribed Angle Theorem</title>
+
+<style>
+    /* 主题颜色变量 */
+    :root {
+        --theme_color: #0d3273;
+        --sub_color: #4471c2;
+        --highlight_color: #e8a0bf;
+        --bg_color: #ffffff;
+        --bg_color_night: #0f132a;
+        --text_color: #374151;
+        --text_color_night: #e5e7eb;
+        --border_color: #e5e7eb;
+        --border_color_night: #272e48;
+    }
+
+    /* 黑夜模式 */
+    body.night {
+        background-color: var(--bg_color_night);
+        color: var(--text_color_night);
+    }
+    body.night .container {
+        background: var(--bg_color_night);
+    }
+    body.night .canvas-wrapper {
+        background: var(--bg_color_night);
+    }
+    body.night canvas {
+        background: var(--bg_color_night);
+        border-color: var(--border_color_night);
+    }
+    body.night .card-def {
+        background: #162349;
+        color: var(--text_color_night);
+    }
+    body.night .card-theorem {
+        background: #14293f;
+        color: var(--text_color_night);
+    }
+    body.night .card-corollary {
+        background: #2c2442;
+        color: var(--text_color_night);
+    }
+    body.night .card p, 
+    body.night .card li,
+    body.night .canvas-tip,
+    body.night .data-panel {
+        color: var(--text_color_night);
+    }
+
+    /* 返回按钮样式（紧凑版） */
+    .back-btn {
+        text-align: center;
+        margin: 1rem 0;
+        padding-top: 1rem;
+        border-top: 2px solid rgba(68, 113, 194, 0.3);
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+    }
+    .back-btn a {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        white-space: nowrap;
+        font-size: 1rem;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+
+    /* 紧凑排版核心修改 */
+    body {
+        background-color: var(--bg_color);
+        padding: 20px 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--bg_color);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        overflow: hidden;
+        transition: background-color 0.3s ease;
+    }
+
+    .header {
+        background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .control-btn {
+        position: absolute;
+        top: 15px;
+        padding: 6px 12px;
+        background: rgba(255,255,255,0.25);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+    .control-btn:hover {
+        background: rgba(255,255,255,0.4);
+    }
+    /* 按钮间距保持不变，防止英文重叠 */
+    .lang-btn {
+        right: 180px;
+    }
+    .mode-btn {
+        right: 20px;
+    }
+
+    /* 紧凑内容区 */
+    .content {
+        padding: 24px 20px;
+    }
+
+    /* 紧凑卡片排版 */
+    .card {
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        line-height: 1.5;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .card-def {
+        border-left: 4px solid var(--theme_color);
+        background: rgba(13, 50, 115, 0.05);
+    }
+    .card-theorem {
+        border-left: 4px solid var(--sub_color);
+        background: rgba(68, 113, 194, 0.05);
+    }
+    .card-corollary {
+        border-left: 4px solid var(--highlight_color);
+        background: rgba(232, 160, 191, 0.05);
+    }
+
+    .card h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.3px;
+    }
+
+    .card p {
+        font-size: 15px;
+        color: var(--text_color);
+        line-height: 1.5;
+        margin-bottom: 8px;
+        letter-spacing: 0.2px;
+    }
+
+    .card ul {
+        padding-left: 20px;
+    }
+
+    .card li {
+        font-size: 15px;
+        color: var(--text_color);
+        line-height: 1.5;
+        margin-bottom: 6px;
+        letter-spacing: 0.2px;
+    }
+
+    /* 紧凑画布区域 */
+    .canvas-wrapper {
+        position: relative;
+        text-align: center;
+        margin-top: 24px;
+        padding: 16px;
+        background: var(--bg_color);
+        border: 1px solid var(--border_color);
+        border-radius: 8px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .canvas-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    canvas {
+        background: var(--bg_color);
+        border-radius: 6px;
+        touch-action: none;
+        border: 1px solid var(--border_color);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .reset-btn {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        padding: 6px 12px;
+        background: var(--theme_color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+    .reset-btn:hover {
+        background: var(--sub_color);
+    }
+
+    .data-panel {
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translate(30px, -50%);
+        text-align: left;
+        font-size: 15px;
+        line-height: 1.8;
+        min-width: 200px;
+        background: transparent;
+        border: none;
+        padding: 0;
+        letter-spacing: 0.2px;
+        color: var(--text_color);
+        transition: color 0.3s ease;
+    }
+    .data-panel .blue { 
+        color: var(--sub_color); 
+        font-weight: 600; 
+    }
+    .data-panel .green { 
+        color: var(--highlight_color); 
+        font-weight: 600; 
+    }
+
+    .canvas-tip {
+        margin-top: 12px;
+        font-size: 15px;
+        color: var(--text_color);
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .zh, .en { display: none; }
+    :lang(zh-CN) .zh { display: initial; }
+    :lang(en) .en { display: initial; }
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="zh">02 - 同弧圆周角定理</span>
+            <span class="en">02 - Inscribed Angle Theorem</span>
+        </h1>
+        <button class="control-btn lang-btn" id="langBtn">English</button>
+        <button class="control-btn mode-btn" id="modeBtn">☀️ 白天模式</button>
+    </div>
+
+    <div class="back-btn">
+        <a href="../index.html">
+            <span class="zh">← 返回主页</span>
+            <span class="en">← Back to Home</span>
+        </a>
+        <a href="./game.html">
+            <span class="zh">← 返回游戏界面</span>
+            <span class="en">← Back to Game Interface</span>
+        </a>
+    </div>
+
+    <div class="content">
+        <div class="card card-def">
+            <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
+            <p class="zh">顶点在圆上，两边与圆相交的角，叫做圆周角。</p>
+            <p class="en">An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle.</p>
+        </div>
+
+        <div class="card card-theorem">
+            <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
+            <p class="zh"><strong>在同圆或等圆中：</strong></p>
+            <p class="en"><strong>In the same or congruent circles:</strong></p>
+            <ul>
+                <li class="zh">同弧所对的圆周角相等</li>
+                <li class="en">Inscribed angles subtended by the same arc are equal</li>
+                <li class="zh">圆周角 = 所对弧的圆心角的一半</li>
+                <li class="en">An inscribed angle is half its central angle</li>
+            </ul>
+        </div>
+
+        <div class="card card-corollary">
+            <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
+            <p class="zh">半圆所对的圆周角是直角；直径所对的圆周角等于 90°。</p>
+            <p class="en">An angle inscribed in a semicircle is a right angle (90°).</p>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <canvas id="canvas" width="540" height="440"></canvas>
+                <button class="reset-btn" id="resetBtn">
+                    <span class="zh">重置</span>
+                    <span class="en">Reset</span>
+                </button>
+                <div class="data-panel">
+                    <div class="blue">
+                        <span class="zh">∠ACB (圆周角)：</span>
+                        <span class="en">∠ACB (Inscribed Angle)：</span>
+                        <span id="ang1">0°</span>
+                    </div>
+                    <div class="blue">
+                        <span class="zh">弧 AB：</span>
+                        <span class="en">Arc AB：</span>
+                        <span id="arc1">0</span>
+                    </div>
+                </div>
+            </div>
+            <p class="canvas-tip">
+                <span class="zh">🔹 拖动圆上的点 A、B、C，观察同弧圆周角关系</span>
+                <span class="en">🔹 Drag points A, B, C on the circle to observe inscribed angle relationships</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const langBtn = document.getElementById('langBtn');
+const resetBtn = document.getElementById('resetBtn');
+const modeBtn = document.getElementById('modeBtn');
+
+const cx = 270, cy = 220;
+const radius = 160;
+
+const diamRightAngle = 0;
+const diamLeftAngle = Math.PI;
+const snapDistance = 8;
+
+const initialPoints = {
+  A: { angle: Math.PI / 3 },
+  B: { angle: 2 * Math.PI / 3 },
+  C: { angle: 3 * Math.PI / 2 }
+};
+
+let points = JSON.parse(JSON.stringify(initialPoints));
+let dragging = null;
+let hoverPoint = null;
+let isNightMode = false;
+let isChinese = true;
+
+function getPosition(angle) {
+  return {
+    x: cx + radius * Math.cos(angle),
+    y: cy + radius * Math.sin(angle)
+  };
+}
+
+function snapAngle(angle) {
+  const dRight = Math.abs(angle - diamRightAngle);
+  const dLeft = Math.abs(angle - diamLeftAngle);
+  const snapRad = snapDistance / radius;
+
+  if (dRight < snapRad) return diamRightAngle;
+  if (dLeft < snapRad) return diamLeftAngle;
+  return angle;
+}
+
+function updateModeBtnText() {
+    if (isChinese) {
+        modeBtn.textContent = isNightMode ? '🌙 黑夜模式' : '☀️ 白天模式';
+    } else {
+        modeBtn.textContent = isNightMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+}
+
+function drawRightAngleMark(C, A, B) {
+  const L = 14;
+  const dx1 = A.x - C.x;
+  const dy1 = A.y - C.y;
+  const dx2 = B.x - C.x;
+  const dy2 = B.y - C.y;
+  const len1 = Math.hypot(dx1, dy1);
+  const len2 = Math.hypot(dx2, dy2);
+
+  const p1 = { x: C.x + dx1 / len1 * L, y: C.y + dy1 / len1 * L };
+  const p2 = { x: C.x + dx2 / len2 * L, y: C.y + dy2 / len2 * L };
+
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.lineTo(C.x, C.y);
+  ctx.lineTo(p2.x, p2.y);
+  ctx.strokeStyle = isNightMode ? '#e5e7eb' : '#222';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const strokeColor = isNightMode ? '#e5e7eb' : '#333';
+  const fillColor = isNightMode ? '#e5e7eb' : '#000';
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.save();
+  ctx.setLineDash([5, 3]);
+  ctx.strokeStyle = isNightMode ? '#94a3b8' : '#999';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - radius, cy);
+  ctx.lineTo(cx + radius, cy);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+  ctx.font = '16px Arial';
+  ctx.fillStyle = fillColor;
+  ctx.fillText('O', cx, cy - 18);
+
+  const pos = {
+    A: getPosition(points.A.angle),
+    B: getPosition(points.B.angle),
+    C: getPosition(points.C.angle)
+  };
+
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = isNightMode ? '#94a3b8' : '#666';
+  ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+
+  let arcAB = Math.abs(points.B.angle - points.A.angle);
+  if (arcAB > Math.PI) arcAB = 2 * Math.PI - arcAB;
+  const angleC = arcAB / 2;
+  const degC = Math.round(angleC * 180 / Math.PI);
+
+  if (degC === 90) {
+    drawRightAngleMark(pos.C, pos.A, pos.B);
+  }
+
+  for (const k in pos) {
+    ctx.beginPath();
+    ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.font = '18px Arial';
+    ctx.fillStyle = fillColor;
+    ctx.fillText(k, pos[k].x, pos[k].y - 18);
+  }
+
+  document.getElementById('ang1').textContent = degC + '°';
+  document.getElementById('arc1').textContent = arcAB.toFixed(2);
+}
+
+function getMousePos(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function checkHit(mx, my) {
+  for (const k in points) {
+    const p = getPosition(points[k].angle);
+    if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+  }
+  return null;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  const m = getMousePos(e);
+  dragging = checkHit(m.x, m.y);
+  if (dragging) canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!dragging) {
+    const m = getMousePos(e);
+    hoverPoint = checkHit(m.x, m.y);
+    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+    draw();
+    return;
+  }
+  const m = getMousePos(e);
+  const rawAngle = Math.atan2(m.y - cy, m.x - cx);
+  points[dragging].angle = snapAngle(rawAngle);
+  draw();
+});
+
+window.addEventListener('mouseup', () => {
+  dragging = null;
+  canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  hoverPoint = null;
+  draw();
+});
+
+resetBtn.onclick = () => {
+  points = JSON.parse(JSON.stringify(initialPoints));
+  draw();
+};
+
+langBtn.onclick = () => {
+  const html = document.documentElement;
+  if (html.lang === 'zh-CN') {
+    html.lang = 'en';
+    langBtn.textContent = '中文';
+    isChinese = false;
+  } else {
+    html.lang = 'zh-CN';
+    langBtn.textContent = 'English';
+    isChinese = true;
+  }
+  updateModeBtnText();
+  draw();
+};
+
+modeBtn.onclick = () => {
+  isNightMode = !isNightMode;
+  document.body.classList.toggle('night', isNightMode);
+  updateModeBtnText();
+  draw();
+};
+
+draw();
+</script>
+</body>
+</html>

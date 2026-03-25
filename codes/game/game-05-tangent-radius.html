@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05 - 切线半径垂直定理 | 05 - Tangent Perpendicular to Radius Theorem</title>
+
+    <!-- CSS 样式部分（调整为和game-02一致） -->
+    <style>
+        /* 主题颜色变量 */
+        :root {
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #374151;
+            --text_color_night: #e5e7eb;
+            --border_color: #e5e7eb;
+            --border_color_night: #272e48;
+        }
+
+        /* 黑夜模式 */
+        body.night {
+            background-color: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+        body.night .container {
+            background: var(--bg_color_night);
+        }
+        body.night .canvas-wrapper {
+            background: var(--bg_color_night);
+        }
+        body.night canvas {
+            background: var(--bg_color_night);
+            border-color: var(--border_color_night);
+        }
+        body.night .card-def {
+            background: #162349;
+            color: var(--text_color_night);
+        }
+        body.night .card-theorem {
+            background: #14293f;
+            color: var(--text_color_night);
+        }
+        body.night .card-corollary {
+            background: #2c2442;
+            color: var(--text_color_night);
+        }
+        body.night .card p, 
+        body.night .card li,
+        body.night .canvas-tip,
+        body.night .data-panel {
+            color: var(--text_color_night);
+        }
+
+        /* 返回按钮样式（和game-02一致） */
+        .back-btn {
+            text-align: center;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(68, 113, 194, 0.3);
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        .back-btn a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 紧凑排版核心修改（和game-02一致） */
+        body {
+            background-color: var(--bg_color);
+            padding: 20px 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--bg_color);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .control-btn {
+            position: absolute;
+            top: 15px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .control-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        /* 按钮间距保持不变，防止英文重叠 */
+        .lang-btn {
+            right: 180px;
+        }
+        .mode-btn {
+            right: 20px;
+        }
+
+        /* 紧凑内容区（和game-02一致） */
+        .content {
+            padding: 24px 20px;
+        }
+
+        /* 紧凑卡片排版（和game-02一致） */
+        .card {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .card-def {
+            border-left: 4px solid var(--theme_color);
+            background: rgba(13, 50, 115, 0.05);
+        }
+        .card-theorem {
+            border-left: 4px solid var(--sub_color);
+            background: rgba(68, 113, 194, 0.05);
+        }
+        .card-corollary {
+            border-left: 4px solid var(--highlight_color);
+            background: rgba(232, 160, 191, 0.05);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+
+        .card li {
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.5;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        /* 紧凑画布区域（和game-02一致） */
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--bg_color);
+            border: 1px solid var(--border_color);
+            border-radius: 8px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        canvas {
+            background: var(--bg_color);
+            border-radius: 6px;
+            touch-action: none;
+            border: 1px solid var(--border_color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 12px;
+            background: var(--theme_color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: var(--sub_color);
+        }
+
+        .canvas-tip {
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--text_color);
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        .zh, .en { display: none; }
+        :lang(zh-CN) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
+    </style>
+</head>
+
+<!-- HTML 结构部分（仅添加模式切换按钮，其他功能不变） -->
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span class="zh">05 - 切线半径垂直定理</span>
+            <span class="en">05 - Tangent Perpendicular to Radius Theorem</span>
+        </h1>
+        <button class="control-btn lang-btn" id="langBtn">English</button>
+        <button class="control-btn mode-btn" id="modeBtn">☀️ 白天模式</button>
+    </div>
+
+    <!-- 顶部返回按钮区域（样式和game-02一致） -->
+    <div class="back-btn">
+        <a href="../index.html">
+            <span class="zh">← 返回主页</span>
+            <span class="en">← Back to Home</span>
+        </a>
+        <a href="./game.html">
+            <span class="zh">← 返回游戏界面</span>
+            <span class="en">← Back to Game Interface</span>
+        </a>
+    </div>
+
+    <div class="content">
+        <div class="card card-def">
+            <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
+            <p class="zh">圆的切线是指与圆只有唯一公共点的直线，该公共点称为切点。</p>
+            <p class="en">A tangent to a circle is a line that intersects the circle at exactly one point, called the point of tangency.</p>
+        </div>
+
+        <div class="card card-theorem">
+            <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
+            <p class="zh"><strong>在任意一个圆中：</strong></p>
+            <p class="en"><strong>In any circle:</strong></p>
+            <ul>
+                <li class="zh">圆的切线垂直于过切点的半径。</li>
+                <li class="en">The tangent to a circle is perpendicular to the radius at the point of tangency.</li>
+            </ul>
+        </div>
+
+        <div class="card card-corollary">
+            <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
+            <p class="zh">经过圆心且垂直于切线的直线必经过切点；经过切点且垂直于切线的直线必经过圆心。</p>
+            <p class="en">The line perpendicular to the tangent at the point of contact passes through the center of the circle.</p>
+        </div>
+
+        <!-- 交互式图形区域 -->
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <canvas id="canvas" width="540" height="440"></canvas>
+                <button class="reset-btn" id="resetBtn">
+                    <span class="zh">重置</span>
+                    <span class="en">Reset</span>
+                </button>
+            </div>
+            <p class="canvas-tip">
+                <span class="zh">🔹 拖动切点 A 即可移动切线，半径 OA 始终与切线保持垂直</span>
+                <span class="en">🔹 Drag point A to move the tangent, OA is always perpendicular to tangent</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 交互部分（仅添加黑夜模式、适配颜色和按钮文本，核心功能不变） -->
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resetBtn = document.getElementById('resetBtn');
+    const langBtn = document.getElementById('langBtn');
+    const modeBtn = document.getElementById('modeBtn');
+
+    // 圆心 O 与半径
+    const cx = 270, cy = 220;
+    const radius = 120;
+    let angle = Math.PI / 4;
+
+    let isDragging = false;
+    let isNightMode = false;
+    let isChinese = true;
+
+    // 更新模式按钮文本（和game-02一致）
+    function updateModeBtnText() {
+        if (isChinese) {
+            modeBtn.textContent = isNightMode ? '🌙 黑夜模式' : '☀️ 白天模式';
+        } else {
+            modeBtn.textContent = isNightMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 适配黑夜模式的颜色
+        const strokeColor = isNightMode ? '#e5e7eb' : '#333';
+        const fillColor = isNightMode ? '#e5e7eb' : '#000';
+
+        // 切点 A
+        const ax = cx + radius * Math.cos(angle);
+        const ay = cy + radius * Math.sin(angle);
+
+        // 画圆
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 圆心 O
+        ctx.beginPath();
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+        ctx.font = '16px Arial';
+        ctx.fillStyle = fillColor;
+        ctx.fillText('O', cx - 15, cy - 10);
+
+        // 半径 OA —— 实线
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(ax, ay);
+        ctx.strokeStyle = fillColor;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.stroke();
+
+        // 切线 —— 虚线
+        const nx = -Math.sin(angle);
+        const ny = Math.cos(angle);
+        const len = 400;
+        ctx.beginPath();
+        ctx.moveTo(ax - nx * len, ay - ny * len);
+        ctx.lineTo(ax + nx * len, ay + ny * len);
+        ctx.strokeStyle = fillColor;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 切点 A
+        ctx.beginPath();
+        ctx.arc(ax, ay, 6, 0, Math.PI * 2);
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+
+        // 字母 A 放在点旁边
+        ctx.font = '16px Arial';
+        ctx.fillStyle = fillColor;
+        ctx.fillText('A', ax + 8, ay - 8);
+    }
+
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const pos = getMousePos(e);
+        const ax = cx + radius * Math.cos(angle);
+        const ay = cy + radius * Math.sin(angle);
+        const dx = pos.x - ax;
+        const dy = pos.y - ay;
+        if (Math.hypot(dx, dy) < 20) {
+            isDragging = true;
+        }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const pos = getMousePos(e);
+        angle = Math.atan2(pos.y - cy, pos.x - cx);
+        draw();
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    resetBtn.addEventListener('click', () => {
+        angle = Math.PI / 4;
+        draw();
+    });
+
+    // 中英文切换（和game-02一致）
+    langBtn.onclick = () => {
+        const html = document.documentElement;
+        if (html.lang === 'zh-CN') {
+            // 切换到英文
+            html.lang = 'en';
+            langBtn.textContent = '中文';
+            isChinese = false;
+        } else {
+            // 切换到中文
+            html.lang = 'zh-CN';
+            langBtn.textContent = 'English';
+            isChinese = true;
+        }
+        updateModeBtnText();
+        draw();
+    };
+
+    // 黑夜/白天模式切换（和game-02一致）
+    modeBtn.onclick = () => {
+        isNightMode = !isNightMode;
+        document.body.classList.toggle('night', isNightMode);
+        updateModeBtnText();
+        draw();
+    };
+
+    // 初始化绘制
+    draw();
+</script>
+</body>
+</html>
