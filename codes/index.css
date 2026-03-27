@@ -180,19 +180,25 @@ display: grid;
 grid-template-columns: minmax(0, 1fr);
 gap: 0;
 align-items: start;
-  padding-left: calc(var(--rail_width) + 2rem);
+padding-left: calc(var(--rail_width) + 1rem);
 }
 
 .side_nav {
-  position: fixed;
-  top: calc(0.95rem + var(--header_height) + 0.55rem);
-  left: 1rem;
-  width: var(--rail_width);
-  height: calc(100vh - (0.95rem + var(--header_height) + 1.5rem));
-  min-height: calc(100vh - var(--header_height) - 2rem);
-  background: var(--sub_color);
-  box-shadow: 0 8px 24px rgba(13, 50, 115, 0.15);
-  border-radius: 16px;
+position: fixed;
+top: calc(0.95rem + var(--header_height) + 0.55rem);
+left: 0.8rem;
+width: var(--rail_width);
+height: calc(100vh - (0.95rem + var(--header_height) + 1.5rem));
+min-height: calc(100vh - var(--header_height) - 2rem);
+background: var(--sub_color);
+box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+padding: 1.1rem 0.55rem;
+overflow: visible;
+z-index: 240;
+}
+
+.side_nav_inner {
+position: static;
 width: 100%;
 display: grid;
 align-content: start;
@@ -796,12 +802,12 @@ padding-left: 0;
 .side_nav {
 position: sticky;
 top: calc(var(--header_height) + 0.4rem);
-  left: 0;
-  min-height: auto;
-  border-radius: 12px;
-  background: var(--sub_color);
-  padding: 0.35rem;
-  z-index: 240;
+min-height: auto;
+background: var(--sub_color);
+padding: 0.35rem;
+}
+
+.side_nav_inner {
 position: static;
 display: grid;
 grid-template-columns: repeat(3, 1fr);
