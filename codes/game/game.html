@@ -1,198 +1,447 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>CircleLab | Game Path</title>
-	<link rel="stylesheet" href="../index.css">
-	<link rel="stylesheet" href="./game.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircleLab | 几何定理游戏中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 核心配色变量 - 按指定值定义 */
+        :root {
+            --theme_color: #0d3273;      /* 主主题色 */
+            --sub_color: #4471c2;        /* 次要色 */
+            --highlight_color: #e8a0bf;  /* 高亮色 */
+            --bg_color: #ffffff;         /* 白天背景 */
+            --bg_color_night: #0f132a;   /* 夜间背景 */
+            
+            /* 衍生配色（适配明暗模式） */
+            --text_primary: #333333;     /* 白天主文本 */
+            --text_secondary: #666666;   /* 白天次要文本 */
+            --text_tertiary: #888888;    /* 白天三级文本 */
+            --card_bg: #ffffff;          /* 白天卡片背景 */
+            --border_light: #eeeeee;     /* 白天浅色边框 */
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);  /* 小阴影 */
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.12); /* 中阴影 */
+        }
+
+        /* 夜间模式配色覆盖 */
+        body.dark-mode {
+            --text_primary: #f5f5f5;     /* 夜间主文本 */
+            --text_secondary: #dddddd;   /* 夜间次要文本 */
+            --text_tertiary: #bbbbbb;    /* 夜间三级文本 */
+            --card_bg: #1a1e38;          /* 夜间卡片背景（基于夜间背景微调） */
+            --border_light: #2a2f48;     /* 夜间浅色边框 */
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);   /* 夜间小阴影 */
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.25); /* 夜间中阴影 */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg_color); /* 白天默认背景 */
+            min-height: 100vh;
+            color: var(--text_primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background: var(--card_bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow_sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--theme_color); /* 主主题色 */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* ✅ 导航栏文字优化：主题色+加粗+醒目效果 */
+        .nav-links a {
+            color: var(--theme_color);
+            text-decoration: none;
+            font-weight: 700; /* 加粗 */
+            font-size: 1rem;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* hover 高亮效果 */
+        .nav-links a:hover {
+            color: var(--sub_color);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--highlight_color);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* 语言/主题切换按钮 */
+        .lang-toggle, .theme-toggle {
+            background: var(--theme_color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .lang-toggle:hover, .theme-toggle:hover {
+            background: var(--sub_color); /* 次要色 hover */
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* 页面头部 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--theme_color); /* 主主题色 */
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text_secondary);
+        }
+
+        /* 游戏网格 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* 游戏卡片 */
+        .game-card {
+            background: var(--card_bg);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text_primary);
+            box-shadow: var(--shadow_md);
+            display: block;
+            border: 1px solid var(--border_light);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow_md);
+            border-color: var(--sub_color); /* 次要色边框 hover */
+        }
+
+        .game-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            color: var(--theme_color); /* 主主题色 */
+        }
+
+        .game-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--theme_color); /* 主主题色 */
+            line-height: 1.4;
+        }
+
+        .game-card p {
+            font-size: 0.85rem;
+            color: var(--text_secondary);
+            line-height 1.5;
+        }
+
+        .game-card .number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            line-height: 35px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .game-card .description {
+            font-size: 0.8rem;
+            color: var(--text_tertiary);
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border_light);
+        }
+
+        /* 占位卡片 */
+        .game-card.placeholder {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed var(--border_light);
+            color: var(--text_secondary);
+        }
+
+        .game-card.placeholder h3,
+        .game-card.placeholder p,
+        .game-card.placeholder .description {
+            color: var(--text_secondary);
+        }
+
+        .game-card.placeholder .number {
+            background: rgba(255,255,255,0.15);
+            color: var(--text_tertiary);
+        }
+
+        .game-card.placeholder:hover {
+            transform: none;
+            box-shadow: var(--shadow_sm);
+            border-color: var(--border_light);
+        }
+
+        /* 返回区域 */
+        .back-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border_light);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: var(--theme_color);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: var(--shadow_sm);
+        }
+
+        .back-btn:hover {
+            background: var(--sub_color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow_md);
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            color: var(--text_tertiary);
+            padding: 2rem;
+            margin-top: 3rem;
+            background: var(--card_bg);
+            box-shadow: var(--shadow_sm);
+        }
+
+        .footer p {
+            margin: 0.3rem 0;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1100px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* 夜间模式背景覆盖 */
+        body.dark-mode {
+            background: var(--bg_color_night);
+        }
+    </style>
 </head>
 <body>
-	<div class="bg_orb bg_orb_left"></div>
-	<div class="bg_orb bg_orb_right"></div>
+    <nav class="navbar">
+        <a href="../index.html" class="logo" data-zh="◯ CircleLab" data-en="◯ CircleLab">
+            ◯ CircleLab
+        </a>
+        <div class="nav-links">
+            <a href="../index.html" data-zh="主页" data-en="Home">主页</a>
+            <a href="../quiz/quiz.html" data-zh="测验" data-en="Quiz">测验</a>
+            <a href="./game.html" data-zh="游戏" data-en="Games">游戏</a>
+        </div>
+        <div class="nav-buttons">
+            <!-- ✅ 语言按钮：默认中文界面显示 English，英文界面显示 中文 -->
+            <button class="lang-toggle" id="langToggleBtn">English</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
+        </div>
+    </nav>
 
-	<header class="site_header">
-		<div class="brand_wrap">
-			<div class="brand_logo" aria-hidden="true">◯</div>
-			<div>
-				<p class="brand_name">CircleLab</p>
-				<p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry Games</p>
-			</div>
-		</div>
+    <div class="container">
+        <div class="page-header">
+            <h1 data-zh="🎮 几何定理游戏中心" data-en="🎮 Circle Geometry Theorem Games">🎮 几何定理游戏中心</h1>
+            <p data-zh="选择定理开始互动学习" data-en="Select a theorem to start interactive learning">选择定理开始互动学习</p>
+        </div>
 
-		<div class="control_group">
-			<button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
-			<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
-		</div>
-	</header>
+        <div class="game-grid">
+            <a href="game-01-central-angle.html" class="game-card">
+                <span class="number">01</span>
+                <span class="icon">📐</span>
+                <h3 data-zh="圆心角定理" data-en="Central Angle Theorem">圆心角定理</h3>
+                <p class="description" data-zh="探索圆心角与弧、弦的关系" data-en="Explore the relationship between central angles, arcs and chords">探索圆心角与弧、弦的关系</p>
+            </a>
 
-	<div class="page_shell">
-		<aside class="side_nav fade_in_up" aria-label="Primary menu">
-			<a class="side_nav_link" href="../index.html" aria-label="Homepage">
-				<span class="side_nav_icon" aria-hidden="true">
-					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-						<path d="M3 10.5L12 3L21 10.5"></path>
-						<path d="M5 9.5V20H19V9.5"></path>
-						<path d="M10 20V14H14V20"></path>
-					</svg>
-				</span>
-				<span class="side_nav_tooltip" data-i18n="nav_home">主页</span>
-			</a>
-			<a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
-				<span class="side_nav_icon" aria-hidden="true">
-					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-						<rect x="6" y="4" width="12" height="16" rx="2"></rect>
-						<path d="M9 4.5H15"></path>
-						<path d="M9 10H15"></path>
-						<path d="M9 14H13"></path>
-						<path d="M9 18H12"></path>
-						<path d="M14 14L15.5 15.5L18 13"></path>
-					</svg>
-				</span>
-				<span class="side_nav_tooltip" data-i18n="nav_quiz">测验</span>
-			</a>
-			<a class="side_nav_link active" href="./game.html" aria-label="Game">
-				<span class="side_nav_icon" aria-hidden="true">
-					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-						<path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
-						<path d="M8.5 13.5V16.5"></path>
-						<path d="M7 15H10"></path>
-						<circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
-						<circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
-					</svg>
-				</span>
-				<span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
-			</a>
-		</aside>
+            <a href="game-02-inscribed-angle.html" class="game-card">
+                <span class="number">02</span>
+                <span class="icon">🔵</span>
+                <h3 data-zh="同弧圆周角定理" data-en="Inscribed Angle Theorem">同弧圆周角定理</h3>
+                <p class="description" data-zh="同弧所对圆周角相等" data-en="Inscribed angles subtended by the same arc are equal">同弧所对圆周角相等</p>
+            </a>
 
-		<main class="content_area">
-			<section id="game-home" class="showcase_panel fade_in_up">
-				<div class="showcase_visual">
-					<div class="game_stage_board">
-						<p class="game_stage_kicker" data-i18n="stage_kicker">Game Roadmap</p>
-						<h2 class="game_stage_title" data-i18n="stage_title">6 个关卡逐步推进</h2>
-						<ol class="game_stage_list">
-							<li data-i18n="stage_1">圆心角与弧长关系</li>
-							<li data-i18n="stage_2">同弧圆周角关系</li>
-							<li data-i18n="stage_3">半圆所对圆周角是直角</li>
-							<li data-i18n="stage_4">圆内接四边形对角互补</li>
-							<li data-i18n="stage_5">切线垂直过切点半径</li>
-							<li data-i18n="stage_6">同一点引切线长相等</li>
-						</ol>
-						<p class="game_stage_tip" data-i18n="stage_tip">点击关卡卡片进入练习，系统会自动记录你的完成进度。</p>
-					</div>
-				</div>
+            <a href="game-03-semicircle-right.html" class="game-card">
+                <span class="number">03</span>
+                <span class="icon">📏</span>
+                <h3 data-zh="半圆直角定理" data-en="Semicircle Right Angle">半圆直角定理</h3>
+                <p class="description" data-zh="直径所对圆周角为90°" data-en="The inscribed angle subtended by a diameter is 90°">直径所对圆周角为90°</p>
+            </a>
 
-				<div class="showcase_copy">
-					<p class="showcase_kicker" data-i18n="hero_kicker">Circle Geometry Arena</p>
-					<h1 class="showcase_title">
-						<span data-i18n="hero_line_1">先观察</span>
-						<span data-i18n="hero_line_2">再推理</span>
-						<span data-i18n="hero_line_3">最后通关</span>
-					</h1>
-					<p class="showcase_desc" data-i18n="hero_desc">通过拖拽与判断题，把圆几何定理变成可视化体验，再用测验巩固记忆。</p>
+            <a href="game-04-cyclic-quad.html" class="game-card">
+                <span class="number">04</span>
+                <span class="icon">◼️</span>
+                <h3 data-zh="圆内接四边形定理" data-en="Cyclic Quadrilateral">圆内接四边形定理</h3>
+                <p class="description" data-zh="对角互补等于180°" data-en="Opposite angles of a cyclic quadrilateral sum to 180°">对角互补等于180°</p>
+            </a>
 
-					<div class="hero_cta_wrap">
-						<a class="primary_btn" href="./game-01圆心角定理.html" data-i18n="cta_start">从第 1 关开始</a>
-						<a class="secondary_btn" href="../quiz/quiz.html" data-i18n="cta_quiz">进入分级测验</a>
-					</div>
+            <a href="game-05-tangent-radius.html" class="game-card">
+                <span class="number">05</span>
+                <span class="icon">📍</span>
+                <h3 data-zh="切线半径垂直定理" data-en="Tangent ⊥ Radius">切线半径垂直定理</h3>
+                <p class="description" data-zh="切线垂直于过切点半径" data-en="A tangent is perpendicular to the radius at the point of contact">切线垂直于过切点半径</p>
+            </a>
 
-					<div class="ai_preview">
-						<p class="ai_preview_label" data-i18n="tips_label">学习建议</p>
-						<p data-i18n="tips_text">每完成一关都会自动标记，建议按顺序练习，最后去测验检验掌握度。</p>
-						<button id="reset_progress_btn" class="text_btn" type="button" data-i18n="reset_progress">重置游戏进度</button>
-					</div>
-				</div>
-			</section>
+            <a href="game-06-tangent-length.html" class="game-card">
+                <span class="number">06</span>
+                <span class="icon">✂️</span>
+                <h3 data-zh="切线长定理" data-en="Tangent Length Theorem">切线长定理</h3>
+                <p class="description" data-zh="圆外一点引两条切线长相等" data-en="Two tangents from a point outside the circle are equal in length">圆外一点引两条切线长相等</p>
+            </a>
 
-			<section class="dashboard_grid">
-				<section class="rule_section fade_in_up delay_1">
-					<div class="section_head">
-						<h2 data-i18n="levels_title">Game Levels</h2>
-						<p id="progress_text">你已完成 0 / 6 个关卡。</p>
-					</div>
+            <div class="game-card placeholder">
+                <span class="number">07</span>
+                <span class="icon">🔜</span>
+                <h3 data-zh="即将上线" data-en="Coming Soon">即将上线</h3>
+                <p class="description" data-zh="新定理游戏中..." data-en="New theorem games in development...">新定理游戏中...</p>
+            </div>
 
-					<div class="level_card_grid">
-						<a class="level_card" data-level="1" href="./game-01圆心角定理.html">
-							<p class="card_kicker">01</p>
-							<h3 data-i18n="level_1_title">圆心角定理</h3>
-							<p data-i18n="level_1_desc">理解圆心角、弧和弦之间的一一对应关系。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-						<a class="level_card" data-level="2" href="./game-02同弧圆周角定理.html">
-							<p class="card_kicker">02</p>
-							<h3 data-i18n="level_2_title">同弧圆周角定理</h3>
-							<p data-i18n="level_2_desc">比较不同位置圆周角，建立同弧关系直觉。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-						<a class="level_card" data-level="3" href="./game-03半圆直角定理.html">
-							<p class="card_kicker">03</p>
-							<h3 data-i18n="level_3_title">半圆直角定理</h3>
-							<p data-i18n="level_3_desc">观察半圆所对角恒为 90° 的图形证据。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-						<a class="level_card" data-level="4" href="./game-04圆内接四边形定理.html">
-							<p class="card_kicker">04</p>
-							<h3 data-i18n="level_4_title">圆内接四边形定理</h3>
-							<p data-i18n="level_4_desc">练习对角互补性质，提升综合推理能力。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-						<a class="level_card" data-level="5" href="./game-05切线半径垂直定理.html">
-							<p class="card_kicker">05</p>
-							<h3 data-i18n="level_5_title">切线半径垂直定理</h3>
-							<p data-i18n="level_5_desc">通过拖动观察切点处 90° 关系的稳定性。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-						<a class="level_card" data-level="6" href="./game-06切线长定理.html">
-							<p class="card_kicker">06</p>
-							<h3 data-i18n="level_6_title">切线长定理</h3>
-							<p data-i18n="level_6_desc">比较两条切线段长度，完成最终综合关卡。</p>
-							<span class="completion_badge" data-i18n="status_incomplete">未完成</span>
-						</a>
-					</div>
-				</section>
+            <div class="game-card placeholder">
+                <span class="number">08</span>
+                <span class="icon">🔜</span>
+                <h3 data-zh="即将上线" data-en="Coming Soon">即将上线</h3>
+                <p class="description" data-zh="新定理游戏中..." data-en="New theorem games in development...">新定理游戏中...</p>
+            </div>
+        </div>
 
-				<section class="quick_link_card fade_in_up delay_1">
-					<p class="card_kicker" data-i18n="quick_title_kicker">Quick Route</p>
-					<h2 data-i18n="quick_title">想先复习规则再闯关？</h2>
-					<p data-i18n="quick_desc">回到首页看规则轮播与图形演示，再返回继续游戏。</p>
-					<a class="secondary_btn" href="../index.html" data-i18n="quick_btn">返回主页复习</a>
-				</section>
+        <div class="back-section">
+            <a href="../index.html" class="back-btn" data-zh="← 返回主页" data-en="← Back to Home">← 返回主页</a>
+        </div>
+    </div>
 
-				<section class="usp_section fade_in_up delay_2">
-					<div class="section_head">
-						<h2 data-i18n="method_title">How To Use</h2>
-					</div>
+    <footer class="footer">
+        <p data-zh="EBU5315 第17组 · 圆几何学习平台" data-en="EBU5315 Group 17 · Circle Geometry Learning">EBU5315 第17组 · 圆几何学习平台</p>
+        <p data-zh="CircleLab © 2024" data-en="CircleLab © 2024">CircleLab © 2024</p>
+    </footer>
 
-					<div class="usp_grid">
-						<article class="usp_card">
-							<h3 data-i18n="method_1_title">按序练习</h3>
-							<p data-i18n="method_1_desc">建议从 01 开始，逐步建立圆几何知识网络。</p>
-						</article>
-						<article class="usp_card">
-							<h3 data-i18n="method_2_title">即时反馈</h3>
-							<p data-i18n="method_2_desc">每一关都提供可视化关系，帮助你快速定位错误。</p>
-						</article>
-						<article class="usp_card">
-							<h3 data-i18n="method_3_title">测验闭环</h3>
-							<p data-i18n="method_3_desc">完成关卡后进入测验，把直觉转化为稳定得分。</p>
-						</article>
-					</div>
-				</section>
+    <script>
+        // 初始状态：中文模式
+        let isChinese = true;
+        const langBtn = document.getElementById('langToggleBtn');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        
+        // 语言切换核心函数
+        function toggleLang() {
+            isChinese = !isChinese;
+            // 遍历所有带data-zh/data-en的元素
+            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+            i18nElements.forEach(el => {
+                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+            });
 
-				<section class="ad_section fade_in_up delay_3" aria-label="advertisement">
-					<p class="ad_title" data-i18n="ad_title">Sponsored Learning Pick</p>
-					<p data-i18n="ad_desc">广告位：可接入教学文具、在线课程或学习 App 推广。</p>
-				</section>
-			</section>
-		</main>
-	</div>
+            // ✅ 语言按钮文字切换：中文界面显示 English，英文界面显示 中文
+            langBtn.textContent = isChinese ? "English" : "中文";
+            // 同步主题按钮文字
+            updateThemeBtnText();
+        }
 
-	<footer class="site_footer">
-		<p data-i18n="footer_text">EBU5315 Group 17 · Circle Geometry Game Path</p>
-	</footer>
+        // 主题切换函数
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            updateThemeBtnText();
+        }
 
-	<script src="../config.js"></script>
-	<script src="./game.js"></script>
+        // 更新主题按钮文字（联动语言）
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? "☀️ 白天模式" : "🌙 夜间模式";
+            } else {
+                themeBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+            }
+        }
+
+        // 绑定按钮事件
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+    </script>
 </body>
 </html>
