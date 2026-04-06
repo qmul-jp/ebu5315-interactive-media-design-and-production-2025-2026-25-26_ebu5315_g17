@@ -192,19 +192,24 @@ body.night_mode .result_card {
   margin-top: 1rem;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: 0.8rem;
   flex: 1;
 }
 
 .level_btn {
+  position: relative;
   border: 1px solid var(--line_color);
   background: var(--panel_color);
   color: inherit;
-  padding: 1rem;
+  padding: 0.95rem 1rem;
   min-height: 0;
   text-align: left;
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 body.night_mode .level_btn {
@@ -215,6 +220,10 @@ body.night_mode .level_btn {
 .level_btn.active_level {
   transform: translateY(-2px);
   border-color: var(--theme_color);
+}
+
+.level_btn.active_level {
+  box-shadow: 0 0 0 3px rgba(68, 113, 194, 0.12);
 }
 
 body.night_mode .level_btn.active_level {
@@ -233,6 +242,60 @@ body.night_mode .level_btn.active_level {
   margin-top: 0.25rem;
   font-size: 0.9rem;
   opacity: 0.8;
+}
+
+.smart_entry {
+  overflow: hidden;
+  border-color: rgba(68, 113, 194, 0.45);
+  background:
+    linear-gradient(135deg, rgba(68, 113, 194, 0.12), rgba(232, 160, 191, 0.12)),
+    var(--panel_color);
+}
+
+body.night_mode .smart_entry {
+  background:
+    linear-gradient(135deg, rgba(68, 113, 194, 0.2), rgba(232, 160, 191, 0.12)),
+    var(--panel_color_night);
+}
+
+.smart_entry::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.smart_entry:hover,
+.smart_entry.active_level {
+  border-color: var(--sub_color);
+  box-shadow:
+    0 10px 20px rgba(68, 113, 194, 0.14),
+    0 0 0 3px rgba(68, 113, 194, 0.14);
+}
+
+body.night_mode .smart_entry.active_level {
+  border-color: #9dbbff;
+  box-shadow:
+    0 0 0 3px rgba(157, 187, 255, 0.18),
+    0 0 18px rgba(157, 187, 255, 0.16);
+}
+
+.level_badge {
+  align-self: flex-start;
+  margin-bottom: 0.45rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(68, 113, 194, 0.12);
+  color: var(--theme_color);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+body.night_mode .level_badge {
+  background: rgba(157, 187, 255, 0.16);
+  color: #d8e3ff;
 }
 
 .quiz_card {
@@ -503,5 +566,4 @@ body.night_mode .secondary_btn {
     flex-direction: column;
     align-items: start;
   }
-
 }

@@ -47,20 +47,25 @@ let is_chinese =
     ? runtime_config.is_chinese
     : default_config.is_chinese;
 
+const SMART_SESSION_LENGTH = 10;
+const SMART_INITIAL_SKILL = 50;
+const SMART_SCORE_RULES = {
+  1: { correct: 5, wrong: -4 },
+  2: { correct: 7, wrong: -6 },
+  3: { correct: 9, wrong: -8 },
+};
+
 const i18n_text = {
   zh: {
     brand_tag: "GCSE 圆几何测验",
     mode_day: "夜间模式",
     mode_night: "白天模式",
-    nav_home: "主页",
-    nav_quiz: "测验",
     quiz_kicker: "Level-based Quiz",
     quiz_title: "圆几何分级测验",
     quiz_desc:
       "从基础识别到公式应用，逐步检查你对 circle geometry 的掌握情况。",
-    back_home: "返回主页",
     level_title: "选择难度",
-    level_desc: "先选一个 level，然后开始答题。",
+    level_desc: "先选一个 level，然后开始答题；或直接进入智能闯关。",
     level_1: "Level 1 · 基础",
     level_1_hint: "半径 / 直径 / 基本概念",
     level_2: "Level 2 · 进阶",
@@ -68,6 +73,12 @@ const i18n_text = {
     level_3: "Level 3 · 挑战",
     level_3_hint: "综合应用 / 推理题",
     level_label: "Level",
+    smart_badge: "推荐",
+    smart_mode: "智能闯关",
+    smart_mode_hint: "按你的实时表现自动调节题目难度",
+    smart_mode_title: "智能闯关 · 当前题目",
+    smart_mode_result_title: "智能闯关完成",
+    smart_progress_label: "闯关进度",
     question_title: "题目",
     loading_questions: "正在加载题库...",
     load_error: "题库加载失败，请检查 quiz.json 路径。",
@@ -77,28 +88,36 @@ const i18n_text = {
     restart_level: "重做本关",
     result_kicker: "Result",
     result_title: "本关完成",
-    score_prefix: "得分",
+    score_prefix: "答对",
+    skill_prefix: "能力值",
     choose_first: "请先选择一个答案。",
     feedback_correct: "回答正确！",
     feedback_wrong: "回答错误。",
     explanation_label: "解析",
+    smart_delta_label: "能力变化",
+    smart_next_label: "下一题趋势",
+    smart_reason_balanced: "正常适配当前水平",
+    smart_reason_raise: "适度拔高，看看你能不能稳住",
+    smart_reason_support: "短暂降低一档，先帮你稳住基础",
+    smart_reason_challenge: "连续答对，给你一题挑战题",
+    smart_reason_recover: "连续失误，先做一题缓冲题",
     final_good: "不错，你已经掌握了这一关的大部分内容。",
     final_great: "很棒，这一关你几乎全对了！",
     final_retry: "再试一次会更稳，你已经接近掌握了。",
+    smart_final_high: "状态很强，已经能稳定处理更高难度题目。",
+    smart_final_mid: "整体表现不错，继续练习就能更稳地进入挑战区。",
+    smart_final_low: "基础还在建立中，建议多做几轮智能闯关巩固。",
   },
   en: {
     brand_tag: "GCSE Circle Geometry Quiz",
     mode_day: "Night Mode",
     mode_night: "Day Mode",
-    nav_home: "Homepage",
-    nav_quiz: "Quiz",
     quiz_kicker: "Level-based Quiz",
     quiz_title: "Circle Geometry Level Quiz",
     quiz_desc:
       "Move from basic recognition to formula use and check your mastery step by step.",
-    back_home: "Back to Home",
     level_title: "Choose a Level",
-    level_desc: "Pick one level first, then start answering.",
+    level_desc: "Pick one level first, or enter Smart Challenge mode.",
     level_1: "Level 1 · Basic",
     level_1_hint: "Radius / diameter / core concepts",
     level_2: "Level 2 · Intermediate",
@@ -106,23 +125,40 @@ const i18n_text = {
     level_3: "Level 3 · Challenge",
     level_3_hint: "Mixed application / reasoning",
     level_label: "Level",
+    smart_badge: "Recommended",
+    smart_mode: "Smart Challenge",
+    smart_mode_hint: "Adjust question difficulty in real time based on your performance",
+    smart_mode_title: "Smart Challenge · Current Question",
+    smart_mode_result_title: "Smart Challenge Complete",
+    smart_progress_label: "Progress",
     question_title: "Question",
     loading_questions: "Loading question bank...",
     load_error: "Failed to load question bank. Please check quiz.json path.",
     no_questions: "There are no questions in this level yet.",
     submit_answer: "Submit Answer",
     next_question: "Next Question",
-    restart_level: "Restart Level",
+    restart_level: "Restart",
     result_kicker: "Result",
     result_title: "Level Complete",
-    score_prefix: "Score",
+    score_prefix: "Correct",
+    skill_prefix: "Skill",
     choose_first: "Please choose one option first.",
     feedback_correct: "Correct!",
     feedback_wrong: "Wrong.",
     explanation_label: "Explanation",
+    smart_delta_label: "Skill Change",
+    smart_next_label: "Next Trend",
+    smart_reason_balanced: "Normally matched to your current level",
+    smart_reason_raise: "A slight step-up to test your ceiling",
+    smart_reason_support: "A slight step-down to steady the basics",
+    smart_reason_challenge: "You are on a streak, so here comes a challenge",
+    smart_reason_recover: "You missed a few, so here comes a buffer question",
     final_good: "Nice work. You understood most of this level.",
     final_great: "Excellent. You almost got everything right!",
     final_retry: "Try again once more. You are close to mastering it.",
+    smart_final_high: "Strong session. You can now handle higher-level questions steadily.",
+    smart_final_mid: "Solid overall. A bit more practice will push you into the challenge zone.",
+    smart_final_low: "Your fundamentals are still forming. Another smart run will help a lot.",
   },
 };
 
@@ -134,8 +170,10 @@ const mode_toggle_btn = document.getElementById("mode_toggle_btn");
 
 const level_buttons = Array.from(document.querySelectorAll(".level_btn"));
 const current_level_text = document.getElementById("current_level_text");
+const question_title_text = document.getElementById("question_title_text");
 const progress_text = document.getElementById("progress_text");
 const score_text = document.getElementById("score_text");
+const skill_text = document.getElementById("skill_text");
 const progress_fill = document.getElementById("progress_fill");
 
 const question_text = document.getElementById("question_text");
@@ -146,18 +184,28 @@ const restart_btn = document.getElementById("restart_btn");
 const feedback_box = document.getElementById("feedback_box");
 
 const result_card = document.getElementById("result_card");
+const result_title_text = document.getElementById("result_title_text");
 const final_score_text = document.getElementById("final_score_text");
 const final_message_text = document.getElementById("final_message_text");
 const retry_result_btn = document.getElementById("retry_result_btn");
 
 const state = {
   question_bank: [],
+  current_mode: "level",
   current_level: 1,
   current_questions: [],
+  current_question: null,
   current_index: 0,
   selected_option_index: null,
   score: 0,
   answered: false,
+  session_length: 0,
+  skill_score: SMART_INITIAL_SKILL,
+  correct_streak: 0,
+  wrong_streak: 0,
+  asked_question_ids: new Set(),
+  smart_draw_reason_key: "smart_reason_balanced",
+  pending_delta: 0,
 };
 
 function set_theme_variables() {
@@ -193,6 +241,30 @@ function shuffle_array(array) {
     [copied[i], copied[j]] = [copied[j], copied[i]];
   }
   return copied;
+}
+
+function random_pick(array) {
+  if (!array.length) return null;
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function clamp_number(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function weighted_pick(weight_map) {
+  const entries = Object.entries(weight_map);
+  const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
+  let threshold = Math.random() * total;
+
+  for (const [key, weight] of entries) {
+    threshold -= weight;
+    if (threshold <= 0) {
+      return Number(key);
+    }
+  }
+
+  return Number(entries[entries.length - 1][0]);
 }
 
 async function load_question_bank() {
@@ -238,42 +310,170 @@ function build_level_questions(level) {
   );
 }
 
-function reset_level_state(level) {
-  state.current_level = level;
-  state.current_questions = build_level_questions(level);
+function reset_common_state() {
+  state.current_questions = [];
+  state.current_question = null;
   state.current_index = 0;
   state.selected_option_index = null;
   state.score = 0;
   state.answered = false;
+  state.pending_delta = 0;
+  state.correct_streak = 0;
+  state.wrong_streak = 0;
+  state.asked_question_ids = new Set();
+  state.smart_draw_reason_key = "smart_reason_balanced";
+}
+
+function update_active_entry(activeMatcher) {
+  level_buttons.forEach((button) => {
+    const is_active = activeMatcher(button);
+    button.classList.toggle("active_level", is_active);
+  });
 }
 
 function set_level(level) {
-  reset_level_state(level);
+  reset_common_state();
+  state.current_mode = "level";
+  state.current_level = level;
+  state.current_questions = build_level_questions(level);
+  state.session_length = state.current_questions.length;
+  state.current_question = state.current_questions[0] || null;
+  state.skill_score = SMART_INITIAL_SKILL;
 
-  level_buttons.forEach((button) => {
-    button.classList.toggle(
-      "active_level",
-      Number(button.dataset.level) === level,
-    );
-  });
-
-  result_card.classList.add("hidden");
-  feedback_box.className = "feedback_box";
-  feedback_box.textContent = "";
-
+  update_active_entry((button) => Number(button.dataset.level) === level);
+  hide_result_and_feedback();
   update_meta();
   render_question();
   render_feedback();
 }
 
+function hide_result_and_feedback() {
+  result_card.classList.add("hidden");
+  feedback_box.className = "feedback_box";
+  feedback_box.textContent = "";
+}
+
 function get_current_question() {
+  if (state.current_mode === "smart") {
+    return state.current_question;
+  }
   return state.current_questions[state.current_index] || null;
 }
 
+function get_smart_base_level() {
+  if (state.skill_score < 35) return 1;
+  if (state.skill_score < 75) return 2;
+  return 3;
+}
+
+function get_smart_target_level() {
+  const base_level = get_smart_base_level();
+
+  if (state.correct_streak >= 3) {
+    state.smart_draw_reason_key = "smart_reason_challenge";
+    return Math.min(3, base_level + 1);
+  }
+
+  if (state.wrong_streak >= 2) {
+    state.smart_draw_reason_key = "smart_reason_recover";
+    return Math.max(1, base_level - 1);
+  }
+
+  let weights;
+  if (state.skill_score < 35) {
+    weights = { 1: 0.65, 2: 0.25, 3: 0.1 };
+  } else if (state.skill_score < 60) {
+    weights = { 1: 0.25, 2: 0.55, 3: 0.2 };
+  } else if (state.skill_score < 80) {
+    weights = { 1: 0.15, 2: 0.45, 3: 0.4 };
+  } else {
+    weights = { 1: 0.1, 2: 0.3, 3: 0.6 };
+  }
+
+  const picked_level = weighted_pick(weights);
+
+  if (picked_level > base_level) {
+    state.smart_draw_reason_key = "smart_reason_raise";
+  } else if (picked_level < base_level) {
+    state.smart_draw_reason_key = "smart_reason_support";
+  } else {
+    state.smart_draw_reason_key = "smart_reason_balanced";
+  }
+
+  return picked_level;
+}
+
+function get_available_questions_by_level(level) {
+  const unseen_pool = state.question_bank.filter(
+    (item) => item.level === level && !state.asked_question_ids.has(item.id),
+  );
+
+  if (unseen_pool.length) {
+    return unseen_pool;
+  }
+
+  return state.question_bank.filter((item) => item.level === level);
+}
+
+function draw_smart_question() {
+  let target_level = get_smart_target_level();
+  let pool = get_available_questions_by_level(target_level);
+
+  if (!pool.length) {
+    const fallback_pool = state.question_bank.filter(
+      (item) => !state.asked_question_ids.has(item.id),
+    );
+    pool = fallback_pool.length ? fallback_pool : state.question_bank;
+    if (pool.length) {
+      target_level = pool[0].level;
+    }
+  }
+
+  const picked_question = random_pick(pool);
+  if (!picked_question) {
+    return null;
+  }
+
+  state.asked_question_ids.add(picked_question.id);
+  return picked_question;
+}
+
+function start_smart_mode() {
+  reset_common_state();
+  state.current_mode = "smart";
+  state.current_level = 2;
+  state.skill_score = SMART_INITIAL_SKILL;
+  state.session_length = Math.min(SMART_SESSION_LENGTH, state.question_bank.length);
+  state.current_question = draw_smart_question();
+  state.current_questions = state.current_question ? [state.current_question] : [];
+
+  update_active_entry((button) => button.dataset.mode === "smart");
+  hide_result_and_feedback();
+  update_meta();
+  render_question();
+  render_feedback();
+}
+
 function update_meta() {
-  const total = state.current_questions.length;
-  current_level_text.textContent = `${get_text("level_label")} ${state.current_level}`;
-  score_text.textContent = `${get_text("score_prefix")}: ${state.score}`;
+  const total =
+    state.current_mode === "smart"
+      ? state.session_length
+      : state.current_questions.length;
+  const question = get_current_question();
+
+  if (state.current_mode === "smart") {
+    current_level_text.textContent = `${get_text("smart_mode_title")} · Level ${question ? question.level : 2}`;
+    question_title_text.textContent = get_text("question_title");
+    score_text.textContent = `${get_text("score_prefix")}: ${state.score}`;
+    skill_text.classList.remove("hidden");
+    skill_text.textContent = `${get_text("skill_prefix")}: ${state.skill_score}`;
+  } else {
+    current_level_text.textContent = `${get_text("level_label")} ${state.current_level}`;
+    question_title_text.textContent = get_text("question_title");
+    score_text.textContent = `${get_text("score_prefix")}: ${state.score}`;
+    skill_text.classList.add("hidden");
+    skill_text.textContent = `${get_text("skill_prefix")}: ${SMART_INITIAL_SKILL}`;
+  }
 
   if (total === 0) {
     progress_text.textContent = "0 / 0";
@@ -365,6 +565,28 @@ function paint_answer_result() {
   });
 }
 
+function get_next_trend_text() {
+  if (state.current_mode !== "smart") return "";
+
+  if (state.correct_streak >= 3) {
+    return get_text("smart_reason_challenge");
+  }
+
+  if (state.wrong_streak >= 2) {
+    return get_text("smart_reason_recover");
+  }
+
+  if (state.skill_score < 35) {
+    return get_text("smart_reason_support");
+  }
+
+  if (state.skill_score >= 75) {
+    return get_text("smart_reason_raise");
+  }
+
+  return get_text("smart_reason_balanced");
+}
+
 function render_feedback() {
   const question = get_current_question();
 
@@ -380,11 +602,37 @@ function render_feedback() {
   }
 
   const is_correct = state.selected_option_index === question.answer;
+  let extra_feedback = "";
+
+  if (state.current_mode === "smart") {
+    const delta_prefix = state.pending_delta > 0 ? "+" : "";
+    extra_feedback = `
+      <br>${get_text("smart_delta_label")}: ${delta_prefix}${state.pending_delta}
+      <br>${get_text("skill_prefix")}: ${state.skill_score}
+      <br>${get_text("smart_next_label")}: ${get_next_trend_text()}
+    `;
+  }
+
   feedback_box.className = `feedback_box ${is_correct ? "correct_text" : "wrong_text"}`;
   feedback_box.innerHTML = `
     <strong>${is_correct ? get_text("feedback_correct") : get_text("feedback_wrong")}</strong><br>
     ${get_text("explanation_label")}: ${question[get_locale()].explanation}
+    ${extra_feedback}
   `;
+}
+
+function apply_smart_score(questionLevel, is_correct) {
+  const rules = SMART_SCORE_RULES[questionLevel] || SMART_SCORE_RULES[2];
+  state.pending_delta = is_correct ? rules.correct : rules.wrong;
+  state.skill_score = clamp_number(state.skill_score + state.pending_delta, 0, 100);
+
+  if (is_correct) {
+    state.correct_streak += 1;
+    state.wrong_streak = 0;
+  } else {
+    state.wrong_streak += 1;
+    state.correct_streak = 0;
+  }
 }
 
 function submit_answer() {
@@ -398,8 +646,14 @@ function submit_answer() {
   }
 
   state.answered = true;
+  const is_correct = state.selected_option_index === question.answer;
 
-  if (state.selected_option_index === question.answer) {
+  if (state.current_mode === "smart") {
+    if (is_correct) {
+      state.score += 1;
+    }
+    apply_smart_score(question.level, is_correct);
+  } else if (is_correct) {
     state.score += 1;
   }
 
@@ -410,17 +664,31 @@ function submit_answer() {
 }
 
 function show_result() {
-  const total = state.current_questions.length || 1;
-  const percent = state.score / total;
+  if (state.current_mode === "smart") {
+    result_title_text.textContent = get_text("smart_mode_result_title");
+    final_score_text.textContent = `${get_text("score_prefix")}: ${state.score} / ${state.session_length} · ${get_text("skill_prefix")}: ${state.skill_score}`;
 
-  final_score_text.textContent = `${state.score} / ${total}`;
-
-  if (percent === 1) {
-    final_message_text.textContent = get_text("final_great");
-  } else if (percent >= 0.6) {
-    final_message_text.textContent = get_text("final_good");
+    if (state.skill_score >= 80) {
+      final_message_text.textContent = get_text("smart_final_high");
+    } else if (state.skill_score >= 55) {
+      final_message_text.textContent = get_text("smart_final_mid");
+    } else {
+      final_message_text.textContent = get_text("smart_final_low");
+    }
   } else {
-    final_message_text.textContent = get_text("final_retry");
+    const total = state.current_questions.length || 1;
+    const percent = state.score / total;
+
+    result_title_text.textContent = get_text("result_title");
+    final_score_text.textContent = `${state.score} / ${total}`;
+
+    if (percent === 1) {
+      final_message_text.textContent = get_text("final_great");
+    } else if (percent >= 0.6) {
+      final_message_text.textContent = get_text("final_good");
+    } else {
+      final_message_text.textContent = get_text("final_retry");
+    }
   }
 
   result_card.classList.remove("hidden");
@@ -435,12 +703,28 @@ function render_result_text() {
 function next_question() {
   if (!state.answered) return;
 
-  if (state.current_index < state.current_questions.length - 1) {
+  const total =
+    state.current_mode === "smart"
+      ? state.session_length
+      : state.current_questions.length;
+
+  if (state.current_index < total - 1) {
     state.current_index += 1;
     state.selected_option_index = null;
     state.answered = false;
+    state.pending_delta = 0;
     feedback_box.className = "feedback_box";
     feedback_box.textContent = "";
+
+    if (state.current_mode === "smart") {
+      state.current_question = draw_smart_question();
+      if (state.current_question) {
+        state.current_questions.push(state.current_question);
+      }
+    } else {
+      state.current_question = state.current_questions[state.current_index] || null;
+    }
+
     render_question();
     update_meta();
     update_action_buttons();
@@ -449,8 +733,12 @@ function next_question() {
   }
 }
 
-function restart_level() {
-  set_level(state.current_level);
+function restart_current_mode() {
+  if (state.current_mode === "smart") {
+    start_smart_mode();
+  } else {
+    set_level(state.current_level);
+  }
 }
 
 async function initialise_quiz() {
@@ -477,10 +765,6 @@ async function initialise_quiz() {
     feedback_box.className = "feedback_box wrong_text";
     feedback_box.textContent = error_message;
     update_action_buttons();
-    options_wrap.innerHTML = "";
-    feedback_box.className = "feedback_box wrong_text";
-    feedback_box.textContent = get_text("load_error");
-    update_action_buttons();
   }
 }
 
@@ -496,13 +780,21 @@ mode_toggle_btn.addEventListener("click", () => {
 
 level_buttons.forEach((button) => {
   button.addEventListener("click", () => {
-    set_level(Number(button.dataset.level));
+    if (button.dataset.mode === "smart") {
+      start_smart_mode();
+      return;
+    }
+
+    const target_level = Number(button.dataset.level);
+    if (target_level) {
+      set_level(target_level);
+    }
   });
 });
 
 submit_btn.addEventListener("click", submit_answer);
 next_btn.addEventListener("click", next_question);
-restart_btn.addEventListener("click", restart_level);
-retry_result_btn.addEventListener("click", restart_level);
+restart_btn.addEventListener("click", restart_current_mode);
+retry_result_btn.addEventListener("click", restart_current_mode);
 
 initialise_quiz();

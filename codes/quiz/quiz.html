@@ -25,7 +25,6 @@
   </header>
 
   <main class="quiz_shell">
-
     <section class="hero_card">
       <div class="hero_copy">
         <p class="hero_kicker" data-i18n="quiz_kicker">Level-based Quiz</p>
@@ -40,7 +39,7 @@
       <section class="level_card">
         <div class="section_head">
           <h2 data-i18n="level_title">选择难度</h2>
-          <p data-i18n="level_desc">先选一个 level，然后开始答题。</p>
+          <p data-i18n="level_desc">先选一个 level，然后开始答题；或直接进入智能闯关。</p>
         </div>
 
         <div class="level_grid">
@@ -58,52 +57,59 @@
             <span class="level_name" data-i18n="level_3">Level 3 · 挑战</span>
             <span class="level_hint" data-i18n="level_3_hint">综合应用 / 推理题</span>
           </button>
+
+          <button class="level_btn smart_entry" data-mode="smart" type="button">
+            <span class="level_badge" data-i18n="smart_badge">推荐</span>
+            <span class="level_name" data-i18n="smart_mode">智能闯关</span>
+            <span class="level_hint" data-i18n="smart_mode_hint">按你的实时表现自动调节题目难度</span>
+          </button>
         </div>
       </section>
 
       <section class="quiz_card">
-      <div class="quiz_topbar">
-        <div>
-          <p class="meta_text" id="current_level_text">Level 1</p>
-          <h2 data-i18n="question_title">题目</h2>
-        </div>
-        <div class="quiz_meta">
-          <span id="progress_text">0 / 0</span>
-          <span id="score_text">Score: 0</span>
-        </div>
-      </div>
-
-      <div class="progress_track" aria-hidden="true">
-        <div id="progress_fill" class="progress_fill"></div>
-      </div>
-
-      <div class="question_panel">
-        <p id="question_text" class="question_text" data-i18n="loading_questions">
-          正在加载题库...
-        </p>
-
-        <div id="options_wrap" class="options_wrap"></div>
-
-        <div class="action_row">
-          <button id="submit_btn" class="primary_btn" type="button" data-i18n="submit_answer">
-            提交答案
-          </button>
-          <button id="next_btn" class="secondary_btn" type="button" data-i18n="next_question">
-            下一题
-          </button>
-          <button id="restart_btn" class="secondary_btn" type="button" data-i18n="restart_level">
-            重做本关
-          </button>
+        <div class="quiz_topbar">
+          <div>
+            <p class="meta_text" id="current_level_text">Level 1</p>
+            <h2 id="question_title_text" data-i18n="question_title">题目</h2>
+          </div>
+          <div class="quiz_meta">
+            <span id="progress_text">0 / 0</span>
+            <span id="score_text">Score: 0</span>
+            <span id="skill_text" class="hidden">Skill: 50</span>
+          </div>
         </div>
 
-        <div id="feedback_box" class="feedback_box" aria-live="polite"></div>
-      </div>
+        <div class="progress_track" aria-hidden="true">
+          <div id="progress_fill" class="progress_fill"></div>
+        </div>
+
+        <div class="question_panel">
+          <p id="question_text" class="question_text" data-i18n="loading_questions">
+            正在加载题库...
+          </p>
+
+          <div id="options_wrap" class="options_wrap"></div>
+
+          <div class="action_row">
+            <button id="submit_btn" class="primary_btn" type="button" data-i18n="submit_answer">
+              提交答案
+            </button>
+            <button id="next_btn" class="secondary_btn" type="button" data-i18n="next_question">
+              下一题
+            </button>
+            <button id="restart_btn" class="secondary_btn" type="button" data-i18n="restart_level">
+              重做本关
+            </button>
+          </div>
+
+          <div id="feedback_box" class="feedback_box" aria-live="polite"></div>
+        </div>
       </section>
     </section>
 
     <section id="result_card" class="result_card hidden">
       <p class="hero_kicker" data-i18n="result_kicker">Result</p>
-      <h2 data-i18n="result_title">本关完成</h2>
+      <h2 id="result_title_text" data-i18n="result_title">本关完成</h2>
       <p id="final_score_text" class="final_score_text">0 / 0</p>
       <p id="final_message_text" class="final_message_text"></p>
       <div class="action_row center_actions">
