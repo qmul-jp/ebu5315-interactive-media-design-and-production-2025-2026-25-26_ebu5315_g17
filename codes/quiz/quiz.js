@@ -81,7 +81,7 @@ const i18n_text = {
     smart_progress_label: "闯关进度",
     question_title: "题目",
     loading_questions: "正在加载题库...",
-    load_error: "题库加载失败，请检查 quiz.json 路径。",
+    load_error: "题库加载失败，请检查 quiz-data.js 是否已正确引入。",
     no_questions: "这一关暂时没有题目。",
     submit_answer: "提交答案",
     next_question: "下一题",
@@ -133,7 +133,7 @@ const i18n_text = {
     smart_progress_label: "Progress",
     question_title: "Question",
     loading_questions: "Loading question bank...",
-    load_error: "Failed to load question bank. Please check quiz.json path.",
+    load_error: "Failed to load question bank. Please check whether quiz-data.js is loaded correctly.",
     no_questions: "There are no questions in this level yet.",
     submit_answer: "Submit Answer",
     next_question: "Next Question",
@@ -268,11 +268,11 @@ function weighted_pick(weight_map) {
 }
 
 async function load_question_bank() {
-  const response = await fetch("./quiz.json");
-  if (!response.ok) {
-    throw new Error("Failed to load quiz.json");
+  if (Array.isArray(window.quiz_question_bank)) {
+    return window.quiz_question_bank;
   }
-  return response.json();
+
+  throw new Error("Question bank not found. Please check quiz-data.js");
 }
 
 function apply_language() {
@@ -755,10 +755,7 @@ async function initialise_quiz() {
     apply_language();
   } catch (error) {
     console.error(error);
-    const is_file_protocol = window.location.protocol === "file:";
-    const error_message = is_file_protocol
-      ? "题库加载失败：你现在是直接打开本地文件。请使用 Live Server 运行。"
-      : get_text("load_error");
+    const error_message = get_text("load_error");
 
     question_text.textContent = error_message;
     options_wrap.innerHTML = "";
