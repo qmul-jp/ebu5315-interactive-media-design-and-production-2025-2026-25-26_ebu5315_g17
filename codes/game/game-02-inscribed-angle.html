@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>02-同弧圆周角定理 | CircleLab</title>
     <style>
         * {
@@ -387,12 +387,33 @@
             font-weight: 600; 
         }
 
+        /* 弧切换按钮样式 */
+        .arc-toggle-btn {
+            margin-left: 6px;
+            padding: 2px 6px;
+            background: var(--sub_color);
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .arc-toggle-btn:hover {
+            background: var(--theme_color);
+        }
+
         .canvas-tip {
             margin-top: 12px;
             font-size: 15px;
             color: var(--text_secondary);
             line-height: 1.4;
         }
+
+        /* 语言切换核心规则：同一时间只显示一种语言 */
+        .zh, .en { display: none; }
+        :lang(zh-CN) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
 
         /* 夜间模式兼容原有卡片 */
         body.dark-mode .card-def {
@@ -484,280 +505,388 @@
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
-                <h1 data-zh="02 - 同弧圆周角定理" data-en="02 - Inscribed Angle Theorem"></h1>
+                <h1>
+                    <span class="zh">02 - 同弧圆周角定理</span>
+                    <span class="en">02 - Inscribed Angle Theorem</span>
+                </h1>
             </div>
 
             <div class="content">
                 <div class="card card-def">
-                    <h3 data-zh="📘 基本定义" data-en="📘 Definition"></h3>
-                    <p data-zh="顶点在圆上，两边与圆相交的角，叫做圆周角。" data-en="An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle."></p>
+                    <h3>
+                        <span class="zh">📘 基本定义</span>
+                        <span class="en">📘 Definition</span>
+                    </h3>
+                    <p class="zh">顶点在圆上，两边与圆相交的角，叫做圆周角。</p>
+                    <p class="en">An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle.</p>
                 </div>
 
                 <div class="card card-theorem">
-                    <h3 data-zh="📐 定理内容" data-en="📐 Theorem"></h3>
-                    <p data-zh="在同圆或等圆中：" data-en="In the same or congruent circles:"></p>
+                    <h3>
+                        <span class="zh">📐 定理内容</span>
+                        <span class="en">📐 Theorem</span>
+                    </h3>
+                    <p class="zh">在同圆或等圆中：</p>
+                    <p class="en">In the same or congruent circles:</p>
                     <ul>
-                        <li data-zh="同弧所对的圆周角相等" data-en="Inscribed angles subtended by the same arc are equal"></li>
-                        <li data-zh="圆周角 = 所对弧的圆心角的一半" data-en="An inscribed angle is half its central angle"></li>
+                        <li class="zh">同弧所对的圆周角相等</li>
+                        <li class="en">Inscribed angles subtended by the same arc are equal</li>
+                        <li class="zh">圆周角 = 所对弧的圆心角的一半</li>
+                        <li class="en">An inscribed angle is half its central angle</li>
                     </ul>
                 </div>
 
                 <div class="card card-corollary">
-                    <h3 data-zh="📌 重要推论" data-en="📌 Corollary"></h3>
-                    <p data-zh="半圆所对的圆周角是直角；直径所对的圆周角等于 90°。" data-en="An angle inscribed in a semicircle is a right angle (90°)."></p>
+                    <h3>
+                        <span class="zh">📌 重要推论</span>
+                        <span class="en">📌 Corollary</span>
+                    </h3>
+                    <p class="zh">半圆所对的圆周角是直角；直径所对的圆周角等于 90°。</p>
+                    <p class="en">An angle inscribed in a semicircle is a right angle (90°).</p>
                 </div>
 
                 <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="canvas" width="540" height="440"></canvas>
-                        <button class="reset-btn" id="resetBtn" data-zh="重置" data-en="Reset"></button>
+                        <button class="reset-btn" id="resetBtn">
+                            <span class="zh">重置</span>
+                            <span class="en">Reset</span>
+                        </button>
                         <div class="data-panel">
                             <div class="blue">
-                                <span data-zh="∠ACB (圆周角)：" data-en="∠ACB (Inscribed Angle)："></span>
+                                <span class="zh">∠ACB (圆周角)：</span>
+                                <span class="en">∠ACB (Inscribed Angle)：</span>
                                 <span id="ang1">0°</span>
                             </div>
                             <div class="blue">
-                                <span data-zh="弧 AB：" data-en="Arc AB："></span>
+                                <span id="arcLabelZh" class="zh">劣弧AB</span>
+                                <span id="arcLabelEn" class="en">Minor AB</span>：
                                 <span id="arc1">0</span>
                             </div>
+                            <br>
+                            <button class="arc-toggle-btn" id="arcToggleBtn">
+                                <span class="zh">切换为优弧</span>
+                                <span class="en">Switch to Major</span>
+                            </button>
                         </div>
                     </div>
-                    <p class="canvas-tip" data-zh="🔹 拖动圆上的点 A、B、C，观察同弧圆周角关系" data-en="🔹 Drag points A, B, C on the circle to observe inscribed angle relationships"></p>
+                    <p class="canvas-tip">
+                        <span class="zh">🔹 拖动圆上的点 A、B、C，观察同弧圆周角关系；当 ∠ACB = 90° 时出现垂直符号</span>
+                        <span class="en">🔹 Drag points A, B, C on the circle; right-angle symbol appears when ∠ACB = 90°</span>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ====================== 统一语言/主题/导航逻辑 ======================
-        let isChinese = true;
-        const langBtn = document.getElementById('langToggleBtn');
-        const themeBtn = document.getElementById('themeToggleBtn');
-        
-        // 初始化直接渲染中文（核心修复）
-        function initLang() {
-            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
-            i18nElements.forEach(el => {
-                el.textContent = el.dataset.zh;
+        (function(){
+            "use strict";
+
+            // ====================== 统一语言/主题/导航逻辑 ======================
+            let isChinese = true;
+            const langBtn = document.getElementById('langToggleBtn');
+            const themeBtn = document.getElementById('themeToggleBtn');
+            
+            // 弧显示模式：true=劣弧(默认)，false=优弧
+            let showMinorArc = true;
+
+            // 初始化语言
+            function initLang() {
+                document.documentElement.lang = 'zh-CN';
+                isChinese = true;
+                langBtn.textContent = "English";
+                updateThemeBtnText();
+                updateArcLabels();
+                updateArcBtnText();
+            }
+
+            // 语言切换
+            function toggleLang() {
+                isChinese = !isChinese;
+                document.documentElement.lang = isChinese ? 'zh-CN' : 'en';
+                langBtn.textContent = isChinese ? "English" : "中文";
+                updateThemeBtnText();
+                updateArcLabels();
+                updateArcBtnText();
+            }
+
+            // 主题切换
+            function toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+                updateThemeBtnText();
+                draw();
+            }
+
+            // 更新主题按钮文字
+            function updateThemeBtnText() {
+                const isDark = document.body.classList.contains('dark-mode');
+                themeBtn.textContent = isChinese 
+                    ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                    : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+            }
+
+            // 更新弧标签（完美适配中英文）
+            function updateArcLabels() {
+                document.getElementById('arcLabelZh').textContent = showMinorArc ? '劣弧AB' : '优弧AB';
+                document.getElementById('arcLabelEn').textContent = showMinorArc ? 'Minor AB' : 'Major AB';
+            }
+
+            // 更新弧切换按钮文字
+            function updateArcBtnText() {
+                const btn = document.getElementById('arcToggleBtn');
+                const zhText = showMinorArc ? '切换为优弧' : '切换为劣弧';
+                const enText = showMinorArc ? 'Switch to Major' : 'Switch to Minor';
+                
+                btn.querySelector('.zh').textContent = zhText;
+                btn.querySelector('.en').textContent = enText;
+            }
+
+            // 绑定事件
+            langBtn.addEventListener('click', toggleLang);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            // 弧切换按钮事件
+            document.getElementById('arcToggleBtn').addEventListener('click', () => {
+                showMinorArc = !showMinorArc;
+                updateArcLabels();
+                updateArcBtnText();
+                draw();
             });
-            langBtn.textContent = "English";
-            updateThemeBtnText();
-        }
 
-        // 语言切换
-        function toggleLang() {
-            isChinese = !isChinese;
-            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
-            i18nElements.forEach(el => {
-                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
-            });
-            langBtn.textContent = isChinese ? "English" : "中文";
-            updateThemeBtnText();
-        }
+            // 页面加载初始化
+            window.addEventListener('DOMContentLoaded', initLang);
 
-        // 主题切换
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            updateThemeBtnText();
-            draw(); // 重绘画布适配主题
-        }
+            // ====================== 画布交互逻辑 ======================
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const resetBtn = document.getElementById('resetBtn');
 
-        // 更新主题按钮文字
-        function updateThemeBtnText() {
-            const isDark = document.body.classList.contains('dark-mode');
-            themeBtn.textContent = isChinese 
-                ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-                : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-        }
+            const cx = 270, cy = 220;
+            const radius = 160;
+            const diamRightAngle = 0;
+            const diamLeftAngle = Math.PI;
+            const snapDistance = 8;
 
-        // 绑定事件
-        langBtn.addEventListener('click', toggleLang);
-        themeBtn.addEventListener('click', toggleTheme);
-
-        // 页面加载后初始化中文
-        window.addEventListener('DOMContentLoaded', initLang);
-
-        // ====================== 原有画布交互逻辑 ======================
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const resetBtn = document.getElementById('resetBtn');
-
-        const cx = 270, cy = 220;
-        const radius = 160;
-        const diamRightAngle = 0;
-        const diamLeftAngle = Math.PI;
-        const snapDistance = 8;
-
-        const initialPoints = {
-            A: { angle: Math.PI / 3 },
-            B: { angle: 2 * Math.PI / 3 },
-            C: { angle: 3 * Math.PI / 2 }
-        };
-
-        let points = JSON.parse(JSON.stringify(initialPoints));
-        let dragging = null;
-        let hoverPoint = null;
-
-        function getPosition(angle) {
-            return {
-                x: cx + radius * Math.cos(angle),
-                y: cy + radius * Math.sin(angle)
-            };
-        }
-
-        function snapAngle(angle) {
-            const dRight = Math.abs(angle - diamRightAngle);
-            const dLeft = Math.abs(angle - diamLeftAngle);
-            const snapRad = snapDistance / radius;
-            if (dRight < snapRad) return diamRightAngle;
-            if (dLeft < snapRad) return diamLeftAngle;
-            return angle;
-        }
-
-        function drawRightAngleMark(C, A, B) {
-            const L = 14;
-            const dx1 = A.x - C.x;
-            const dy1 = A.y - C.y;
-            const dx2 = B.x - C.x;
-            const dy2 = B.y - C.y;
-            const len1 = Math.hypot(dx1, dy1);
-            const len2 = Math.hypot(dx2, dy2);
-
-            const p1 = { x: C.x + dx1 / len1 * L, y: C.y + dy1 / len1 * L };
-            const p2 = { x: C.x + dx2 / len2 * L, y: C.y + dy2 / len2 * L };
-
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(C.x, C.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = document.body.classList.contains('dark-mode') ? '#e5e7eb' : '#222';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            const isDark = document.body.classList.contains('dark-mode');
-            const strokeColor = isDark ? '#e5e7eb' : '#333';
-            const fillColor = isDark ? '#e5e7eb' : '#000';
-
-            // 绘制圆
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // 绘制直径虚线
-            ctx.save();
-            ctx.setLineDash([5, 3]);
-            ctx.strokeStyle = isDark ? '#94a3b8' : '#999';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(cx - radius, cy);
-            ctx.lineTo(cx + radius, cy);
-            ctx.stroke();
-            ctx.restore();
-
-            // 圆心
-            ctx.beginPath();
-            ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-            ctx.font = '16px Arial';
-            ctx.fillText('O', cx, cy - 18);
-
-            // 获取点坐标
-            const pos = {
-                A: getPosition(points.A.angle),
-                B: getPosition(points.B.angle),
-                C: getPosition(points.C.angle)
+            const initialPoints = {
+                A: { angle: Math.PI / 3 },
+                B: { angle: 2 * Math.PI / 3 },
+                C: { angle: 3 * Math.PI / 2 }
             };
 
-            // 绘制弦
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
-            ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+            let points = JSON.parse(JSON.stringify(initialPoints));
+            let dragging = null;
+            let hoverPoint = null;
 
-            // 计算角度
-            let arcAB = Math.abs(points.B.angle - points.A.angle);
-            if (arcAB > Math.PI) arcAB = 2 * Math.PI - arcAB;
-            const angleC = arcAB / 2;
-            const degC = Math.round(angleC * 180 / Math.PI);
+            function getPosition(angle) {
+                return {
+                    x: cx + radius * Math.cos(angle),
+                    y: cy + radius * Math.sin(angle)
+                };
+            }
 
-            // 直角标记
-            if (degC === 90) drawRightAngleMark(pos.C, pos.A, pos.B);
+            function snapAngle(angle) {
+                const dRight = Math.abs(angle - diamRightAngle);
+                const dLeft = Math.abs(angle - diamLeftAngle);
+                const snapRad = snapDistance / radius;
+                if (dRight < snapRad) return diamRightAngle;
+                if (dLeft < snapRad) return diamLeftAngle;
+                return angle;
+            }
 
-            // 绘制点
-            for (const k in pos) {
+            // 绘制直角符号 (仅当角度≈90°时调用，与game-03逻辑一致)
+            function drawRightAngleSymbol(C, A, B) {
+                const size = 16;
+                const u = { x: A.x - C.x, y: A.y - C.y };
+                const v = { x: B.x - C.x, y: B.y - C.y };
+                const lenU = Math.hypot(u.x, u.y);
+                const lenV = Math.hypot(v.x, v.y);
+                if (lenU < 0.001 || lenV < 0.001) return;
+                
+                const ux = u.x / lenU;
+                const uy = u.y / lenU;
+                const vx = v.x / lenV;
+                const vy = v.y / lenV;
+                
+                const p1 = { x: C.x + ux * size, y: C.y + uy * size };
+                const p2 = { x: C.x + vx * size, y: C.y + vy * size };
+                const p1v = { x: p1.x + vx * size, y: p1.y + vy * size };
+                const p2u = { x: p2.x + ux * size, y: p2.y + uy * size };
+                
                 ctx.beginPath();
-                ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p1v.x, p1v.y);
+                ctx.lineTo(p2u.x, p2u.y);
+                ctx.lineTo(p2.x, p2.y);
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+                ctx.lineWidth = 2.0;
+                ctx.stroke();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const isDark = document.body.classList.contains('dark-mode');
+                const strokeColor = isDark ? '#e5e7eb' : '#333';
+                const fillColor = isDark ? '#e5e7eb' : '#000';
+                const dashColor = isDark ? '#94a3b8' : '#999';
+
+                // 绘制圆
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // 绘制直径虚线
+                ctx.save();
+                ctx.setLineDash([5, 3]);
+                ctx.strokeStyle = dashColor;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(cx - radius, cy);
+                ctx.lineTo(cx + radius, cy);
+                ctx.stroke();
+                ctx.restore();
+
+                // 圆心
+                ctx.beginPath();
+                ctx.arc(cx, cy, 5, 0, Math.PI * 2);
                 ctx.fillStyle = fillColor;
                 ctx.fill();
-                ctx.font = '18px Arial';
-                ctx.fillText(k, pos[k].x, pos[k].y - 18);
+                ctx.font = '16px Arial';
+                ctx.fillText('O', cx, cy - 18);
+
+                // 获取点坐标
+                const pos = {
+                    A: getPosition(points.A.angle),
+                    B: getPosition(points.B.angle),
+                    C: getPosition(points.C.angle)
+                };
+
+                // 绘制弦
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+                ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+
+                // 计算角度（劣弧）
+                let minorArcAB = Math.abs(points.B.angle - points.A.angle);
+                if (minorArcAB > Math.PI) minorArcAB = 2 * Math.PI - minorArcAB;
+                // 根据切换模式选择劣弧/优弧
+                const arcAB = showMinorArc ? minorArcAB : 2 * Math.PI - minorArcAB;
+                const angleC = minorArcAB / 2;
+                const degC = Math.round(angleC * 180 / Math.PI);
+
+                // ★ 修改点：当角度接近90°时绘制直角符号（容差0.6°）
+                const isRightAngle = Math.abs(degC - 90) < 0.6;
+                if (isRightAngle) {
+                    drawRightAngleSymbol(pos.C, pos.A, pos.B);
+                }
+
+                // 绘制点
+                for (const k in pos) {
+                    ctx.beginPath();
+                    ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+                    ctx.fillStyle = fillColor;
+                    ctx.fill();
+                    ctx.font = '18px Arial';
+                    ctx.fillText(k, pos[k].x, pos[k].y - 18);
+                }
+
+                // 更新数据
+                document.getElementById('ang1').textContent = degC + '°';
+                document.getElementById('arc1').textContent = arcAB.toFixed(2);
             }
 
-            // 更新数据
-            document.getElementById('ang1').textContent = degC + '°';
-            document.getElementById('arc1').textContent = arcAB.toFixed(2);
-        }
-
-        // 鼠标交互
-        function getMousePos(e) {
-            const r = canvas.getBoundingClientRect();
-            return { x: e.clientX - r.left, y: e.clientY - r.top };
-        }
-
-        function checkHit(mx, my) {
-            for (const k in points) {
-                const p = getPosition(points[k].angle);
-                if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+            // 鼠标交互
+            function getMousePos(e) {
+                const r = canvas.getBoundingClientRect();
+                return { x: e.clientX - r.left, y: e.clientY - r.top };
             }
-            return null;
-        }
 
-        canvas.addEventListener('mousedown', (e) => {
-            const m = getMousePos(e);
-            dragging = checkHit(m.x, m.y);
-            if (dragging) canvas.style.cursor = 'grabbing';
-        });
+            function checkHit(mx, my) {
+                for (const k in points) {
+                    const p = getPosition(points[k].angle);
+                    if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+                }
+                return null;
+            }
 
-        window.addEventListener('mousemove', (e) => {
-            if (!dragging) {
+            canvas.addEventListener('mousedown', (e) => {
                 const m = getMousePos(e);
-                hoverPoint = checkHit(m.x, m.y);
-                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                dragging = checkHit(m.x, m.y);
+                if (dragging) canvas.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) {
+                    const m = getMousePos(e);
+                    hoverPoint = checkHit(m.x, m.y);
+                    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                    draw();
+                    return;
+                }
+                const m = getMousePos(e);
+                const rawAngle = Math.atan2(m.y - cy, m.x - cx);
+                points[dragging].angle = snapAngle(rawAngle);
                 draw();
-                return;
-            }
-            const m = getMousePos(e);
-            const rawAngle = Math.atan2(m.y - cy, m.x - cx);
-            points[dragging].angle = snapAngle(rawAngle);
+            });
+
+            window.addEventListener('mouseup', () => {
+                dragging = null;
+                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                hoverPoint = null;
+                draw();
+            });
+
+            // 重置按钮
+            resetBtn.onclick = () => {
+                points = JSON.parse(JSON.stringify(initialPoints));
+                showMinorArc = true;
+                updateArcLabels();
+                updateArcBtnText();
+                draw();
+            };
+
+            // 触摸屏支持
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+                const m = getMousePos(fakeMouse);
+                dragging = checkHit(m.x, m.y);
+                if (dragging) canvas.style.cursor = 'grabbing';
+            }, { passive: false });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!dragging) return;
+                const touch = e.touches[0];
+                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+                const m = getMousePos(fakeMouse);
+                let angle = Math.atan2(m.y - cy, m.x - cx);
+                points[dragging].angle = snapAngle(angle);
+                draw();
+            }, { passive: false });
+
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                dragging = null;
+                canvas.style.cursor = 'default';
+                draw();
+            });
+
+            // 初始化绘制
             draw();
-        });
-
-        window.addEventListener('mouseup', () => {
-            dragging = null;
-            canvas.style.cursor = hoverPoint ? 'grab' : 'default';
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            hoverPoint = null;
-            draw();
-        });
-
-        resetBtn.onclick = () => {
-            points = JSON.parse(JSON.stringify(initialPoints));
-            draw();
-        };
-
-        // 初始化绘制
-        draw();
+        })();
     </script>
 </body>
 </html>

@@ -1,12 +1,9 @@
-<!-- ====================== HTML 结构部分 ====================== -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>06 - 切线长定理 | 06 - Tangent Length Theorem</title>
-
-    <!-- ====================== CSS 样式部分 ====================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>06 · 切线长定理 | CircleLab</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 - 完全对齐game-03 */
+        /* 核心配色变量 */
         :root {
             --theme_color: #0d3273;
             --sub_color: #4471c2;
@@ -39,12 +36,10 @@
             --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
             --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
 
-            /* 动画通用配置 */
             --animate-duration: 0.4s;
             --animate-ease: ease-out;
         }
 
-        /* 导航栏入场动画 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -61,7 +56,6 @@
             from { opacity: 0; } to { opacity: 1; }
         }
 
-        /* 统一夜间模式 */
         body.dark-mode {
             --text_primary: var(--text_color_night);
             --text_secondary: #dddddd;
@@ -75,7 +69,7 @@
         }
 
         body {
-            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
             background: var(--bg_color);
             min-height: 100vh;
             color: var(--text_color);
@@ -86,7 +80,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* ====================== 顶部导航栏 ====================== */
+        /* 导航栏 */
         .navbar {
             position: sticky;
             top: 0.95rem;
@@ -141,7 +135,7 @@
             border: none;
             cursor: pointer;
             font-weight: 800;
-            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.18s ease, background-color 0.2s ease;
             border-radius: 0px;
         }
 
@@ -150,10 +144,10 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 ====================== */
+        /* 侧边栏 */
         .side_nav {
             position: fixed;
-            left:1rem;
+            left: 1rem;
             top: calc(var(--header_height) + 1rem);
             bottom: 2rem;
             width: var(--rail_width);
@@ -182,7 +176,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .side_nav_icon {
@@ -200,7 +194,6 @@
             stroke-width: 1.9;
             stroke-linecap: round;
             stroke-linejoin: round;
-            vector-effect: non-stroke;
         }
 
         .side_nav_tooltip {
@@ -237,16 +230,14 @@
         .side_nav_link.active {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.42);
-            transform: none;
         }
 
-        .side_nav_link:hover .side_nav_tooltip,
-        .side_nav_link:focus-visible .side_nav_tooltip {
+        .side_nav_link:hover .side_nav_tooltip {
             opacity: 1;
             transform: translate(0, -50%);
         }
 
-        /* ====================== 主内容适配布局 ====================== */
+        /* 主内容 */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -257,9 +248,8 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* 原有页面样式 - 完全保留 */
         .container {
-            max-width: 960px;
+            max-width: 1000px;
             margin: 0 auto;
             background: var(--card_bg);
             border-radius: 12px;
@@ -274,27 +264,23 @@
             color: #fff;
             padding: 20px;
             text-align: center;
-            position: relative;
         }
 
         .header h1 {
             font-size: 24px;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        /* 🔴 优化1：加大内容区内边距，文本不拥挤 */
         .content {
             padding: 32px 24px;
         }
 
-        /* 🔴 优化2：加大卡片间距，提升行高，可读性更好 */
         .card {
             border-radius: 8px;
             padding: 16px 20px;
             margin-bottom: 24px;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
         .card-def {
@@ -305,7 +291,6 @@
             border-left: 4px solid var(--sub_color);
             background: rgba(68, 113, 194, 0.05);
         }
-        /* 🔴 修复语法错误：删除多余的大括号 */
         .card-corollary {
             border-left: 4px solid var(--highlight_color);
             background: rgba(232, 160, 191, 0.05);
@@ -315,36 +300,14 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
         }
 
-        .card p {
+        .card p, .card li {
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 8px;
-            letter-spacing: 0.2px;
         }
 
-        .card ul {
-            padding-left: 20px;
-        }
-
-        .card li {
-            font-size: 15px;
-            color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 6px;
-            letter-spacing: 0.2px;
-        }
-
-        /* 🔴 优化3：画布大幅下移 + 加大内边距，空出文本空间 */
         .canvas-wrapper {
-            position: relative;
-            text-align: center;
             margin-top: 48px;
             padding: 24px;
             background: var(--card_bg);
@@ -356,6 +319,8 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            width: 100%;
+            text-align: center;
         }
 
         canvas {
@@ -364,19 +329,51 @@
             touch-action: none;
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .control-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            gap: 12px;
+        }
+
+        .control-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text_secondary);
+            cursor: pointer;
+        }
+
+        .control-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--sub_color);
+            cursor: pointer;
         }
 
         .reset-btn {
-            position: absolute;
-            left: 10px;
-            bottom: 10px;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: var(--theme_color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             transition: 0.2s;
         }
         .reset-btn:hover {
@@ -385,64 +382,44 @@
 
         .data-panel {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 16px;
+            top: 16px;
             text-align: left;
             font-size: 15px;
-            padding: 8px 10px;
-            background: transparent;
-            border: none;
-            letter-spacing: 0.2px;
+            padding: 14px 18px;
+            background: var(--card_bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow_sm);
+            border: 1px solid var(--border_light);
             color: var(--text_secondary);
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
-        .data-panel .blue { 
-            color: var(--sub_color); 
-            font-weight: 600; 
-        }
+        .data-panel .blue { color: var(--sub_color); font-weight: 600; }
+        .data-panel .green { color: var(--highlight_color); font-weight: 600; }
+        .data-panel hr { margin: 8px 0; border: 0.5px solid var(--border_light); }
 
-        /* 🔴 优化4：加大提示文字与画布的间距 */
         .canvas-tip {
             margin-top: 16px;
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: 1.4;
-            transition: color 0.3s ease;
         }
 
-        .zh, .en { display: none; }
-        :lang(zh-CN) .zh { display: initial; }
-        :lang(en) .en { display: initial; }
-
-        /* 夜间模式兼容卡片 */
-        body.dark-mode .card-def {
-            background: #162349;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-theorem {
-            background: #14293f;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-corollary {
-            background: #2c2442;
-            color: var(--text_color_night);
-        }
+        body.dark-mode .card-def { background: #162349; }
+        body.dark-mode .card-theorem { background: #14293f; }
+        body.dark-mode .card-corollary { background: #2c2442; }
         body.dark-mode .card p, 
         body.dark-mode .card li,
         body.dark-mode .canvas-tip,
-        body.dark-mode .data-panel {
-            color: var(--text_color_night);
-        }
+        body.dark-mode .data-panel { color: var(--text_color_night); }
 
-        /* 响应式适配 */
+        /* 响应式 */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
                 top: calc(var(--header_height) + 0.4rem);
                 min-height: auto;
                 grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
                 padding: 0.35rem;
                 width: 100%;
                 left: 0;
@@ -463,6 +440,7 @@
                 box-shadow: none;
                 padding: 0;
                 font-size: 0.78rem;
+                color: #fff;
             }
             .side_nav_tooltip::before { display: none; }
             .main-wrapper {
@@ -471,11 +449,22 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 700px) {
+            .data-panel {
+                position: static;
+                margin-top: 16px;
+                text-align: center;
+            }
+            .control-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -484,7 +473,6 @@
         </div>
     </nav>
 
-    <!-- 左侧边栏 -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
@@ -500,229 +488,404 @@
         </a>
     </aside>
 
-    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
                 <h1>
-                    <span class="zh">06 - 切线长定理</span>
-                    <span class="en">06 - Tangent Length Theorem</span>
+                    <span data-zh="06 · 切线长定理" data-en="06 · Tangent Length Theorem"></span>
                 </h1>
             </div>
 
             <div class="content">
                 <div class="card card-def">
-                    <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
-                    <p class="zh">从圆外一点向圆作切线，该点与切点之间的线段长度，叫做这点到圆的切线长。</p>
-                    <p class="en">The length of the segment from an external point to the point of tangency is called the tangent length from the point to the circle.</p>
+                    <h3><span data-zh="📘 基本定义" data-en="📘 Definition"></span></h3>
+                    <p data-zh="从圆外一点向圆作切线，该点与切点之间的线段长度，叫做这点到圆的切线长。" 
+                       data-en="The length of the segment from an external point to the point of tangency is called the tangent length."></p>
                 </div>
-
                 <div class="card card-theorem">
-                    <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
-                    <p class="zh"><strong>在任意一个圆中：</strong></p>
-                    <p class="en"><strong>In any circle:</strong></p>
+                    <h3><span data-zh="📐 定理内容" data-en="📐 Theorem"></span></h3>
+                    <p data-zh="<strong>在任意一个圆中：</strong>" data-en="<strong>In any circle:</strong>"></p>
                     <ul>
-                        <li class="zh">从圆外一点引圆的两条切线，它们的切线长相等。</li>
-                        <li class="en">The two tangent segments from a single external point to a circle are equal in length.</li>
+                        <li data-zh="从圆外一点引圆的两条切线，它们的切线长相等。" 
+                            data-en="The two tangent segments from a single external point to a circle are equal in length."></li>
                     </ul>
                 </div>
-
                 <div class="card card-corollary">
-                    <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
-                    <p class="zh">圆心与圆外一点的连线，平分这一点所引的两条切线的夹角，并且垂直平分两条切点的连线。</p>
-                    <p class="en">The line from the center to an external point bisects the angle between the two tangents and is the perpendicular bisector of the chord joining the points of contact.</p>
+                    <h3><span data-zh="📌 重要推论" data-en="📌 Corollary"></span></h3>
+                    <p data-zh="圆心与圆外一点的连线，平分这一点所引的两条切线的夹角，并且垂直平分两条切点的连线。" 
+                       data-en="The line from the center to an external point bisects the angle between the two tangents and is the perpendicular bisector of the chord joining the points of contact."></p>
                 </div>
 
                 <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="geometryCanvas" width="880" height="400"></canvas>
-                        <button class="reset-btn" id="resetBtn">
-                            <span class="zh">重置</span>
-                            <span class="en">Reset</span>
-                        </button>
+                        
                         <div class="data-panel">
-                            <div class="blue">PA = PB = <span id="val">0.000</span></div>
+                            <div class="blue"><span data-zh="PA = PB = " data-en="PA = PB = "></span><span id="tangentLength">0.000</span></div>
+                            <div><span data-zh="OP = " data-en="OP = "></span><span id="opLength">0.000</span></div>
+                            <hr>
+                            <div class="green"><span data-zh="∠APB = " data-en="∠APB = "></span><span id="angleAPB">0.0</span>°</div>
+                            <div class="green"><span data-zh="∠AOB = " data-en="∠AOB = "></span><span id="angleAOB">0.0</span>°</div>
+                        </div>
+
+                        <div class="control-bar">
+                            <div class="control-left">
+                                <label class="control-check">
+                                    <input type="checkbox" id="showRightAngleCheck" checked> 
+                                    <span data-zh="显示直角标记" data-en="Show right angle"></span>
+                                </label>
+                                <label class="control-check">
+                                    <input type="checkbox" id="showChordCheck"> 
+                                    <span data-zh="显示弦 AB" data-en="Show chord AB"></span>
+                                </label>
+                            </div>
+                            <button class="reset-btn" id="resetBtn">
+                                <span data-zh="↻ 重置图形" data-en="↻ Reset"></span>
+                            </button>
                         </div>
                     </div>
-                    <p class="canvas-tip">
-                        <span class="zh">🔹 拖动点 P 来观察切线长的变化</span>
-                        <span class="en">🔹 Drag point P to observe the change of tangent length</span>
-                    </p>
+                    <p class="canvas-tip" data-zh="🔹 拖动点 P 观察切线长、角度变化 · 直角标记和弦 AB 可开关" 
+                       data-en="🔹 Drag point P · Toggle right angle marks and chord AB"></p>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- ====================== JavaScript 逻辑部分 ====================== -->
 <script>
-    // 全局统一配置
-    const canvas = document.getElementById('geometryCanvas');
-    const ctx = canvas.getContext('2d');
-    const resetBtn = document.getElementById('resetBtn');
-    const val = document.getElementById('val');
-    const langBtn = document.getElementById('langToggleBtn');
-    const themeBtn = document.getElementById('themeToggleBtn');
-    let isChinese = true;
+    (function(){
+        "use strict";
 
-    // 几何绘图核心参数
-    const scale = 110;
-    const O = { x: 440, y: 200 };
-    const r = 1;
-    const rDraw = r * scale;
-    let P = { x: O.x + 2.5 * scale, y: O.y };
-    let isDragging = false;
+        // ---------- DOM 元素 ----------
+        const canvas = document.getElementById('geometryCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+        const langBtn = document.getElementById('langToggleBtn');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        
+        const tangentSpan = document.getElementById('tangentLength');
+        const opSpan = document.getElementById('opLength');
+        const angleAPBSpan = document.getElementById('angleAPB');
+        const angleAOBSpan = document.getElementById('angleAOB');
+        
+        const showRightAngleCheck = document.getElementById('showRightAngleCheck');
+        const showChordCheck = document.getElementById('showChordCheck');
 
-    // 限制P点位置（不进入圆内）
-    function clampP() {
-        P.x = Math.max(5, Math.min(875, P.x));
-        P.y = Math.max(5, Math.min(395, P.y));
+        // ---------- 全局变量 ----------
+        let isChinese = true;
+        const scale = 110;            
+        const O = { x: 440, y: 200 };
+        const r = 1;                 
+        const rDraw = r * scale;
+        
+        let P = { x: O.x + 2.5 * scale, y: O.y };
+        let isDragging = false;
 
-        const dx = P.x - O.x;
-        const dy = P.y - O.y;
-        const d = Math.hypot(dx, dy);
-        const min = rDraw + 15;
-        if (d < min) {
-            P.x = O.x + dx / d * min;
-            P.y = O.y + dy / d * min;
+        let showRightAngle = true;
+        let showChord = false;
+
+        // ---------- 辅助函数 ----------
+        function clampP() {
+            P.x = Math.max(10, Math.min(canvas.width - 10, P.x));
+            P.y = Math.max(10, Math.min(canvas.height - 10, P.y));
+            const dx = P.x - O.x;
+            const dy = P.y - O.y;
+            const d = Math.hypot(dx, dy);
+            const minDist = rDraw + 15;
+            if (d < minDist) {
+                P.x = O.x + (dx / d) * minDist;
+                P.y = O.y + (dy / d) * minDist;
+            }
         }
-    }
 
-    // 计算切线数据
-    function getData() {
-        const dx = P.x - O.x;
-        const dy = P.y - O.y;
-        const op = Math.hypot(dx, dy) / scale;
-        const pa = Math.sqrt(op * op - 1);
-        const ang = Math.atan2(dy, dx);
-        const th = Math.acos(1 / op);
-        const A = {
-            x: O.x + rDraw * Math.cos(ang - th),
-            y: O.y + rDraw * Math.sin(ang - th)
-        };
-        const B = {
-            x: O.x + rDraw * Math.cos(ang + th),
-            y: O.y + rDraw * Math.sin(ang + th)
-        };
-        return { A, B, pa };
-    }
-
-    // 绘制函数
-    function draw() {
-        ctx.clearRect(0, 0, 880, 400);
-        const { A, B, pa } = getData();
-
-        const isDark = document.body.classList.contains('dark-mode');
-        const strokeColor = isDark ? '#e5e7eb' : '#333';
-        const fillColor = isDark ? '#e5e7eb' : '#000';
-        const dashColor = isDark ? '#94a3b8' : '#999';
-
-        // 绘制半径
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y); ctx.stroke();
-
-        // 绘制切线
-        ctx.setLineDash([5, 3]);
-        ctx.strokeStyle = dashColor;
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(A.x, A.y); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(B.x, B.y); ctx.stroke();
-        ctx.setLineDash([]);
-
-        // 绘制圆
-        ctx.beginPath();
-        ctx.arc(O.x, O.y, rDraw, 0, Math.PI * 2);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // 绘制关键点
-        ctx.fillStyle = fillColor;
-        ctx.beginPath(); ctx.arc(O.x, O.y, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(P.x, P.y, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(A.x, A.y, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(B.x, B.y, 4, 0, Math.PI * 2); ctx.fill();
-
-        // 标注文字
-        ctx.font = '15px Arial';
-        ctx.fillStyle = fillColor;
-        ctx.fillText('O', O.x + 8, O.y + 4);
-        ctx.fillText('P', P.x + 8, P.y + 4);
-        ctx.fillText('A', A.x + 8, A.y + 4);
-        ctx.fillText('B', B.x + 8, B.y + 4);
-
-        val.textContent = pa.toFixed(3);
-    }
-
-    // 鼠标交互
-    canvas.addEventListener('mousedown', e => {
-        const r = canvas.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
-        if (Math.hypot(x - P.x, y - P.y) < 15) {
-            isDragging = true;
-            canvas.style.cursor = 'grabbing';
+        function getGeometry() {
+            const dx = P.x - O.x;
+            const dy = P.y - O.y;
+            const opPixels = Math.hypot(dx, dy);
+            const op = opPixels / scale;
+            
+            const tangent = Math.sqrt(Math.max(0, op * op - r * r));
+            const theta = Math.atan2(dy, dx);
+            const halfAngle = Math.acos(r / op);
+            
+            const angleAPB_rad = 2 * Math.asin(r / op);
+            const angleAOB_rad = 2 * Math.acos(r / op);
+            
+            const A = {
+                x: O.x + rDraw * Math.cos(theta - halfAngle),
+                y: O.y + rDraw * Math.sin(theta - halfAngle)
+            };
+            const B = {
+                x: O.x + rDraw * Math.cos(theta + halfAngle),
+                y: O.y + rDraw * Math.sin(theta + halfAngle)
+            };
+            
+            return { 
+                A, B, tangent, op, opPixels,
+                angleAPB: angleAPB_rad * 180 / Math.PI,
+                angleAOB: angleAOB_rad * 180 / Math.PI
+            };
         }
-    });
 
-    canvas.addEventListener('mousemove', e => {
-        const r = canvas.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
+        // 绘制直角符号 (在切点处)
+        function drawRightAngleMark(pt, center, size = 16) {
+            const dx = pt.x - center.x;
+            const dy = pt.y - center.y;
+            const len = Math.hypot(dx, dy);
+            if (len < 0.1) return;
+            
+            const ux = dx / len;
+            const uy = dy / len;
+            const vx = -uy;
+            const vy = ux;
+            
+            const p1 = { x: pt.x - ux * size, y: pt.y - uy * size };
+            const p2 = { x: pt.x + vx * size, y: pt.y + vy * size };
+            const p3 = { x: pt.x - ux * size + vx * size, y: pt.y - uy * size + vy * size };
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+        }
 
-        if (isDragging) {
-            P.x = x;
-            P.y = y;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const geo = getGeometry();
+            const { A, B, tangent, op, angleAPB, angleAOB } = geo;
+            
+            const isDark = document.body.classList.contains('dark-mode');
+            const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
+            const fillColor = isDark ? '#f8fafc' : '#0f172a';
+            const dashColor = isDark ? '#94a3b8' : '#64748b';
+            const lineColor = isDark ? '#cbd5e1' : '#475569';
+            
+            // 半径
+            ctx.beginPath();
+            ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y);
+            ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            
+            // 切线 (虚线)
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(P.x, P.y); ctx.lineTo(A.x, A.y);
+            ctx.moveTo(P.x, P.y); ctx.lineTo(B.x, B.y);
+            ctx.strokeStyle = dashColor;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 圆
+            ctx.beginPath();
+            ctx.arc(O.x, O.y, rDraw, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            
+            // 弦 AB (可选)
+            if (showChord) {
+                ctx.beginPath();
+                ctx.moveTo(A.x, A.y);
+                ctx.lineTo(B.x, B.y);
+                ctx.strokeStyle = isDark ? '#e8a0bf' : '#b45389';
+                ctx.lineWidth = 1.8;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 连线 OP
+            ctx.beginPath();
+            ctx.moveTo(O.x, O.y);
+            ctx.lineTo(P.x, P.y);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            
+            // 直角标记 (可选)
+            if (showRightAngle) {
+                ctx.save();
+                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+                ctx.fillStyle = ctx.strokeStyle;
+                drawRightAngleMark(A, O, 16);
+                drawRightAngleMark(B, O, 16);
+                ctx.restore();
+            }
+            
+            // 绘制点
+            const drawPoint = (pt, radius, label, offsetX = 12, offsetY = 6) => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.shadowColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.font = 'bold 15px "Segoe UI", sans-serif';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(label, pt.x + offsetX, pt.y + offsetY);
+            };
+            
+            drawPoint(O, 5, 'O', 12, 6);
+            drawPoint(P, 7, 'P', 12, 6);
+            drawPoint(A, 5, 'A', 12, 6);
+            drawPoint(B, 5, 'B', 12, 6);
+            
+            // 更新数据
+            tangentSpan.textContent = tangent.toFixed(3);
+            opSpan.textContent = op.toFixed(3);
+            angleAPBSpan.textContent = angleAPB.toFixed(1);
+            angleAOBSpan.textContent = angleAOB.toFixed(1);
+        }
+
+        // ---------- 语言/主题 ----------
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+            i18nElements.forEach(el => {
+                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+            });
+            langBtn.textContent = isChinese ? "English" : "中文";
+            updateThemeButtonText();
+        }
+
+        function updateThemeButtonText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            themeBtn.textContent = isChinese 
+                ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+        }
+
+        function toggleLanguage() {
+            isChinese = !isChinese;
+            applyLanguage();
+            draw();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            updateThemeButtonText();
+            draw();
+        }
+
+        // ---------- 交互事件 ----------
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+            
+            if (Math.hypot(mouseX - P.x, mouseY - P.y) < 20) {
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+        }
+
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+            
+            if (isDragging) {
+                P.x = mouseX;
+                P.y = mouseY;
+                clampP();
+                draw();
+                e.preventDefault();
+            } else {
+                canvas.style.cursor = Math.hypot(mouseX - P.x, mouseY - P.y) < 20 ? 'grab' : 'default';
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (isDragging) {
+                isDragging = false;
+                canvas.style.cursor = 'default';
+                draw();
+            }
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touchX = (touch.clientX - rect.left) * scaleX;
+            const touchY = (touch.clientY - rect.top) * scaleY;
+            
+            if (Math.hypot(touchX - P.x, touchY - P.y) < 25) {
+                isDragging = true;
+            }
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touchX = (touch.clientX - rect.left) * scaleX;
+            const touchY = (touch.clientY - rect.top) * scaleY;
+            
+            P.x = touchX;
+            P.y = touchY;
             clampP();
             draw();
-        } else {
-            canvas.style.cursor = Math.hypot(x - P.x, y - P.y) < 15 ? 'grab' : 'default';
         }
-    });
 
-    canvas.addEventListener('mouseup', () => {
-        isDragging = false;
-        canvas.style.cursor = 'grab';
-    });
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            isDragging = false;
+            draw();
+        }
 
-    // 重置功能
-    resetBtn.addEventListener('click', () => {
-        P = { x: O.x + 2.5 * scale, y: O.y };
+        function resetToDefault() {
+            P = { x: O.x + 2.5 * scale, y: O.y };
+            draw();
+        }
+
+        // ---------- 绑定 ----------
+        function bindEvents() {
+            canvas.addEventListener('mousedown', handleMouseDown);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd);
+            canvas.addEventListener('touchcancel', handleTouchEnd);
+            
+            resetBtn.addEventListener('click', resetToDefault);
+            langBtn.addEventListener('click', toggleLanguage);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            showRightAngleCheck.addEventListener('change', (e) => {
+                showRightAngle = e.target.checked;
+                draw();
+            });
+            showChordCheck.addEventListener('change', (e) => {
+                showChord = e.target.checked;
+                draw();
+            });
+            
+            window.addEventListener('resize', () => draw());
+        }
+
+        // 启动
+        applyLanguage();
+        bindEvents();
         draw();
-    });
-
-    // 语言切换
-    function toggleLang() {
-        isChinese = !isChinese;
-        const html = document.documentElement;
-        html.lang = isChinese ? 'zh-CN' : 'en';
-        langBtn.textContent = isChinese ? "English" : "中文";
-        updateThemeBtnText();
-        draw();
-    }
-
-    // 主题切换
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        updateThemeBtnText();
-        draw();
-    }
-
-    // 更新主题按钮文字
-    function updateThemeBtnText() {
-        const isDark = document.body.classList.contains('dark-mode');
-        themeBtn.textContent = isChinese 
-            ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-            : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-    }
-
-    // 绑定事件
-    langBtn.addEventListener('click', toggleLang);
-    themeBtn.addEventListener('click', toggleTheme);
-
-    // 初始化
-    draw();
+    })();
 </script>
 </body>
 </html>

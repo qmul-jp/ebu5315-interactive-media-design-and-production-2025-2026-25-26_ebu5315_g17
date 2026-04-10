@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>03 - 半圆直角定理 | CircleLab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>03 · 半圆直角定理 | CircleLab</title>
     <style>
         * {
             margin: 0;
@@ -11,7 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 - 完全对齐game.html/02页面 */
+        /* 核心配色变量 — 与整体风格完全对齐 */
         :root {
             --theme_color: #0d3273;
             --sub_color: #4471c2;
@@ -36,12 +36,11 @@
             --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
             --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
 
-            /* 动画通用配置 */
             --animate-duration: 0.4s;
             --animate-ease: ease-out;
         }
 
-        /* 导航栏入场动画 */
+        /* 入场动画 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -58,7 +57,7 @@
             from { opacity: 0; } to { opacity: 1; }
         }
 
-        /* 统一夜间模式 */
+        /* 夜间模式变量覆盖 */
         body.dark-mode {
             --text_primary: var(--text_color_night);
             --text_secondary: #dddddd;
@@ -72,7 +71,7 @@
         }
 
         body {
-            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
             background: var(--bg_color);
             min-height: 100vh;
             color: var(--text_color);
@@ -243,7 +242,7 @@
             transform: translate(0, -50%);
         }
 
-        /* ====================== 主内容适配布局（与02完全一致） ====================== */
+        /* ====================== 主内容适配布局 ====================== */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -254,7 +253,7 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* ====================== 页面核心样式（与02完全对齐） ====================== */
+        /* ====================== 页面卡片样式 ====================== */
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -326,7 +325,7 @@
             padding-left: 20px;
         }
 
-        /* 画布区域样式（完全同步02） */
+        /* 画布区域 */
         .canvas-wrapper {
             position: relative;
             text-align: center;
@@ -349,6 +348,7 @@
             touch-action: none;
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
+            display: block;
         }
 
         .reset-btn {
@@ -363,6 +363,7 @@
             cursor: pointer;
             font-size: 14px;
             transition: 0.2s;
+            font-weight: 600;
         }
         .reset-btn:hover {
             background: var(--sub_color);
@@ -376,11 +377,12 @@
             text-align: left;
             font-size: 15px;
             line-height: 1.8;
-            min-width: 200px;
+            min-width: 180px;
             background: transparent;
             border: none;
             padding: 0;
             color: var(--text_secondary);
+            pointer-events: none;
         }
         .data-panel .blue { 
             color: var(--sub_color); 
@@ -394,7 +396,7 @@
             line-height: 1.4;
         }
 
-        /* 夜间模式兼容卡片（与02完全一致） */
+        /* 夜间模式卡片微调 */
         body.dark-mode .card-def {
             background: #162349;
             color: var(--text_color_night);
@@ -414,7 +416,7 @@
             color: var(--text_color_night);
         }
 
-        /* 响应式适配（与02完全一致） */
+        /* 响应式适配 */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
@@ -443,6 +445,7 @@
                 box-shadow: none;
                 padding: 0;
                 font-size: 0.78rem;
+                color: #fff;
             }
             .side_nav_tooltip::before { display: none; }
             .main-wrapper {
@@ -451,11 +454,27 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 700px) {
+            .data-panel {
+                position: static;
+                transform: none;
+                margin-top: 16px;
+                text-align: center;
+            }
+            .canvas-container {
+                width: 100%;
+            }
+            canvas {
+                width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- 顶部导航栏（与02/game.html完全一致） -->
+    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -464,7 +483,7 @@
         </div>
     </nav>
 
-    <!-- 左侧边栏（与02/game.html完全一致） -->
+    <!-- 左侧边栏（与整体导航一致） -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
@@ -480,20 +499,21 @@
         </a>
     </aside>
 
-    <!-- 主内容区域（布局与02完全一致，无偏移） -->
+    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
-                <h1 data-zh="03 - 半圆直角定理" data-en="03 - Semicircle Right Angle Theorem"></h1>
+                <h1 data-zh="03 · 半圆直角定理" data-en="03 · Semicircle Right Angle Theorem"></h1>
             </div>
 
             <div class="content">
-                <!-- 半圆直角定理内容（双语data属性） -->
+                <!-- 定义卡片 -->
                 <div class="card card-def">
                     <h3 data-zh="📘 基本定义" data-en="📘 Definition"></h3>
                     <p data-zh="顶点在圆上，两边与圆相交的角，叫做圆周角。" data-en="An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle."></p>
                 </div>
 
+                <!-- 定理卡片 -->
                 <div class="card card-theorem">
                     <h3 data-zh="📐 定理内容" data-en="📐 Theorem"></h3>
                     <p data-zh="在任意一个圆中：" data-en="In any circle:"></p>
@@ -503,280 +523,370 @@
                     </ul>
                 </div>
 
+                <!-- 推论卡片 -->
                 <div class="card card-corollary">
                     <h3 data-zh="📌 重要推论" data-en="📌 Corollary"></h3>
                     <p data-zh="如果三角形的一条边是圆的直径，且第三个顶点在圆上，该三角形一定是直角三角形。" data-en="If one side of a triangle is the diameter of a circle and the third vertex lies on the circle, the triangle must be a right triangle."></p>
                 </div>
 
-                <!-- 画布区域（与02完全一致） -->
+                <!-- 交互画布区 -->
                 <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="canvas" width="540" height="440"></canvas>
-                        <button class="reset-btn" id="resetBtn" data-zh="重置图形" data-en="Reset"></button>
+                        <button class="reset-btn" id="resetBtn" data-zh="↻ 重置图形" data-en="↻ Reset"></button>
                         <div class="data-panel">
                             <div class="blue">
                                 <span data-zh="∠ACB：" data-en="∠ACB："></span>
-                                <span id="ang1">0</span>°
+                                <span id="ang1">90</span>°
                             </div>
+                            <div style="font-size: 0.9rem; opacity:0.8; margin-top: 6px;" data-zh="(直径所对圆周角)" data-en="(inscribed angle of diameter)"></div>
                         </div>
                     </div>
-                    <p class="canvas-tip" data-zh="🔹 拖动圆上的点 A、B、C 任意移动，靠近直径两端会自动吸附" data-en="🔹 Drag points A, B, C on the circle"></p>
+                    <p class="canvas-tip" data-zh="🔹 拖动 A、B、C · 点标记在圆周上，标签显示在圆外侧 · 直角时出现垂直符号" data-en="🔹 Drag A, B, C · Labels are placed outside the circle · Right angle symbol appears at 90°"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ====================== 统一语言/主题/导航逻辑（与02完全一致） ======================
-        let isChinese = true;
-        const langBtn = document.getElementById('langToggleBtn');
-        const themeBtn = document.getElementById('themeToggleBtn');
-        
-        // 初始化默认中文
-        function initLang() {
-            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
-            i18nElements.forEach(el => {
-                el.textContent = el.dataset.zh;
+        (function(){
+            "use strict";
+
+            // ---------- 国际化 & 主题 ----------
+            let isChinese = true;
+            const langBtn = document.getElementById('langToggleBtn');
+            const themeBtn = document.getElementById('themeToggleBtn');
+            
+            function applyLanguage() {
+                const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+                i18nElements.forEach(el => {
+                    el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+                });
+                langBtn.textContent = isChinese ? "English" : "中文";
+                updateThemeButtonText();
+            }
+
+            function updateThemeButtonText() {
+                const isDark = document.body.classList.contains('dark-mode');
+                themeBtn.textContent = isChinese 
+                    ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                    : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+            }
+
+            function toggleLanguage() {
+                isChinese = !isChinese;
+                applyLanguage();
+                draw();
+            }
+
+            function toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+                updateThemeButtonText();
+                draw();
+            }
+
+            langBtn.addEventListener('click', toggleLanguage);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            applyLanguage();
+
+            // ---------- 画布与几何参数 ----------
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const resetBtn = document.getElementById('resetBtn');
+            const angleSpan = document.getElementById('ang1');
+
+            const cx = 270, cy = 220;       
+            const radius = 160;              
+            const diamRight = 0;             
+            const diamLeft = Math.PI;        
+            const snapThreshold = 0.05;      
+
+            // 标签外移距离 (沿半径方向)
+            const LABEL_OFFSET = 22;          
+
+            const initialPoints = {
+                A: { angle: diamLeft },
+                B: { angle: diamRight },
+                C: { angle: 3 * Math.PI / 2 }
+            };
+
+            let points = {
+                A: { angle: diamLeft },
+                B: { angle: diamRight },
+                C: { angle: 3 * Math.PI / 2 }
+            };
+
+            let dragging = null;
+            let hoverPoint = null;
+
+            // 获取圆周上的坐标
+            function getPosition(angle) {
+                return {
+                    x: cx + radius * Math.cos(angle),
+                    y: cy + radius * Math.sin(angle)
+                };
+            }
+
+            // 获取标签坐标 (沿半径向外偏移)
+            function getLabelPosition(angle, offset = LABEL_OFFSET) {
+                const dirX = Math.cos(angle);
+                const dirY = Math.sin(angle);
+                return {
+                    x: cx + (radius + offset) * dirX,
+                    y: cy + (radius + offset) * dirY
+                };
+            }
+
+            // 吸附至直径端点
+            function snapToDiameter(angle) {
+                let a = angle;
+                while (a < 0) a += 2 * Math.PI;
+                a = a % (2 * Math.PI);
+                
+                const distToRight = Math.min(Math.abs(a - 0), 2*Math.PI - Math.abs(a - 0));
+                const distToLeft = Math.min(Math.abs(a - Math.PI), 2*Math.PI - Math.abs(a - Math.PI));
+                
+                if (distToRight < snapThreshold) return 0;
+                if (distToLeft < snapThreshold) return Math.PI;
+                return angle;
+            }
+
+            // 绘制直角符号 (仅当角度≈90°)
+            function drawRightAngleSymbol(C, A, B) {
+                const size = 16;
+                const u = { x: A.x - C.x, y: A.y - C.y };
+                const v = { x: B.x - C.x, y: B.y - C.y };
+                const lenU = Math.hypot(u.x, u.y);
+                const lenV = Math.hypot(v.x, v.y);
+                if (lenU < 0.001 || lenV < 0.001) return;
+                
+                const ux = u.x / lenU;
+                const uy = u.y / lenU;
+                const vx = v.x / lenV;
+                const vy = v.y / lenV;
+                
+                const p1 = { x: C.x + ux * size, y: C.y + uy * size };
+                const p2 = { x: C.x + vx * size, y: C.y + vy * size };
+                const p1v = { x: p1.x + vx * size, y: p1.y + vy * size };
+                const p2u = { x: p2.x + ux * size, y: p2.y + uy * size };
+                
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p1v.x, p1v.y);
+                ctx.lineTo(p2u.x, p2u.y);
+                ctx.lineTo(p2.x, p2.y);
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+                ctx.lineWidth = 2.0;
+                ctx.stroke();
+            }
+
+            // 主绘制函数
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
+                const fillColor = isDark ? '#f8fafc' : '#0f172a';
+                const dashColor = isDark ? '#94a3b8' : '#64748b';
+                
+                // 圆
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2.2;
+                ctx.stroke();
+                
+                // 直径虚线
+                ctx.save();
+                ctx.setLineDash([6, 4]);
+                ctx.beginPath();
+                ctx.moveTo(cx - radius, cy);
+                ctx.lineTo(cx + radius, cy);
+                ctx.strokeStyle = dashColor;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.restore();
+                
+                // 圆心
+                ctx.beginPath();
+                ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.font = '500 15px "Segoe UI", "Trebuchet MS", sans-serif';
+                ctx.fillStyle = fillColor;
+                ctx.fillText('O', cx, cy - 18);
+                
+                // 各点坐标
+                const pos = {
+                    A: getPosition(points.A.angle),
+                    B: getPosition(points.B.angle),
+                    C: getPosition(points.C.angle)
+                };
+                
+                // 连线 AC, BC
+                ctx.beginPath();
+                ctx.moveTo(pos.A.x, pos.A.y);
+                ctx.lineTo(pos.C.x, pos.C.y);
+                ctx.lineTo(pos.B.x, pos.B.y);
+                ctx.strokeStyle = isDark ? '#cbd5e1' : '#475569';
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+                
+                // 计算角度
+                let arcAB = Math.abs(points.B.angle - points.A.angle);
+                if (arcAB > Math.PI) arcAB = 2 * Math.PI - arcAB;
+                const degC = Math.round(arcAB / 2 * 180 / Math.PI);
+                angleSpan.textContent = degC;
+                
+                // 直角判定并绘制符号
+                const isRightAngle = Math.abs(degC - 90) < 0.6;
+                if (isRightAngle) {
+                    drawRightAngleSymbol(pos.C, pos.A, pos.B);
+                }
+                
+                // 绘制圆周上的点标记 (小圆)
+                const keys = ['A', 'B', 'C'];
+                keys.forEach(k => {
+                    const p = pos[k];
+                    ctx.beginPath();
+                    const pointRadius = (hoverPoint === k) ? 9 : 7;
+                    ctx.arc(p.x, p.y, pointRadius, 0, 2 * Math.PI);
+                    ctx.fillStyle = fillColor;
+                    ctx.shadowColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+                    ctx.shadowBlur = 6;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+                
+                // ★ 关键修改：标签文字绘制在圆周外侧 (沿径向向外偏移)
+                keys.forEach(k => {
+                    const angle = points[k].angle;
+                    const labelPos = getLabelPosition(angle);
+                    
+                    ctx.font = 'bold 17px "Segoe UI", "Trebuchet MS", sans-serif';
+                    ctx.fillStyle = fillColor;
+                    ctx.fillText(k, labelPos.x, labelPos.y);
+                });
+            }
+
+            // ---------- 鼠标交互 ----------
+            function getCanvasMouse(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const mouseX = (e.clientX - rect.left) * scaleX;
+                const mouseY = (e.clientY - rect.top) * scaleY;
+                return { x: mouseX, y: mouseY };
+            }
+
+            function hitTest(mx, my) {
+                const threshold = 20;
+                for (let key of ['A', 'B', 'C']) {
+                    const p = getPosition(points[key].angle);
+                    const dist = Math.hypot(mx - p.x, my - p.y);
+                    if (dist < threshold) return key;
+                }
+                return null;
+            }
+
+            function onMouseDown(e) {
+                const m = getCanvasMouse(e);
+                dragging = hitTest(m.x, m.y);
+                if (dragging) {
+                    canvas.style.cursor = 'grabbing';
+                    e.preventDefault();
+                }
+            }
+
+            function onMouseMove(e) {
+                const m = getCanvasMouse(e);
+                
+                if (!dragging) {
+                    hoverPoint = hitTest(m.x, m.y);
+                    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                    draw();
+                    return;
+                }
+                
+                let angle = Math.atan2(m.y - cy, m.x - cx);
+                if (dragging === 'A' || dragging === 'B') {
+                    angle = snapToDiameter(angle);
+                }
+                points[dragging].angle = angle;
+                draw();
+            }
+
+            function onMouseUp(e) {
+                if (dragging) {
+                    dragging = null;
+                    canvas.style.cursor = 'default';
+                    draw();
+                }
+            }
+
+            function onMouseLeave() {
+                hoverPoint = null;
+                if (!dragging) {
+                    canvas.style.cursor = 'default';
+                }
+                draw();
+            }
+
+            function resetPoints() {
+                points = {
+                    A: { angle: initialPoints.A.angle },
+                    B: { angle: initialPoints.B.angle },
+                    C: { angle: initialPoints.C.angle }
+                };
+                draw();
+            }
+
+            // 事件绑定
+            canvas.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('mouseleave', onMouseLeave);
+            resetBtn.addEventListener('click', resetPoints);
+
+            // 触摸屏支持
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+                const m = getCanvasMouse(fakeMouse);
+                dragging = hitTest(m.x, m.y);
+                if (dragging) canvas.style.cursor = 'grabbing';
+            }, { passive: false });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!dragging) return;
+                const touch = e.touches[0];
+                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+                const m = getCanvasMouse(fakeMouse);
+                let angle = Math.atan2(m.y - cy, m.x - cx);
+                if (dragging === 'A' || dragging === 'B') {
+                    angle = snapToDiameter(angle);
+                }
+                points[dragging].angle = angle;
+                draw();
+            }, { passive: false });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                dragging = null;
+                canvas.style.cursor = 'default';
+                draw();
             });
-            langBtn.textContent = "English";
-            updateThemeBtnText();
-        }
 
-        // 语言切换
-        function toggleLang() {
-            isChinese = !isChinese;
-            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
-            i18nElements.forEach(el => {
-                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
-            });
-            langBtn.textContent = isChinese ? "English" : "中文";
-            updateThemeBtnText();
+            window.addEventListener('resize', () => { draw(); });
             draw();
-        }
-
-        // 主题切换
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            updateThemeBtnText();
-            draw();
-        }
-
-        // 更新主题按钮文字
-        function updateThemeBtnText() {
-            const isDark = document.body.classList.contains('dark-mode');
-            themeBtn.textContent = isChinese 
-                ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-                : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-        }
-
-        // 绑定事件
-        langBtn.addEventListener('click', toggleLang);
-        themeBtn.addEventListener('click', toggleTheme);
-        window.addEventListener('DOMContentLoaded', initLang);
-
-        // ====================== 半圆直角定理 画布交互逻辑（原版功能完整保留） ======================
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const resetBtn = document.getElementById('resetBtn');
-
-        const cx = 270, cy = 220;
-        const radius = 160;
-        const diamRight = 0;
-        const diamLeft = Math.PI;
-        const snapDistance = 8;
-
-        const initialPoints = {
-          A: { angle: diamLeft },
-          B: { angle: diamRight },
-          C: { angle: 3 * Math.PI / 2 }
-        };
-
-        let points = JSON.parse(JSON.stringify(initialPoints));
-        let dragging = null;
-        let hoverPoint = null;
-
-        // 获取坐标
-        function getPosition(angle) {
-          return {
-            x: cx + radius * Math.cos(angle),
-            y: cy + radius * Math.sin(angle)
-          };
-        }
-
-        // 吸附直径
-        function snapAngle(angle) {
-          const diffRight = Math.abs(angle - diamRight);
-          const diffLeft = Math.abs(angle - diamLeft);
-          
-          if (diffRight < snapDistance / radius || (2*Math.PI - diffRight) < snapDistance / radius) {
-            return diamRight;
-          }
-          if (diffLeft < snapDistance / radius || (2*Math.PI - diffLeft) < snapDistance / radius) {
-            return diamLeft;
-          }
-          return angle;
-        }
-
-        // 绘制直角符号
-        function drawRightAngleSymbol(C, A, B) {
-          const size = 14;
-          const vecCA = { x: A.x - C.x, y: A.y - C.y };
-          const vecCB = { x: B.x - C.x, y: B.y - C.y };
-          const lenCA = Math.hypot(vecCA.x, vecCA.y);
-          const lenCB = Math.hypot(vecCB.x, vecCB.y);
-
-          const p1 = {
-            x: C.x + (vecCA.x / lenCA) * size,
-            y: C.y + (vecCA.y / lenCA) * size
-          };
-          const p2 = {
-            x: C.x + (vecCB.x / lenCB) * size,
-            y: C.y + (vecCB.y / lenCB) * size
-          };
-
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(C.x, C.y);
-          ctx.lineTo(p2.x, p2.y);
-          const isDark = document.body.classList.contains('dark-mode');
-          ctx.strokeStyle = isDark ? '#e5e7eb' : '#000';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-        }
-
-        // 主绘制函数
-        function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-
-          const isDark = document.body.classList.contains('dark-mode');
-          const strokeColor = isDark ? '#e5e7eb' : '#333';
-          const fillColor = isDark ? '#e5e7eb' : '#000';
-
-          // 画圆
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = strokeColor;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-
-          // 虚线直径
-          ctx.save();
-          ctx.setLineDash([5, 3]);
-          ctx.strokeStyle = isDark ? '#94a3b8' : '#999';
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(cx - radius, cy);
-          ctx.lineTo(cx + radius, cy);
-          ctx.stroke();
-          ctx.restore();
-
-          // 圆心
-          ctx.beginPath();
-          ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-          ctx.fillStyle = fillColor;
-          ctx.fill();
-          ctx.font = '16px Arial';
-          ctx.fillStyle = fillColor;
-          ctx.fillText('O', cx, cy - 18);
-
-          const pos = {
-            A: getPosition(points.A.angle),
-            B: getPosition(points.B.angle),
-            C: getPosition(points.C.angle)
-          };
-
-          // 画线
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
-          ctx.beginPath(); 
-          ctx.moveTo(pos.A.x, pos.A.y); 
-          ctx.lineTo(pos.C.x, pos.C.y); 
-          ctx.lineTo(pos.B.x, pos.B.y); 
-          ctx.stroke();
-
-          // 计算角度
-          let arcAB = Math.abs(points.B.angle - points.A.angle);
-          if (arcAB > Math.PI) arcAB = 2 * Math.PI - arcAB;
-          const degC = Math.round(arcAB / 2 * 180 / Math.PI);
-
-          // 绘制直角符号
-          if (degC === 90) {
-            drawRightAngleSymbol(pos.C, pos.A, pos.B);
-          }
-
-          // 画点
-          const keys = ['A', 'B', 'C'];
-          keys.forEach(k => {
-            const p = pos[k];
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-            ctx.font = '18px Arial';
-            ctx.fillStyle = fillColor;
-            ctx.fillText(k, p.x, p.y - 18);
-          });
-
-          document.getElementById('ang1').textContent = degC;
-        }
-
-        // 鼠标交互
-        function getMousePos(e) {
-          const rect = canvas.getBoundingClientRect();
-          return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-          };
-        }
-
-        function checkHit(mx, my) {
-          for (const key in points) {
-            const p = getPosition(points[key].angle);
-            const d = Math.hypot(mx - p.x, my - p.y);
-            if (d < 16) return key;
-          }
-          return null;
-        }
-
-        canvas.addEventListener('mousedown', (e) => {
-          const m = getMousePos(e);
-          dragging = checkHit(m.x, m.y);
-          if (dragging) canvas.style.cursor = 'grabbing';
-        });
-
-        window.addEventListener('mousemove', (e) => {
-          if (!dragging) {
-            const m = getMousePos(e);
-            hoverPoint = checkHit(m.x, m.y);
-            canvas.style.cursor = hoverPoint ? 'grab' : 'default';
-            draw();
-            return;
-          }
-          const m = getMousePos(e);
-          const angle = Math.atan2(m.y - cy, m.x - cx);
-          points[dragging].angle = snapAngle(angle);
-          draw();
-        });
-
-        window.addEventListener('mouseup', () => {
-          dragging = null;
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-          hoverPoint = null;
-          draw();
-        });
-
-        // 重置
-        resetBtn.onclick = () => {
-          points = JSON.parse(JSON.stringify(initialPoints));
-          draw();
-        };
-
-        // 初始化绘制
-        draw();
+        })();
     </script>
 </body>
 </html>
