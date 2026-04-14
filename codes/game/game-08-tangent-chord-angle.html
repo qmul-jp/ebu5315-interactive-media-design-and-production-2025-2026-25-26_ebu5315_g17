@@ -1,12 +1,9 @@
-<!-- ====================== HTML 结构部分 ====================== -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>08 - 弦切角定理 | 08 - Tangent-Chord Angle Theorem</title>
-
-    <!-- ====================== CSS 样式部分 ====================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>08 · 弦切角定理 | CircleLab</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 - 完全对齐game-03 */
+        /* 核心配色变量 */
         :root {
             --theme_color: #0d3273;
             --sub_color: #4471c2;
@@ -39,12 +36,10 @@
             --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
             --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
 
-            /* 动画通用配置 */
             --animate-duration: 0.4s;
             --animate-ease: ease-out;
         }
 
-        /* 导航栏入场动画 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); }
         }
@@ -58,7 +53,6 @@
             from { opacity: 0; } to { opacity: 1; }
         }
 
-        /* 统一夜间模式 */
         body.dark-mode {
             --text_primary: var(--text_color_night);
             --text_secondary: #dddddd;
@@ -72,7 +66,7 @@
         }
 
         body {
-            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
             background: var(--bg_color);
             min-height: 100vh;
             color: var(--text_color);
@@ -83,7 +77,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* ====================== 顶部导航栏 ====================== */
+        /* 导航栏 */
         .navbar {
             position: sticky;
             top: 0.95rem;
@@ -138,7 +132,7 @@
             border: none;
             cursor: pointer;
             font-weight: 800;
-            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.18s ease, background-color 0.2s ease;
             border-radius: 0px;
         }
 
@@ -147,7 +141,7 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 ====================== */
+        /* 侧边栏 */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -179,7 +173,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .side_nav_icon {
@@ -197,7 +191,6 @@
             stroke-width: 1.9;
             stroke-linecap: round;
             stroke-linejoin: round;
-            vector-effect: non-stroke;
         }
 
         .side_nav_tooltip {
@@ -234,16 +227,14 @@
         .side_nav_link.active {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.42);
-            transform: none;
         }
 
-        .side_nav_link:hover .side_nav_tooltip,
-        .side_nav_link:focus-visible .side_nav_tooltip {
+        .side_nav_link:hover .side_nav_tooltip {
             opacity: 1;
             transform: translate(0, -50%);
         }
 
-        /* ====================== 主内容适配布局 ====================== */
+        /* 主内容 */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -254,9 +245,8 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* 原有页面样式 - 完全保留 */
         .container {
-            max-width: 960px;
+            max-width: 1000px;
             margin: 0 auto;
             background: var(--card_bg);
             border-radius: 12px;
@@ -271,27 +261,23 @@
             color: #fff;
             padding: 20px;
             text-align: center;
-            position: relative;
         }
 
         .header h1 {
             font-size: 24px;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        /* 内容内边距 */
         .content {
             padding: 32px 24px;
         }
 
-        /* 卡片样式 */
         .card {
             border-radius: 8px;
             padding: 16px 20px;
             margin-bottom: 24px;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
         .card-def {
@@ -311,36 +297,14 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
         }
 
-        .card p {
+        .card p, .card li {
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 8px;
-            letter-spacing: 0.2px;
         }
 
-        .card ul {
-            padding-left: 20px;
-        }
-
-        .card li {
-            font-size: 15px;
-            color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 6px;
-            letter-spacing: 0.2px;
-        }
-
-        /* 画布容器 */
         .canvas-wrapper {
-            position: relative;
-            text-align: center;
             margin-top: 48px;
             padding: 24px;
             background: var(--card_bg);
@@ -352,6 +316,8 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            width: 100%;
+            text-align: center;
         }
 
         canvas {
@@ -360,19 +326,51 @@
             touch-action: none;
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .control-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            gap: 12px;
+        }
+
+        .control-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text_secondary);
+            cursor: pointer;
+        }
+
+        .control-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--sub_color);
+            cursor: pointer;
         }
 
         .reset-btn {
-            position: absolute;
-            left: 10px;
-            bottom: 10px;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: var(--theme_color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             transition: 0.2s;
         }
         .reset-btn:hover {
@@ -381,65 +379,43 @@
 
         .data-panel {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 16px;
+            top: 16px;
             text-align: left;
             font-size: 15px;
-            padding: 8px 10px;
-            background: transparent;
-            border: none;
-            letter-spacing: 0.2px;
+            padding: 14px 18px;
+            background: var(--card_bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow_sm);
+            border: 1px solid var(--border_light);
             color: var(--text_secondary);
-            transition: color 0.3s ease;
-            line-height: 1.6;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
-        .data-panel .blue { 
-            color: var(--sub_color); 
-            font-weight: 600; 
-        }
+        .data-panel .blue { color: var(--sub_color); font-weight: 600; }
+        .data-panel .green { color: var(--highlight_color); font-weight: 600; }
+        .data-panel hr { margin: 8px 0; border: 0.5px solid var(--border_light); }
 
-        /* 提示文字 */
         .canvas-tip {
             margin-top: 16px;
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: 1.4;
-            transition: color 0.3s ease;
         }
 
-        .zh, .en { display: none; }
-        :lang(zh-CN) .zh { display: initial; }
-        :lang(en) .en { display: initial; }
-
-        /* 夜间模式兼容卡片 */
-        body.dark-mode .card-def {
-            background: #162349;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-theorem {
-            background: #14293f;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-corollary {
-            background: #2c2442;
-            color: var(--text_color_night);
-        }
+        body.dark-mode .card-def { background: #162349; }
+        body.dark-mode .card-theorem { background: #14293f; }
+        body.dark-mode .card-corollary { background: #2c2442; }
         body.dark-mode .card p, 
         body.dark-mode .card li,
         body.dark-mode .canvas-tip,
-        body.dark-mode .data-panel {
-            color: var(--text_color_night);
-        }
+        body.dark-mode .data-panel { color: var(--text_color_night); }
 
-        /* 响应式适配 */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
                 top: calc(var(--header_height) + 0.4rem);
                 min-height: auto;
                 grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
                 padding: 0.35rem;
                 width: 100%;
                 left: 0;
@@ -460,6 +436,7 @@
                 box-shadow: none;
                 padding: 0;
                 font-size: 0.78rem;
+                color: #fff;
             }
             .side_nav_tooltip::before { display: none; }
             .main-wrapper {
@@ -468,11 +445,22 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 700px) {
+            .data-panel {
+                position: static;
+                margin-top: 16px;
+                text-align: center;
+            }
+            .control-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -481,7 +469,6 @@
         </div>
     </nav>
 
-    <!-- 左侧边栏 -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
@@ -497,297 +484,418 @@
         </a>
     </aside>
 
-    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
                 <h1>
-                    <span class="zh">08 - 弦切角定理</span>
-                    <span class="en">08 - Tangent-Chord Angle Theorem</span>
+                    <span data-zh="08 · 弦切角定理" data-en="08 · Tangent-Chord Angle Theorem"></span>
                 </h1>
             </div>
 
             <div class="content">
                 <div class="card card-def">
-                    <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
-                    <p class="zh">顶点在圆上，一边与圆相切，另一边与圆相交的角叫做弦切角。</p>
-                    <p class="en">An angle with its vertex on a circle, one side tangent to the circle and the other side intersecting the circle is called a tangent-chord angle.</p>
+                    <h3><span data-zh="📘 基本定义" data-en="📘 Definition"></span></h3>
+                    <p data-zh="顶点在圆上，一边与圆相切，另一边与圆相交的角叫做弦切角。" 
+                       data-en="An angle with its vertex on a circle, one side tangent to the circle and the other side intersecting the circle is called a tangent-chord angle."></p>
                 </div>
-
                 <div class="card card-theorem">
-                    <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
-                    <p class="zh"><strong>在任意一个圆中：</strong></p>
-                    <p class="en"><strong>In any circle:</strong></p>
+                    <h3><span data-zh="📐 定理内容" data-en="📐 Theorem"></span></h3>
+                    <p data-zh="<strong>在任意一个圆中：</strong>" data-en="<strong>In any circle:</strong>"></p>
                     <ul>
-                        <li class="zh">弦切角等于它所夹的弧所对的圆周角。</li>
-                        <li class="en">The tangent-chord angle is equal to the inscribed angle subtended by the intercepted arc.</li>
+                        <li data-zh="弦切角等于它所夹的弧所对的圆周角。" 
+                            data-en="The tangent-chord angle is equal to the inscribed angle subtended by the intercepted arc."></li>
                     </ul>
                 </div>
-
                 <div class="card card-corollary">
-                    <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
-                    <p class="zh">1. 弦切角的度数等于它所夹弧的度数的一半；</p>
-                    <p class="en">1. The measure of a tangent-chord angle equals half the measure of its intercepted arc;</p>
-                    <p class="zh">2. 同弧或等弧所对的弦切角相等。</p>
-                    <p class="en">2. Tangent-chord angles subtended by the same or equal arcs are equal.</p>
+                    <h3><span data-zh="📌 重要推论" data-en="📌 Corollary"></span></h3>
+                    <p data-zh="1. 弦切角的度数等于它所夹弧的度数的一半；" 
+                       data-en="1. The measure of a tangent-chord angle equals half the measure of its intercepted arc;"></p>
+                    <p data-zh="2. 同弧或等弧所对的弦切角相等。" 
+                       data-en="2. Tangent-chord angles subtended by the same or equal arcs are equal."></p>
                 </div>
 
                 <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="geometryCanvas" width="880" height="400"></canvas>
-                        <button class="reset-btn" id="resetBtn">
-                            <span class="zh">重置</span>
-                            <span class="en">Reset</span>
-                        </button>
+                        
                         <div class="data-panel">
-                            <div class="blue">∠ABC = <span id="angleABC">0.0°</span></div>
-                            <div class="blue">∠ABD = <span id="angleABD">0.0°</span></div>
-                            <div class="blue">∠AMB = <span id="angleAMB">0.0°</span>
+                            <div class="blue"><span data-zh="弦切角 ∠ABC = " data-en="Tangent-chord ∠ABC = "></span><span id="angleABC">0.0</span>°</div>
+                            <div class="blue"><span data-zh="邻补角 ∠ABD = " data-en="Adjacent ∠ABD = "></span><span id="angleABD">0.0</span>°</div>
+                            <div class="green"><span data-zh="圆周角 ∠AMB = " data-en="Inscribed ∠AMB = "></span><span id="angleAMB">0.0</span>°</div>
+                            <hr>
+                            <div><span data-zh="弧 AMB 度数 = " data-en="Arc AMB = "></span><span id="arcAMB">0.0</span>°</div>
+                        </div>
+
+                        <div class="control-bar">
+                            <div class="control-left">
+                                <label class="control-check">
+                                    <input type="checkbox" id="showRadiusCheck"> 
+                                    <span data-zh="显示半径 OB" data-en="Show radius OB"></span>
+                                </label>
+                                <label class="control-check">
+                                    <input type="checkbox" id="showRightAngleCheck" checked> 
+                                    <span data-zh="显示直角标记" data-en="Show right angle"></span>
+                                </label>
+                                <label class="control-check">
+                                    <input type="checkbox" id="showArcCheck"> 
+                                    <span data-zh="显示弧 AMB" data-en="Show arc AMB"></span>
+                                </label>
+                            </div>
+                            <button class="reset-btn" id="resetBtn">
+                                <span data-zh="↻ 重置图形" data-en="↻ Reset"></span>
+                            </button>
                         </div>
                     </div>
-                    <p class="canvas-tip">
-                        <span class="zh">🔹 拖动圆上点A/B/M，实时查看弦切角与圆周角度数</span>
-                        <span class="en">🔹 Drag points A/B/M on the circle, view tangent-chord angle & inscribed angle in real time</span>
-                    </p>
+                    <p class="canvas-tip" data-zh="🔹 拖动圆上点 A、B、M · 弦切角 ∠ABC = 圆周角 ∠AMB · 可切换辅助线" 
+                       data-en="🔹 Drag A, B, M · ∠ABC = ∠AMB · Toggle helpers"></p>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- ====================== JavaScript 逻辑部分 ====================== -->
 <script>
-    // 画布核心元素
-    const canvas = document.getElementById('geometryCanvas');
-    const ctx = canvas.getContext('2d');
-    const resetBtn = document.getElementById('resetBtn');
-    const angleABC = document.getElementById('angleABC');
-    const angleABD = document.getElementById('angleABD');
-    const angleAMB = document.getElementById('angleAMB');
-    const langBtn = document.getElementById('langToggleBtn');
-    const themeBtn = document.getElementById('themeToggleBtn');
-    let isChinese = true;
+    (function(){
+        "use strict";
 
-    // 弦切角定理配置参数
-    const scale = 130;
-    const O = { x: 440, y: 200 };  // 圆心
-    const rDraw = scale;           // 圆半径
-    let A, B, M, C, D;             // 圆上点A/B/M，切线点C/D
-    let isDragging = false;
-    let dragTarget = null;         // 仅A/B/M可拖动
-    const dragRadius = 15;         // 拖动检测范围
-
-    // 初始化点位置（初始状态：∠ABC锐角，∠ABD钝角，M在D侧）
-    function initPoints() {
-        A = { x: O.x - 100, y: O.y - 80 };
-        B = { x: O.x + 100, y: O.y };
-        M = { x: O.x + 80, y: O.y + 100 };
-        // 约束所有点在圆上
-        clampToCircle(A);
-        clampToCircle(B);
-        clampToCircle(M);
-        // 计算B点切线CD
-        updateTangentLine();
-    }
-
-    // 约束点始终在圆上
-    function clampToCircle(p) {
-        const dx = p.x - O.x;
-        const dy = p.y - O.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 1) return;
-        p.x = O.x + (dx / dist) * rDraw;
-        p.y = O.y + (dy / dist) * rDraw;
-    }
-
-    // 计算B点的切线CD（切线垂直于半径OB）
-    function updateTangentLine() {
-        const dx = B.x - O.x;
-        const dy = B.y - O.y;
-        // 切线方向向量（垂直于OB）
-        const tx = -dy;
-        const ty = dx;
-        const len = Math.hypot(tx, ty);
-        // 生成切线两端点C、D（B点两侧）
-        C = { x: B.x - tx/len * 200, y: B.y - ty/len * 200 };
-        D = { x: B.x + tx/len * 200, y: B.y + ty/len * 200 };
-    }
-
-    // 计算三点夹角（顶点为middle）
-    function calculateAngle(p1, middle, p2) {
-        const v1x = p1.x - middle.x;
-        const v1y = p1.y - middle.y;
-        const v2x = p2.x - middle.x;
-        const v2y = p2.y - middle.y;
+        // ---------- DOM 元素 ----------
+        const canvas = document.getElementById('geometryCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+        const langBtn = document.getElementById('langToggleBtn');
+        const themeBtn = document.getElementById('themeToggleBtn');
         
-        const dot = v1x * v2x + v1y * v2y;
-        const mod1 = Math.hypot(v1x, v1y);
-        const mod2 = Math.hypot(v2x, v2y);
+        const angleABCspan = document.getElementById('angleABC');
+        const angleABDspan = document.getElementById('angleABD');
+        const angleAMBspan = document.getElementById('angleAMB');
+        const arcAMBspan = document.getElementById('arcAMB');
         
-        let rad = Math.acos(Math.max(-1, Math.min(1, dot / (mod1 * mod2))));
-        let deg = rad * 180 / Math.PI;
-        return deg;
-    }
+        const showRadiusCheck = document.getElementById('showRadiusCheck');
+        const showRightAngleCheck = document.getElementById('showRightAngleCheck');
+        const showArcCheck = document.getElementById('showArcCheck');
 
-    // 绘制所有图形
-    function draw() {
-        ctx.clearRect(0, 0, 880, 400);
-        // 拖动B时更新切线
-        if (dragTarget === B) updateTangentLine();
+        // ---------- 全局变量 ----------
+        let isChinese = true;
+        const scale = 130;
+        const O = { x: 440, y: 200 };
+        const rDraw = scale;
         
-        // 夜间模式颜色适配
-        const isDark = document.body.classList.contains('dark-mode');
-        const strokeColor = isDark ? '#e5e7eb' : '#000000';
-        const pointColor = isDark ? '#e5e7eb' : '#000000';
+        let A, B, M, C, D;
+        let isDragging = false;
+        let dragTarget = null;
+        
+        let showRadius = false;
+        let showRightAngle = true;
+        let showArc = false;
 
-        // 1. 绘制圆
-        ctx.beginPath();
-        ctx.arc(O.x, O.y, rDraw, 0, Math.PI * 2);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        // 初始化位置
+        function initPoints() {
+            A = { x: O.x - 100, y: O.y - 80 };
+            B = { x: O.x + 100, y: O.y };
+            M = { x: O.x + 80, y: O.y + 100 };
+            clampToCircle(A);
+            clampToCircle(B);
+            clampToCircle(M);
+            updateTangentLine();
+        }
 
-        // 2. 绘制实线：AB、BM、AM
-        ctx.setLineDash([]);
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = strokeColor;
-        ctx.beginPath();
-        ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
-        ctx.moveTo(B.x, B.y); ctx.lineTo(M.x, M.y);
-        ctx.moveTo(A.x, A.y); ctx.lineTo(M.x, M.y);
-        ctx.stroke();
+        function clampToCircle(p) {
+            const dx = p.x - O.x;
+            const dy = p.y - O.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 0.1) return;
+            p.x = O.x + (dx / dist) * rDraw;
+            p.y = O.y + (dy / dist) * rDraw;
+        }
 
-        // 3. 绘制虚线切线CD
-        ctx.setLineDash([6, 4]);
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(C.x, C.y); ctx.lineTo(D.x, D.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // 更新B点处的切线CD（始终垂直于OB）
+        function updateTangentLine() {
+            const dx = B.x - O.x;
+            const dy = B.y - O.y;
+            const len = Math.hypot(dx, dy);
+            const tx = -dy / len;
+            const ty = dx / len;
+            const tangentLength = 220;
+            C = { x: B.x - tx * tangentLength, y: B.y - ty * tangentLength };
+            D = { x: B.x + tx * tangentLength, y: B.y + ty * tangentLength };
+        }
 
-        // 4. 绘制所有点（黑色实心）
-        ctx.fillStyle = pointColor;
-        // 圆上可动点A/B/M（大圆点）
-        const pointSize = 6;
-        [A, B, M, O].forEach(p => {
+        // 计算三点夹角（middle为顶点）
+        function angleBetween(p1, middle, p2) {
+            const v1x = p1.x - middle.x, v1y = p1.y - middle.y;
+            const v2x = p2.x - middle.x, v2y = p2.y - middle.y;
+            const dot = v1x * v2x + v1y * v2y;
+            const mod1 = Math.hypot(v1x, v1y);
+            const mod2 = Math.hypot(v2x, v2y);
+            return Math.acos(Math.max(-1, Math.min(1, dot / (mod1 * mod2)))) * 180 / Math.PI;
+        }
+
+        // 计算圆心角AOB（用于弧AMB度数，取优弧或劣弧需判断）
+        function centralAngleAOB() {
+            let angle = Math.atan2(B.y - O.y, B.x - O.x) - Math.atan2(A.y - O.y, A.x - O.x);
+            angle = (angle + 2 * Math.PI) % (2 * Math.PI);
+            // 根据M的位置决定取劣弧还是优弧（M在哪一侧就取对应的弧）
+            const cross = (A.x - O.x) * (M.y - O.y) - (A.y - O.y) * (M.x - O.x);
+            if (cross > 0) {
+                return angle < Math.PI ? angle : 2 * Math.PI - angle;
+            } else {
+                return angle > Math.PI ? angle : 2 * Math.PI - angle;
+            }
+        }
+
+        // 绘制直角标记（在B点，半径OB与切线垂直）
+        function drawRightAngleAtB() {
+            const dx = B.x - O.x;
+            const dy = B.y - O.y;
+            const len = Math.hypot(dx, dy);
+            const ux = dx / len;
+            const uy = dy / len;
+            const vx = -uy;
+            const vy = ux;
+            const size = 16;
+            
+            const p1 = { x: B.x - ux * size, y: B.y - uy * size };
+            const p2 = { x: B.x + vx * size, y: B.y + vy * size };
+            const p3 = { x: B.x - ux * size + vx * size, y: B.y - uy * size + vy * size };
+            
             ctx.beginPath();
-            ctx.arc(p.x, p.y, pointSize, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        // 切线点C/D（小圆点）
-        [C, D].forEach(p => {
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+        }
+
+        // 绘制弧AMB
+        function drawArcAMB() {
+            const startAng = Math.atan2(A.y - O.y, A.x - O.x);
+            const endAng = Math.atan2(B.y - O.y, B.x - O.x);
+            const cross = (A.x - O.x) * (M.y - O.y) - (A.y - O.y) * (M.x - O.x);
+            const counterclockwise = cross > 0;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
+            ctx.arc(O.x, O.y, rDraw * 0.7, startAng, endAng, !counterclockwise);
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([]);
+            ctx.stroke();
+        }
 
-        // 5. 标注字母
-        ctx.font = '16px Arial';
-        ctx.fillStyle = strokeColor;
-        const offset = 12;
-        ctx.fillText('O', O.x + offset, O.y + offset);
-        ctx.fillText('A', A.x + offset, A.y + offset);
-        ctx.fillText('B', B.x + offset, B.y + offset);
-        ctx.fillText('M', M.x + offset, M.y + offset);
-        ctx.fillText('C', C.x + offset, C.y + offset);
-        ctx.fillText('D', D.x + offset, D.y + offset);
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (dragTarget) updateTangentLine();
+            
+            const isDark = document.body.classList.contains('dark-mode');
+            const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
+            const fillColor = isDark ? '#f8fafc' : '#0f172a';
+            const dashColor = isDark ? '#94a3b8' : '#64748b';
+            
+            // 圆
+            ctx.beginPath();
+            ctx.arc(O.x, O.y, rDraw, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            
+            // 半径OB（可选）
+            if (showRadius) {
+                ctx.beginPath();
+                ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y);
+                ctx.strokeStyle = isDark ? '#a0aec0' : '#4b5563';
+                ctx.lineWidth = 1.8;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 弦AB、BM、AM
+            ctx.beginPath();
+            ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+            ctx.moveTo(B.x, B.y); ctx.lineTo(M.x, M.y);
+            ctx.moveTo(A.x, A.y); ctx.lineTo(M.x, M.y);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            
+            // 切线CD（虚线）
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(C.x, C.y); ctx.lineTo(D.x, D.y);
+            ctx.strokeStyle = dashColor;
+            ctx.lineWidth = 2.0;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 弧AMB（可选）
+            if (showArc) {
+                ctx.save();
+                ctx.strokeStyle = isDark ? '#e8a0bf' : '#b45389';
+                ctx.fillStyle = ctx.strokeStyle;
+                drawArcAMB();
+                ctx.restore();
+            }
+            
+            // 直角标记
+            if (showRightAngle) {
+                ctx.save();
+                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+                ctx.lineWidth = 2.2;
+                drawRightAngleAtB();
+                ctx.restore();
+            }
+            
+            // 绘制点
+            const drawPoint = (pt, radius, label, offX = 12, offY = 6) => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.shadowColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.font = 'bold 15px "Segoe UI", sans-serif';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(label, pt.x + offX, pt.y + offY);
+            };
+            
+            drawPoint(O, 5, 'O', 12, 6);
+            drawPoint(A, 7, 'A', 12, 6);
+            drawPoint(B, 7, 'B', 12, 6);
+            drawPoint(M, 7, 'M', 12, 6);
+            drawPoint(C, 4, 'C', 10, 5);
+            drawPoint(D, 4, 'D', 10, 5);
+            
+            // 更新角度
+            const abc = angleBetween(A, B, C);
+            const abd = 180 - abc;
+            const amb = angleBetween(A, M, B);
+            const arcDeg = centralAngleAOB() * 180 / Math.PI;
+            
+            angleABCspan.textContent = abc.toFixed(1);
+            angleABDspan.textContent = abd.toFixed(1);
+            angleAMBspan.textContent = amb.toFixed(1);
+            arcAMBspan.textContent = arcDeg.toFixed(1);
+        }
 
-        // 6. 实时计算并更新角度
-        const abc = calculateAngle(A, B, C);
-        const abd = 180 - abc; // 平角互补
-        const amb = calculateAngle(A, M, B);
-        angleABC.textContent = abc.toFixed(1) + '°';
-        angleABD.textContent = abd.toFixed(1) + '°';
-        angleAMB.textContent = amb.toFixed(1) + '°';
-    }
+        // ---------- 交互 ----------
+        function getCanvasCoord(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
 
-    // 获取拖动目标（仅A/B/M）
-    function getDragTarget(x, y) {
-        if (Math.hypot(x - A.x, y - A.y) < dragRadius) return A;
-        if (Math.hypot(x - B.x, y - B.y) < dragRadius) return B;
-        if (Math.hypot(x - M.x, y - M.y) < dragRadius) return M;
-        return null;
-    }
+        function hitTest(x, y) {
+            if (Math.hypot(x - A.x, y - A.y) < 18) return A;
+            if (Math.hypot(x - B.x, y - B.y) < 18) return B;
+            if (Math.hypot(x - M.x, y - M.y) < 18) return M;
+            return null;
+        }
 
-    // ====================== 全局流畅拖动逻辑 ======================
-    // 鼠标按下
-    canvas.addEventListener('mousedown', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        dragTarget = getDragTarget(x, y);
-        if (dragTarget) {
-            isDragging = true;
-            canvas.style.cursor = 'grabbing';
+        function onDragStart(e) {
             e.preventDefault();
+            const coord = getCanvasCoord(e);
+            dragTarget = hitTest(coord.x, coord.y);
+            if (dragTarget) {
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+            }
         }
-    });
 
-    // 鼠标悬停样式
-    canvas.addEventListener('mousemove', (e) => {
-        if (isDragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const target = getDragTarget(x, y);
-        canvas.style.cursor = target ? 'grab' : 'default';
-    });
-
-    // 全局鼠标移动（离开画布仍可拖动）
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging || !dragTarget) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        // 更新拖动点位置并约束在圆上
-        dragTarget.x = x;
-        dragTarget.y = y;
-        clampToCircle(dragTarget);
-        draw();
-    });
-
-    // 全局鼠标抬起（停止拖动）
-    document.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            dragTarget = null;
-            canvas.style.cursor = 'default';
+        function onDragMove(e) {
+            if (!isDragging || !dragTarget) return;
+            e.preventDefault();
+            const coord = getCanvasCoord(e);
+            dragTarget.x = coord.x;
+            dragTarget.y = coord.y;
+            clampToCircle(dragTarget);
+            draw();
         }
-    });
 
-    // 重置按钮
-    resetBtn.addEventListener('click', () => {
+        function onDragEnd(e) {
+            if (isDragging) {
+                isDragging = false;
+                dragTarget = null;
+                canvas.style.cursor = 'default';
+                draw();
+            }
+        }
+
+        function onHover(e) {
+            if (isDragging) return;
+            const coord = getCanvasCoord(e);
+            const target = hitTest(coord.x, coord.y);
+            canvas.style.cursor = target ? 'grab' : 'default';
+        }
+
+        function resetToDefault() {
+            initPoints();
+            draw();
+        }
+
+        // ---------- 语言/主题 ----------
+        function applyLanguage() {
+            const i18n = document.querySelectorAll('[data-zh][data-en]');
+            i18n.forEach(el => el.textContent = isChinese ? el.dataset.zh : el.dataset.en);
+            langBtn.textContent = isChinese ? "English" : "中文";
+            updateThemeButtonText();
+        }
+
+        function updateThemeButtonText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            themeBtn.textContent = isChinese 
+                ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+        }
+
+        function toggleLanguage() {
+            isChinese = !isChinese;
+            applyLanguage();
+            draw();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            updateThemeButtonText();
+            draw();
+        }
+
+        // ---------- 绑定 ----------
+        function bindEvents() {
+            canvas.addEventListener('mousedown', onDragStart);
+            canvas.addEventListener('mousemove', onHover);
+            window.addEventListener('mousemove', onDragMove);
+            window.addEventListener('mouseup', onDragEnd);
+            
+            canvas.addEventListener('touchstart', onDragStart, { passive: false });
+            canvas.addEventListener('touchmove', onDragMove, { passive: false });
+            canvas.addEventListener('touchend', onDragEnd);
+            canvas.addEventListener('touchcancel', onDragEnd);
+            
+            resetBtn.addEventListener('click', resetToDefault);
+            langBtn.addEventListener('click', toggleLanguage);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            showRadiusCheck.addEventListener('change', e => { showRadius = e.target.checked; draw(); });
+            showRightAngleCheck.addEventListener('change', e => { showRightAngle = e.target.checked; draw(); });
+            showArcCheck.addEventListener('change', e => { showArc = e.target.checked; draw(); });
+            
+            window.addEventListener('resize', () => draw());
+        }
+
+        applyLanguage();
         initPoints();
+        bindEvents();
         draw();
-    });
-
-    // ====================== 语言/主题切换 ======================
-    function toggleLang(){
-        isChinese = !isChinese;
-        document.documentElement.lang = isChinese ? 'zh-CN' : 'en';
-        langBtn.textContent = isChinese ? "English" : "中文";
-        updateThemeBtnText();
-    }
-
-    function toggleTheme(){
-        document.body.classList.toggle('dark-mode');
-        updateThemeBtnText();
-        draw(); // 重绘适配主题
-    }
-
-    function updateThemeBtnText(){
-        const isDark = document.body.classList.contains('dark-mode');
-        themeBtn.textContent = isChinese 
-            ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-            : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-    }
-
-    // 绑定事件
-    langBtn.addEventListener('click', toggleLang);
-    themeBtn.addEventListener('click', toggleTheme);
-
-    // 初始化
-    initPoints();
-    draw();
+    })();
 </script>
 	<script src="../colorblind.js"></script>
 </body>

@@ -1,12 +1,9 @@
-<!-- ====================== HTML 结构部分 ====================== -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>07 - 垂径定理 | 07 - Perpendicular Chord Bisector Theorem</title>
-
-    <!-- ====================== CSS 样式部分 ====================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>07 · 垂径定理 | CircleLab</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 - 完全对齐game-03 */
+        /* 核心配色变量 */
         :root {
             --theme_color: #0d3273;
             --sub_color: #4471c2;
@@ -39,12 +36,10 @@
             --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
             --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
 
-            /* 动画通用配置 */
             --animate-duration: 0.4s;
             --animate-ease: ease-out;
         }
 
-        /* 导航栏入场动画 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); }
         }
@@ -58,7 +53,6 @@
             from { opacity: 0; } to { opacity: 1; }
         }
 
-        /* 统一夜间模式 */
         body.dark-mode {
             --text_primary: var(--text_color_night);
             --text_secondary: #dddddd;
@@ -72,7 +66,7 @@
         }
 
         body {
-            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
             background: var(--bg_color);
             min-height: 100vh;
             color: var(--text_color);
@@ -83,7 +77,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* ====================== 顶部导航栏 ====================== */
+        /* 导航栏 */
         .navbar {
             position: sticky;
             top: 0.95rem;
@@ -138,7 +132,7 @@
             border: none;
             cursor: pointer;
             font-weight: 800;
-            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.18s ease, background-color 0.2s ease;
             border-radius: 0px;
         }
 
@@ -147,7 +141,7 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 ====================== */
+        /* 侧边栏 */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -179,7 +173,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .side_nav_icon {
@@ -197,7 +191,6 @@
             stroke-width: 1.9;
             stroke-linecap: round;
             stroke-linejoin: round;
-            vector-effect: non-stroke;
         }
 
         .side_nav_tooltip {
@@ -234,16 +227,14 @@
         .side_nav_link.active {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.42);
-            transform: none;
         }
 
-        .side_nav_link:hover .side_nav_tooltip,
-        .side_nav_link:focus-visible .side_nav_tooltip {
+        .side_nav_link:hover .side_nav_tooltip {
             opacity: 1;
             transform: translate(0, -50%);
         }
 
-        /* ====================== 主内容适配布局 ====================== */
+        /* 主内容 */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -254,9 +245,8 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* 原有页面样式 - 完全保留 */
         .container {
-            max-width: 960px;
+            max-width: 1000px;
             margin: 0 auto;
             background: var(--card_bg);
             border-radius: 12px;
@@ -271,27 +261,23 @@
             color: #fff;
             padding: 20px;
             text-align: center;
-            position: relative;
         }
 
         .header h1 {
             font-size: 24px;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        /* 内容内边距 */
         .content {
             padding: 32px 24px;
         }
 
-        /* 卡片样式 */
         .card {
             border-radius: 8px;
             padding: 16px 20px;
             margin-bottom: 24px;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
         .card-def {
@@ -311,36 +297,14 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
         }
 
-        .card p {
+        .card p, .card li {
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 8px;
-            letter-spacing: 0.2px;
         }
 
-        .card ul {
-            padding-left: 20px;
-        }
-
-        .card li {
-            font-size: 15px;
-            color: var(--text_secondary);
-            line-height: inherit;
-            margin-bottom: 6px;
-            letter-spacing: 0.2px;
-        }
-
-        /* 画布容器 */
         .canvas-wrapper {
-            position: relative;
-            text-align: center;
             margin-top: 48px;
             padding: 24px;
             background: var(--card_bg);
@@ -352,6 +316,8 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            width: 100%;
+            text-align: center;
         }
 
         canvas {
@@ -360,19 +326,51 @@
             touch-action: none;
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .control-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            gap: 12px;
+        }
+
+        .control-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text_secondary);
+            cursor: pointer;
+        }
+
+        .control-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--sub_color);
+            cursor: pointer;
         }
 
         .reset-btn {
-            position: absolute;
-            left: 10px;
-            bottom: 10px;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: var(--theme_color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             transition: 0.2s;
         }
         .reset-btn:hover {
@@ -381,64 +379,43 @@
 
         .data-panel {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 16px;
+            top: 16px;
             text-align: left;
             font-size: 15px;
-            padding: 8px 10px;
-            background: transparent;
-            border: none;
-            letter-spacing: 0.2px;
+            padding: 14px 18px;
+            background: var(--card_bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow_sm);
+            border: 1px solid var(--border_light);
             color: var(--text_secondary);
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
-        .data-panel .blue { 
-            color: var(--sub_color); 
-            font-weight: 600; 
-        }
+        .data-panel .blue { color: var(--sub_color); font-weight: 600; }
+        .data-panel .green { color: var(--highlight_color); font-weight: 600; }
+        .data-panel hr { margin: 8px 0; border: 0.5px solid var(--border_light); }
 
-        /* 提示文字 */
         .canvas-tip {
             margin-top: 16px;
             font-size: 15px;
             color: var(--text_secondary);
-            line-height: 1.4;
-            transition: color 0.3s ease;
         }
 
-        .zh, .en { display: none; }
-        :lang(zh-CN) .zh { display: initial; }
-        :lang(en) .en { display: initial; }
-
-        /* 夜间模式兼容卡片 */
-        body.dark-mode .card-def {
-            background: #162349;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-theorem {
-            background: #14293f;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-corollary {
-            background: #2c2442;
-            color: var(--text_color_night);
-        }
+        body.dark-mode .card-def { background: #162349; }
+        body.dark-mode .card-theorem { background: #14293f; }
+        body.dark-mode .card-corollary { background: #2c2442; }
         body.dark-mode .card p, 
         body.dark-mode .card li,
         body.dark-mode .canvas-tip,
-        body.dark-mode .data-panel {
-            color: var(--text_color_night);
-        }
+        body.dark-mode .data-panel { color: var(--text_color_night); }
 
-        /* 响应式适配 */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
                 top: calc(var(--header_height) + 0.4rem);
                 min-height: auto;
                 grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
                 padding: 0.35rem;
                 width: 100%;
                 left: 0;
@@ -459,6 +436,7 @@
                 box-shadow: none;
                 padding: 0;
                 font-size: 0.78rem;
+                color: #fff;
             }
             .side_nav_tooltip::before { display: none; }
             .main-wrapper {
@@ -467,11 +445,22 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 700px) {
+            .data-panel {
+                position: static;
+                margin-top: 16px;
+                text-align: center;
+            }
+            .control-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -480,7 +469,6 @@
         </div>
     </nav>
 
-    <!-- 左侧边栏 -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
@@ -496,275 +484,404 @@
         </a>
     </aside>
 
-    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
                 <h1>
-                    <span class="zh">07 - 垂径定理</span>
-                    <span class="en">07 - Perpendicular Chord Bisector Theorem</span>
+                    <span data-zh="07 · 垂径定理" data-en="07 · Perpendicular Chord Bisector Theorem"></span>
                 </h1>
             </div>
 
             <div class="content">
                 <div class="card card-def">
-                    <h3><span class="zh">📘 基本定义</span><span class="en">📘 Definition</span></h3>
-                    <p class="zh">垂直于弦的直径平分弦，并且平分弦所对的两条弧，这条直径所在的直线叫做圆的垂径。</p>
-                    <p class="en">The diameter perpendicular to a chord bisects the chord and the arcs subtended by the chord. This diameter is called the perpendicular chord bisector of the circle.</p>
+                    <h3><span data-zh="📘 基本定义" data-en="📘 Definition"></span></h3>
+                    <p data-zh="垂直于弦的直径平分弦，并且平分弦所对的两条弧，这条直径所在的直线叫做圆的垂径。" 
+                       data-en="The diameter perpendicular to a chord bisects the chord and the arcs subtended by the chord."></p>
                 </div>
-
                 <div class="card card-theorem">
-                    <h3><span class="zh">📐 定理内容</span><span class="en">📐 Theorem</span></h3>
-                    <p class="zh"><strong>在任意一个圆中：</strong></p>
-                    <p class="en"><strong>In any circle:</strong></p>
+                    <h3><span data-zh="📐 定理内容" data-en="📐 Theorem"></span></h3>
+                    <p data-zh="<strong>在任意一个圆中：</strong>" data-en="<strong>In any circle:</strong>"></p>
                     <ul>
-                        <li class="zh">垂直于弦的直径平分这条弦，并且平分弦所对的两条弧。</li>
-                        <li class="en">The diameter perpendicular to a chord bisects the chord and the two arcs subtended by the chord.</li>
+                        <li data-zh="垂直于弦的直径平分这条弦，并且平分弦所对的两条弧。" 
+                            data-en="The diameter perpendicular to a chord bisects the chord and the two arcs subtended by the chord."></li>
                     </ul>
                 </div>
-
                 <div class="card card-corollary">
-                    <h3><span class="zh">📌 重要推论</span><span class="en">📌 Corollary</span></h3>
-                    <p class="zh">1. 平分弦（不是直径）的直径垂直于弦，并且平分弦所对的两条弧；</p>
-                    <p class="en">1. The diameter that bisects a chord (not a diameter) is perpendicular to the chord and bisects the arcs subtended by the chord;</p>
-                    <p class="zh">2. 弦的垂直平分线经过圆心，并且平分弦所对的两条弧。</p>
-                    <p class="en">2. The perpendicular bisector of a chord passes through the center and bisects the arcs subtended by the chord.</p>
+                    <h3><span data-zh="📌 重要推论" data-en="📌 Corollary"></span></h3>
+                    <p data-zh="1. 平分弦（不是直径）的直径垂直于弦，并且平分弦所对的两条弧；" 
+                       data-en="1. The diameter that bisects a chord (not a diameter) is perpendicular to the chord and bisects the arcs subtended by the chord;"></p>
+                    <p data-zh="2. 弦的垂直平分线经过圆心，并且平分弦所对的两条弧。" 
+                       data-en="2. The perpendicular bisector of a chord passes through the center and bisects the arcs subtended by the chord."></p>
                 </div>
 
                 <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="geometryCanvas" width="880" height="400"></canvas>
-                        <button class="reset-btn" id="resetBtn">
-                            <span class="zh">重置</span>
-                            <span class="en">Reset</span>
-                        </button>
+                        
                         <div class="data-panel">
-                            <div class="blue">AH = BH = <span id="val">0.000</span></div>
+                            <div class="blue"><span data-zh="AH = BH = " data-en="AH = BH = "></span><span id="halfChord">0.000</span></div>
+                            <div><span data-zh="弦长 AB = " data-en="Chord AB = "></span><span id="chordLength">0.000</span></div>
+                            <div><span data-zh="半径 R = " data-en="Radius R = "></span><span id="radiusVal">1.000</span></div>
+                            <hr>
+                            <div class="green"><span data-zh="∠AHO = " data-en="∠AHO = "></span><span id="angleAHO">90</span>°</div>
+                        </div>
+
+                        <div class="control-bar">
+                            <div class="control-left">
+                                <label class="control-check">
+                                    <input type="checkbox" id="showRightAngleCheck" checked> 
+                                    <span data-zh="显示直角标记" data-en="Show right angle"></span>
+                                </label>
+                                <label class="control-check">
+                                    <input type="checkbox" id="showRadiiCheck"> 
+                                    <span data-zh="显示半径 OA、OB" data-en="Show radii OA, OB"></span>
+                                </label>
+                            </div>
+                            <button class="reset-btn" id="resetBtn">
+                                <span data-zh="↻ 重置图形" data-en="↻ Reset"></span>
+                            </button>
                         </div>
                     </div>
-                    <p class="canvas-tip">
-                        <span class="zh">🔹 拖动弦端点A/B，直径MN自动垂直平分弦AB</span>
-                        <span class="en">🔹 Drag chord endpoints A/B, diameter MN automatically bisects AB perpendicularly</span>
-                    </p>
+                    <p class="canvas-tip" data-zh="🔹 拖动弦端点 A 或 B · 直径 MN 自动垂直平分弦 AB · 直角标记和半径可开关" 
+                       data-en="🔹 Drag chord endpoints A or B · Diameter MN automatically bisects AB perpendicularly · Toggle right angle & radii"></p>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- ====================== JavaScript 逻辑部分 ====================== -->
 <script>
-    // 全局统一配置
-    const canvas = document.getElementById('geometryCanvas');
-    const ctx = canvas.getContext('2d');
-    const resetBtn = document.getElementById('resetBtn');
-    const val = document.getElementById('val');
-    const langBtn = document.getElementById('langToggleBtn');
-    const themeBtn = document.getElementById('themeToggleBtn');
-    let isChinese = true;
+    (function(){
+        "use strict";
 
-    // 垂径定理核心参数
-    const scale = 110;
-    const O = { x: 440, y: 200 };  // 圆心
-    const rDraw = scale;           // 圆半径
-    let A, B, M, N;                // A,B弦端点；M,N直径端点
-    let H;                         // AB中点(垂足)
-    let isDragging = false;
-    let dragTarget = null;         // 仅允许A、B可拖动
+        // ---------- DOM 元素 ----------
+        const canvas = document.getElementById('geometryCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+        const langBtn = document.getElementById('langToggleBtn');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        
+        const halfChordSpan = document.getElementById('halfChord');
+        const chordLengthSpan = document.getElementById('chordLength');
+        const radiusSpan = document.getElementById('radiusVal');
+        const angleAHOSpan = document.getElementById('angleAHO');
+        
+        const showRightAngleCheck = document.getElementById('showRightAngleCheck');
+        const showRadiiCheck = document.getElementById('showRadiiCheck');
 
-    // 初始化默认位置
-    function initPoints() {
-        A = { x: O.x - 80, y: O.y + 60 };
-        B = { x: O.x + 80, y: O.y + 60 };
-        updateDiameterFromChord();
-    }
+        // ---------- 全局变量 ----------
+        let isChinese = true;
+        const scale = 110;            
+        const O = { x: 440, y: 200 };
+        const r = 1;                 
+        const rDraw = r * scale;
+        
+        let A, B, M, N, H;
+        let isDragging = false;
+        let dragTarget = null;        // 只拖动 A 或 B
+        
+        let showRightAngle = true;
+        let showRadii = false;
 
-    // 约束点在圆上
-    function clampToCircle(p) {
-        const dx = p.x - O.x;
-        const dy = p.y - O.y;
-        const d = Math.hypot(dx, dy);
-        if(d < 1) return;
-        p.x = O.x + dx/d * rDraw;
-        p.y = O.y + dy/d * rDraw;
-    }
+        // 初始化位置
+        function initPoints() {
+            A = { x: O.x - 80, y: O.y + 60 };
+            B = { x: O.x + 80, y: O.y + 60 };
+            clampToCircle(A);
+            clampToCircle(B);
+            updateGeometry();
+        }
 
-    // 核心：由弦AB计算垂直平分线直径MN
-    function updateDiameterFromChord() {
-        clampToCircle(A);
-        clampToCircle(B);
-        // AB中点H
-        H = { x: (A.x+B.x)/2, y: (A.y+B.y)/2 };
-        // AB方向向量
-        const abx = B.x - A.x;
-        const aby = B.y - A.y;
-        // 垂直方向向量(MN方向)
-        const mx = -aby;
-        const my = abx;
-        const len = Math.hypot(mx, my);
-        // 直径两端点M、N
-        M = { x: O.x - mx/len * rDraw, y: O.y - my/len * rDraw };
-        N = { x: O.x + mx/len * rDraw, y: O.y + my/len * rDraw };
-    }
+        // 约束点在圆上
+        function clampToCircle(p) {
+            const dx = p.x - O.x;
+            const dy = p.y - O.y;
+            const d = Math.hypot(dx, dy);
+            if (d < 0.1) return;
+            p.x = O.x + dx / d * rDraw;
+            p.y = O.y + dy / d * rDraw;
+        }
 
-    // 计算弦半长 AH=BH
-    function getHalfLength() {
-        return Math.hypot(A.x - H.x, A.y - H.y) / scale;
-    }
+        // 由弦AB计算垂直平分直径MN及中点H
+        function updateGeometry() {
+            clampToCircle(A);
+            clampToCircle(B);
+            
+            // 中点H
+            H = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
+            
+            // AB方向向量
+            const abx = B.x - A.x;
+            const aby = B.y - A.y;
+            
+            // 垂直方向 (MN)
+            const mx = -aby;
+            const my = abx;
+            const len = Math.hypot(mx, my);
+            
+            M = { x: O.x - mx / len * rDraw, y: O.y - my / len * rDraw };
+            N = { x: O.x + mx / len * rDraw, y: O.y + my / len * rDraw };
+        }
 
-    // 绘制函数
-    function draw() {
-        ctx.clearRect(0, 0, 880, 400);
-        updateDiameterFromChord();
-        const len = getHalfLength();
+        // 计算数据
+        function getMetrics() {
+            const half = Math.hypot(A.x - H.x, A.y - H.y) / scale;
+            const chord = half * 2;
+            return { half, chord };
+        }
 
-        // 夜间模式颜色
-        const isDark = document.body.classList.contains('dark-mode');
-        const strokeColor = isDark ? '#e5e7eb' : '#333';
-        const fillColor = isDark ? '#e5e7eb' : '#000';
+        // 绘制直角标记 (在H处，显示OA与AB垂直？实际上OH⊥AB，在H处画直角)
+        function drawRightAngleAtH() {
+            const size = 16;
+            // 方向向量: HA 和 HO
+            const hax = A.x - H.x;
+            const hay = A.y - H.y;
+            const hox = O.x - H.x;
+            const hoy = O.y - H.y;
+            
+            const lenHA = Math.hypot(hax, hay);
+            const lenHO = Math.hypot(hox, hoy);
+            if (lenHA < 0.1 || lenHO < 0.1) return;
+            
+            const ux = hax / lenHA;
+            const uy = hay / lenHA;
+            const vx = hox / lenHO;
+            const vy = hoy / lenHO;
+            
+            const p1 = { x: H.x + ux * size, y: H.y + uy * size };
+            const p2 = { x: H.x + vx * size, y: H.y + vy * size };
+            const p3 = { x: H.x + ux * size + vx * size, y: H.y + uy * size + vy * size };
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+        }
 
-        // 1.绘制圆
-        ctx.beginPath();
-        ctx.arc(O.x, O.y, rDraw, 0, Math.PI*2);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        // 绘制
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateGeometry();
+            const { half, chord } = getMetrics();
+            
+            const isDark = document.body.classList.contains('dark-mode');
+            const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
+            const fillColor = isDark ? '#f8fafc' : '#0f172a';
+            const dashColor = isDark ? '#94a3b8' : '#64748b';
+            const lineColor = isDark ? '#cbd5e1' : '#475569';
+            
+            // 绘制圆
+            ctx.beginPath();
+            ctx.arc(O.x, O.y, rDraw, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            
+            // 绘制半径 OA, OB (可选)
+            if (showRadii) {
+                ctx.beginPath();
+                ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y);
+                ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y);
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制弦AB
+            ctx.beginPath();
+            ctx.moveTo(A.x, A.y);
+            ctx.lineTo(B.x, B.y);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            
+            // 绘制直径MN (虚线)
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(M.x, M.y);
+            ctx.lineTo(N.x, N.y);
+            ctx.strokeStyle = dashColor;
+            ctx.lineWidth = 2.0;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制连线OH (点线)
+            ctx.setLineDash([2, 3]);
+            ctx.beginPath();
+            ctx.moveTo(O.x, O.y);
+            ctx.lineTo(H.x, H.y);
+            ctx.strokeStyle = isDark ? '#a0aec0' : '#6b7280';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 直角标记 (可选)
+            if (showRightAngle) {
+                ctx.save();
+                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+                ctx.lineWidth = 2.2;
+                drawRightAngleAtH();
+                ctx.restore();
+            }
+            
+            // 绘制点
+            const drawPoint = (pt, radius, label, offsetX = 12, offsetY = 6) => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.shadowColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.font = 'bold 15px "Segoe UI", sans-serif';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(label, pt.x + offsetX, pt.y + offsetY);
+            };
+            
+            drawPoint(O, 5, 'O', 12, 6);
+            drawPoint(A, 7, 'A', 12, 6);
+            drawPoint(B, 7, 'B', 12, 6);
+            drawPoint(H, 5, 'H', 12, 6);
+            drawPoint(M, 5, 'M', 12, 6);
+            drawPoint(N, 5, 'N', 12, 6);
+            
+            // 更新面板
+            halfChordSpan.textContent = half.toFixed(3);
+            chordLengthSpan.textContent = chord.toFixed(3);
+            radiusSpan.textContent = r.toFixed(3);
+            angleAHOSpan.textContent = '90';  // 恒为90°
+        }
 
-        // 2.绘制弦AB：黑色实线
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.moveTo(A.x, A.y);
-        ctx.lineTo(B.x, B.y);
-        ctx.stroke();
+        // ---------- 交互 ----------
+        function getMouseCoord(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
 
-        // 3.绘制直径MN：黑色虚线
-        ctx.setLineDash([5,3]);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(M.x, M.y);
-        ctx.lineTo(N.x, N.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        function hitTest(x, y) {
+            if (Math.hypot(x - A.x, y - A.y) < 20) return A;
+            if (Math.hypot(x - B.x, y - B.y) < 20) return B;
+            return null;
+        }
 
-        // 4.绘制所有点
-        ctx.fillStyle = fillColor;
-        // 圆心O
-        ctx.beginPath(); ctx.arc(O.x, O.y, 4, 0, Math.PI*2); ctx.fill();
-        // 中点H
-        ctx.beginPath(); ctx.arc(H.x, H.y, 4, 0, Math.PI*2); ctx.fill();
-        // 可拖动点A、B
-        ctx.beginPath(); ctx.arc(A.x, A.y, 6, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(B.x, B.y, 6, 0, Math.PI*2); ctx.fill();
-        // 不可拖动直径端点M、N
-        ctx.beginPath(); ctx.arc(M.x, M.y, 4, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(N.x, N.y, 4, 0, Math.PI*2); ctx.fill();
-
-        // 标注文字
-        ctx.font = '15px Arial';
-        ctx.fillStyle = strokeColor;
-        ctx.fillText('O', O.x+8, O.y+4);
-        ctx.fillText('A', A.x+8, A.y+4);
-        ctx.fillText('B', B.x+8, B.y+4);
-        ctx.fillText('H', H.x+8, H.y+4);
-        ctx.fillText('M', M.x+8, M.y+4);
-        ctx.fillText('N', N.x+8, N.y+4);
-
-        val.textContent = len.toFixed(3);
-    }
-
-    // 仅检测A、B是否被点击
-    function getDragTarget(x,y){
-        if(Math.hypot(x-A.x, y-A.y) < 15) return A;
-        if(Math.hypot(x-B.x, y-B.y) < 15) return B;
-        return null;
-    }
-
-    // ====================== 优化后的鼠标交互 ======================
-    // 1. 鼠标按下：开始拖动
-    canvas.addEventListener('mousedown', e => {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        dragTarget = getDragTarget(x, y);
-        if (dragTarget) {
-            isDragging = true;
-            canvas.style.cursor = 'grabbing';
+        function onDragStart(e) {
             e.preventDefault();
+            const coord = getMouseCoord(e);
+            dragTarget = hitTest(coord.x, coord.y);
+            if (dragTarget) {
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+            }
         }
-    });
 
-    // 2. 画布内移动：悬停变手掌光标
-    canvas.addEventListener('mousemove', e => {
-        if (isDragging) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const hoverTarget = getDragTarget(x, y);
-        canvas.style.cursor = hoverTarget ? 'grab' : 'default';
-    });
-
-    // 3. 全局移动：拖动逻辑（离开画布仍生效）
-    document.addEventListener('mousemove', e => {
-        if (!isDragging || !dragTarget) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        dragTarget.x = x;
-        dragTarget.y = y;
-        draw();
-    });
-
-    // 4. 全局抬起：结束拖动
-    document.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            dragTarget = null;
-            canvas.style.cursor = 'default';
+        function onDragMove(e) {
+            if (!isDragging || !dragTarget) return;
+            e.preventDefault();
+            const coord = getMouseCoord(e);
+            dragTarget.x = coord.x;
+            dragTarget.y = coord.y;
+            draw();
         }
-    });
 
-    // 5. 鼠标离开画布：不中断操作
-    canvas.addEventListener('mouseleave', (e) => {
-        if (isDragging) e.preventDefault();
-    });
+        function onDragEnd(e) {
+            if (isDragging) {
+                isDragging = false;
+                dragTarget = null;
+                canvas.style.cursor = 'default';
+                draw();
+            }
+        }
 
-    // 重置
-    resetBtn.addEventListener('click', ()=>{
+        function onHover(e) {
+            if (isDragging) return;
+            const coord = getMouseCoord(e);
+            const target = hitTest(coord.x, coord.y);
+            canvas.style.cursor = target ? 'grab' : 'default';
+        }
+
+        function resetToDefault() {
+            initPoints();
+            draw();
+        }
+
+        // ---------- 语言/主题 ----------
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+            i18nElements.forEach(el => {
+                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+            });
+            langBtn.textContent = isChinese ? "English" : "中文";
+            updateThemeButtonText();
+        }
+
+        function updateThemeButtonText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            themeBtn.textContent = isChinese 
+                ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+        }
+
+        function toggleLanguage() {
+            isChinese = !isChinese;
+            applyLanguage();
+            draw();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            updateThemeButtonText();
+            draw();
+        }
+
+        // ---------- 绑定 ----------
+        function bindEvents() {
+            canvas.addEventListener('mousedown', onDragStart);
+            canvas.addEventListener('mousemove', onHover);
+            window.addEventListener('mousemove', onDragMove);
+            window.addEventListener('mouseup', onDragEnd);
+            
+            canvas.addEventListener('touchstart', onDragStart, { passive: false });
+            canvas.addEventListener('touchmove', onDragMove, { passive: false });
+            canvas.addEventListener('touchend', onDragEnd);
+            canvas.addEventListener('touchcancel', onDragEnd);
+            
+            resetBtn.addEventListener('click', resetToDefault);
+            langBtn.addEventListener('click', toggleLanguage);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            showRightAngleCheck.addEventListener('change', (e) => {
+                showRightAngle = e.target.checked;
+                draw();
+            });
+            showRadiiCheck.addEventListener('change', (e) => {
+                showRadii = e.target.checked;
+                draw();
+            });
+            
+            window.addEventListener('resize', () => draw());
+        }
+
+        // 启动
+        applyLanguage();
         initPoints();
+        bindEvents();
         draw();
-    });
-
-    // 语言切换
-    function toggleLang(){
-        isChinese = !isChinese;
-        document.documentElement.lang = isChinese ? 'zh-CN' : 'en';
-        langBtn.textContent = isChinese ? "English" : "中文";
-        updateThemeBtnText();
-        draw();
-    }
-
-    // 主题切换
-    function toggleTheme(){
-        document.body.classList.toggle('dark-mode');
-        updateThemeBtnText();
-        draw();
-    }
-
-    function updateThemeBtnText(){
-        const isDark = document.body.classList.contains('dark-mode');
-        themeBtn.textContent = isChinese 
-            ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-            : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-    }
-
-    // 绑定事件
-    langBtn.addEventListener('click', toggleLang);
-    themeBtn.addEventListener('click', toggleTheme);
-
-    // 初始化
-    initPoints();
-    draw();
+    })();
 </script>
 	<script src="../colorblind.js"></script>
 </body>
