@@ -614,12 +614,16 @@ font-weight: 800;
 position: fixed;
 right: 1rem;
 bottom: 5.65rem;
-width: min(360px, calc(100vw - 2rem));
+width: clamp(280px, 34vw, 430px);
+max-width: calc(100vw - 2rem);
+max-height: min(72vh, 620px);
 border: 1px solid var(--line_color);
 background: var(--chat_panel_bg_day);
 box-shadow: 0 18px 36px rgba(13, 50, 115, 0.24);
 overflow: hidden;
 z-index: 60;
+display: grid;
+grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 body.night_mode .chat_panel {
@@ -647,8 +651,8 @@ color: inherit;
 }
 
 .chat_messages {
-min-height: 170px;
-max-height: 260px;
+min-height: 190px;
+max-height: min(48vh, 390px);
 overflow-y: auto;
 padding: 0.65rem;
 display: grid;
@@ -682,7 +686,9 @@ gap: 0.45rem;
 .chat_input_row button {
 background: var(--theme_color);
 color: #fff;
-padding: 0.5rem 0.8rem;
+padding: 0.52rem 0.82rem;
+min-width: 68px;
+font-size: 0.9rem;
 }
 
 .floating_actions {
@@ -696,12 +702,34 @@ gap: 0.45rem;
 }
 
 .floating_btn {
-min-height: 48px;
-padding: 0.58rem 0.9rem;
+min-height: clamp(40px, 4.4vw, 48px);
+padding: clamp(0.42rem, 1.5vw, 0.58rem) clamp(0.68rem, 2.5vw, 0.9rem);
+font-size: clamp(0.82rem, 1.75vw, 0.92rem);
 background: var(--theme_color);
 border: 2px solid var(--sub_color);
 color: #ffffff;
 box-shadow: var(--shadow_soft);
+}
+
+#chat_fab_btn {
+min-width: clamp(110px, 13vw, 150px);
+}
+
+#back_to_top_btn.icon_btn {
+position: fixed;
+left: 50%;
+right: auto;
+bottom: 1rem;
+transform: translateX(-50%);
+width: clamp(40px, 4.2vw, 46px);
+min-height: clamp(40px, 4.2vw, 46px);
+padding: 0;
+font-size: clamp(1rem, 2.1vw, 1.2rem);
+line-height: 1;
+display: grid;
+place-items: center;
+border-radius: 999px;
+z-index: 72;
 }
 
 .hidden_btn {
@@ -883,7 +911,55 @@ min-height: 540px;
 }
 
 .chat_panel {
-bottom: 5.25rem;
+right: 0.75rem;
+bottom: 4.7rem;
+width: min(96vw, 420px);
+max-height: 68vh;
+}
+
+.chat_messages {
+max-height: min(44vh, 320px);
+}
+}
+
+@media (max-width: 520px) {
+.chat_panel {
+left: 0.5rem;
+right: 0.5rem;
+bottom: 4.35rem;
+width: auto;
+max-width: none;
+max-height: 66vh;
+}
+
+.chat_head {
+padding: 0.58rem 0.62rem;
+}
+
+.chat_messages {
+min-height: 160px;
+max-height: min(42vh, 280px);
+padding: 0.58rem;
+}
+
+.chat_input_row {
+padding: 0.55rem;
+grid-template-columns: 1fr;
+}
+
+.chat_input_row button {
+width: 100%;
+}
+
+.floating_actions {
+right: 0.5rem;
+bottom: 0.5rem;
+gap: 0.38rem;
+}
+
+#back_to_top_btn.icon_btn {
+left: 50%;
+bottom: 0.5rem;
 }
 }
 
