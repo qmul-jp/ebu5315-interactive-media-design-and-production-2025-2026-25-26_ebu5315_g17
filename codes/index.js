@@ -317,6 +317,10 @@ function apply_language() {
 
 	language_toggle_btn.textContent = is_chinese ? "EN" : "中文";
 	mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+	if (back_to_top_btn) {
+		back_to_top_btn.setAttribute("aria-label", lang_dict.back_to_top);
+		back_to_top_btn.setAttribute("title", lang_dict.back_to_top);
+	}
 
 	if (chat_messages.children.length === 0) {
 		add_chat_message("bot", lang_dict.chat_welcome);
@@ -372,10 +376,124 @@ function start_slider_timer() {
 	}, slider_interval_ms);
 }
 
+function normalize_math_notation(raw_content) {
+	if (typeof raw_content !== "string") {
+		return raw_content;
+	}
+
+	let normalized = raw_content;
+
+	function looks_like_math(expr_text) {
+		if (typeof expr_text !== "string") {
+			return false;
+		}
+
+		const expr = expr_text.trim();
+		if (!expr) {
+			return false;
+		}
+
+		if (/\\[a-zA-Z]+/.test(expr)) {
+			return true;
+		}
+
+		if (/[=^_π∏√]|\d\s*[+\-*/]\s*\d/.test(expr)) {
+			return true;
+		}
+
+		if (/^[a-zA-Z](?:\^[0-9]+|_[a-zA-Z0-9]+)?$/.test(expr)) {
+			return true;
+		}
+
+		if (/\bpi\b/i.test(expr)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	function normalize_math_expr(expr_text) {
+		let expr = expr_text.trim();
+		expr = expr.replace(/\bpi\b/gi, "\\\\pi");
+		return expr;
+	}
+
+	// Convert API style display blocks like: [ A = \pi r^2 ] -> \[ A = \pi r^2 \]
+	// Skip markdown links [text](url) by checking the immediate next non-space char.
+	normalized = normalized.replace(/\[([^\]\n]+)\]/g, (match, inner, offset, source) => {
+		const rest = source.slice(offset + match.length);
+		const next_non_space = rest.match(/^\s*(.)/);
+		if (next_non_space && next_non_space[1] === "(") {
+			return match;
+		}
+
+		if (looks_like_math(inner)) {
+			return `\\[${normalize_math_expr(inner)}\\]`;
+		}
+
+		return match;
+	});
+
+	// Convert inline parenthesized math like: ( \\pi r^2 ) or ( r ) -> \( ... \)
+	normalized = normalized.replace(/\(([^()\n]+)\)/g, (match, inner) => {
+		if (looks_like_math(inner)) {
+			return `\\(${normalize_math_expr(inner)}\\)`;
+		}
+
+		return match;
+	});
+
+	return normalized;
+}
+
+function render_katex_in_element(container_element) {
+	if (typeof renderMathInElement !== "function") {
+		return false;
+	}
+
+	renderMathInElement(container_element, {
+		delimiters: [
+			{ left: "$$", right: "$$", display: true },
+			{ left: "\\[", right: "\\]", display: true },
+			{ left: "\\(", right: "\\)", display: false }
+		],
+		throwOnError: false
+	});
+
+	return true;
+}
+
+function render_markdown_and_math(bubble_element, raw_content) {
+	const normalized_content = normalize_math_notation(raw_content);
+
+	// Parse Markdown (if marked is available)
+	if (typeof marked !== "undefined") {
+		bubble_element.innerHTML = marked.parse(normalized_content);
+	} else {
+		bubble_element.textContent = normalized_content;
+	}
+
+	if (render_katex_in_element(bubble_element)) {
+		return;
+	}
+
+	// Typeset MathJax equations (if MathJax is available)
+	if (typeof MathJax !== "undefined" && MathJax.typesetPromise) {
+		MathJax.typesetPromise([bubble_element]).catch((err) => console.error("MathJax error:", err));
+	}
+}
+
 function add_chat_message(role_name, content_text) {
 	const bubble = document.createElement("div");
 	bubble.className = `chat_bubble ${role_name}`;
-	bubble.textContent = content_text;
+	
+	if (role_name === "bot") {
+		render_markdown_and_math(bubble, content_text);
+	} else {
+		// User messages just stay as plain text to avoid injection issues
+		bubble.textContent = content_text;
+	}
+	
 	chat_messages.appendChild(bubble);
 	chat_messages.scrollTop = chat_messages.scrollHeight;
 }
@@ -392,12 +510,63 @@ function close_chat_panel() {
 	chat_panel.classList.add("hidden_panel");
 }
 
-function get_ai_response(user_message) {
+let chat_history = [
+	{ role: "system", content: "You are CircleBot, a helpful assistant specializing in circle geometry learning. Provide concise and educational answers to geometry questions." }
+];
+
+function get_fallback_response(user_message) {
 	const locale = get_locale();
 	const lang_dict = i18n_text[locale];
+	
+	// Convert simple Chinese numerals to Arabic numerals for regex matching
+	const cnNums = { '一': '1', '二': '2', '两': '2', '三': '3', '四': '4', '五': '5', '六': '6', '七': '7', '八': '8', '九': '9', '十': '10' };
+	let text_for_calc = user_message.toLowerCase();
+	text_for_calc = text_for_calc.replace(/[一二两三四五六七八九十]/g, match => cnNums[match]);
+
+	// Regex to find things like "半径为2", "radius is 4.5", "直径等于10"
+	const conditionRegex = /(radius|半径|diameter|直径)\s*(?:is|为|是|等于|:|=|：)\s*(\d+(?:\.\d+)?)/;
+	const conditionMatch = text_for_calc.match(conditionRegex);
+
+	if (conditionMatch) {
+		const givenType = conditionMatch[1];
+		let val = parseFloat(conditionMatch[2]);
+		// Normalize to radius for calculation
+		let r = (givenType.includes('diameter') || givenType.includes('直径')) ? val / 2 : val;
+		
+		let answers = [];
+		let askArea = text_for_calc.includes("area") || text_for_calc.includes("面积");
+		let askCircum = text_for_calc.includes("circumference") || text_for_calc.includes("perimeter") || text_for_calc.includes("周长");
+		
+		// If they didn't explicitly ask for something, maybe we just calculate both
+		if (!askArea && !askCircum) {
+			askArea = true;
+			askCircum = true;
+		}
+
+		if (askArea) {
+			let area = (Math.PI * r * r).toFixed(2);
+			answers.push(locale === "en" ? `Area ≈ ${area}` : `面积 A ≈ ${area}`);
+		}
+		if (askCircum) {
+			let circum = (2 * Math.PI * r).toFixed(2);
+			answers.push(locale === "en" ? `Circumference ≈ ${circum}` : `周长 C ≈ ${circum}`);
+		}
+		
+		if (answers.length > 0) {
+			let intro = locale === "en" ? `Based on radius r = ${r}: ` : `💡 发现计算请求！已知半径 r = ${r}：`;
+			return intro + answers.join(", ") + "（π 取" + Math.PI.toFixed(4) + "）";
+		}
+	}
+
 	const message_text = user_message.toLowerCase();
 
-	if (message_text.includes("radius") || message_text.includes("半径") || message_text.includes("diameter") || message_text.includes("直径")) {
+	if (message_text.includes("diameter") || message_text.includes("直径")) {
+		return locale === "en" ?
+			"The diameter is a straight line segment that passes through the center of the circle and whose endpoints lie on the circle. It is exactly twice the length of the radius (d = 2r)." :
+			"直径是通过圆心且两个端点都在圆周上的线段。长度正好是半径的两倍（即 d = 2r）。";
+	}
+
+	if (message_text.includes("radius") || message_text.includes("半径")) {
 		return lang_dict.chat_radius;
 	}
 
@@ -417,10 +586,108 @@ function get_ai_response(user_message) {
 		return lang_dict.chat_chord;
 	}
 
-	return lang_dict.chat_default;
+	if (message_text.includes("hello") || message_text.includes("hi") || message_text.includes("你好") || message_text.includes("您好")) {
+		return locale === "en" ? "Hello! What circle geometry topics can I help you with today?" : "你好！你想了解什么关于圆的知识呢？";
+	}
+
+	if (message_text.includes("谢谢") || message_text.includes("thank") || message_text.includes("thx")) {
+		return locale === "en" ? "You're welcome! Keep up the good learning!" : "不客气，继续加油学习吧！";
+	}
+
+	if (message_text.includes("喜欢") || message_text.includes("赞") || message_text.includes("love") || message_text.includes("awesome") || message_text.includes("good")) {
+		return locale === "en" ? "Thank you! I'm CircleBot, here to make geometry fun!" : "谢谢夸奖！我是致力于帮你学习圆知识的CircleBot！";
+	}
+
+	if (message_text.includes("你是谁") || message_text.includes("who are you") || message_text.includes("what are you") || message_text.includes("名字")) {
+		return locale === "en" ? "I am CircleBot, a simple geometry learning assistant." : "我是 CircleBot，一个简易的几何学习助手。";
+	}
+
+	return locale === "en" ? 
+		"Offline / Fast Mode: I am not connected to the AI network at the moment. I can primarily answer basic questions about radius, area, circumference, tangent, and chord." :
+		"离线/简易模式：当前未连接到AI智库或配置失效。我可能听不懂复杂的话，目前我更擅长回答关于半径、面积、周长、切线和弦等基础知识。";
 }
 
-function handle_send_message() {
+async function get_ai_response(user_message, bubble) {
+	const locale = get_locale();
+	const lang_dict = i18n_text[locale];
+	const config = typeof AI_CONFIG !== "undefined" ? AI_CONFIG : null;
+
+	// If no internet connection, or API Key is missing / default
+	if (!navigator.onLine || !config || !config.sk || config.sk === "YOUR_DEEPSEEK_API_KEY_HERE" || config.sk === "") {
+		let reason = !navigator.onLine ? "No Internet (Offline)" : "API Key is empty or default in config_ai.js";
+		render_markdown_and_math(bubble, `[Debug: ${reason}]\n\n${get_fallback_response(user_message)}`);
+		chat_messages.scrollTop = chat_messages.scrollHeight;
+		return;
+	}
+
+	chat_history.push({ role: "user", content: user_message });
+
+	try {
+		bubble.textContent = "..."; // Loading state定
+		
+		let response = null;
+		let maxRetries = 3;
+		let debugLog = [];
+		
+		for (let i = 0; i < maxRetries; i++) {
+			try {
+				response = await fetch("https://api.deepseek.com/chat/completions", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${config.sk}`
+					},
+					body: JSON.stringify({
+						model: "deepseek-chat",
+						messages: chat_history
+					})
+				});
+				
+				// Break the loop if request is successful
+				if (response.ok) {
+					break;
+				} else if (response.status >= 500) {
+					// Server instability, wait and retry
+					debugLog.push(`Attempt ${i+1}: 5xx Error (${response.status})`);
+					console.warn(`AI API server error ${response.status}. Retrying... (${i + 1}/${maxRetries})`);
+					await new Promise(res => setTimeout(res, 2000)); 
+				} else {
+					// 4xx errors (e.g., unauthorized, bad request), no point in retrying
+					debugLog.push(`Attempt ${i+1}: Client/Auth Error (${response.status})`);
+					break;
+				}
+			} catch (networkError) {
+				debugLog.push(`Attempt ${i+1}: Exception/CORS/Offline (${networkError.message})`);
+				console.warn(`Network error during AI API call. Retrying... (${i + 1}/${maxRetries})`, networkError);
+				if (i < maxRetries - 1) {
+					await new Promise(res => setTimeout(res, 2000));
+				}
+			}
+		}
+
+		if (response && response.ok) {
+			const data = await response.json();
+			const bot_reply = data.choices[0].message.content;
+			chat_history.push({ role: "assistant", content: bot_reply });
+			render_markdown_and_math(bubble, bot_reply);
+			// Automatically scroll to bottom if content increases
+			chat_messages.scrollTop = chat_messages.scrollHeight;
+		} else {
+			const errDesc = response ? await response.text() : "Network/Timeout Error after retries";
+			console.error("AI API Error logs:", debugLog, "Final Response Details:", errDesc);
+			render_markdown_and_math(bubble, `[Debug API Failed!]\nHistory: ${debugLog.join(" -> ")}\nDetails: ${errDesc}\n\n${get_fallback_response(user_message)}`);
+			chat_history.pop(); // Remove user message since it failed
+			chat_messages.scrollTop = chat_messages.scrollHeight;
+		}
+	} catch (error) {
+		console.error("AI Connection Unexpected Error:", error);
+		render_markdown_and_math(bubble, `[Debug Exception!]\nMsg: ${error.message}\n\n${get_fallback_response(user_message)}`);
+		chat_history.pop();
+		chat_messages.scrollTop = chat_messages.scrollHeight;
+	}
+}
+
+async function handle_send_message() {
 	const user_text = chat_input.value.trim();
 	if (!user_text) {
 		return;
@@ -429,9 +696,14 @@ function handle_send_message() {
 	add_chat_message("user", user_text);
 	chat_input.value = "";
 
-	setTimeout(() => {
-		add_chat_message("bot", get_ai_response(user_text));
-	}, 300);
+	// Create and hold bot bubble so we can update it after awaiting API response
+	const bubble = document.createElement("div");
+	bubble.className = `chat_bubble bot`;
+	bubble.textContent = "...";
+	chat_messages.appendChild(bubble);
+	chat_messages.scrollTop = chat_messages.scrollHeight;
+
+	await get_ai_response(user_text, bubble);
 }
 
 function handle_contact_submit(event) {
@@ -458,11 +730,7 @@ function update_back_to_top_visibility() {
 		return;
 	}
 
-	if (window.scrollY > 280) {
-		back_to_top_btn.classList.remove("hidden_btn");
-	} else {
-		back_to_top_btn.classList.add("hidden_btn");
-	}
+	back_to_top_btn.classList.remove("hidden_btn");
 }
 
 function scroll_to_top() {

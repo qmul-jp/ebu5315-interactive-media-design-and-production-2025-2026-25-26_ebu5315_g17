@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04 - 圆内接四边形定理 | Cyclic Quadrilateral Theorem</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 核心配色变量 - 完全对齐game-03 */
+        :root {
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #374151;
+            --text_color_night: #e5e7eb;
+            --border_color: #e5e7eb;
+            --border_color_night: #272e48;
+
+            --text_primary: #333333;
+            --text_secondary: #666666;
+            --text_tertiary: #888888;
+            --card_bg: #ffffff;
+            --border_light: #eeeeee;
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
+            --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
+            --ui_radius: 0px;
+            --rail_width: 92px;
+            --header_height: 74px;
+
+            /* 动画通用配置 */
+            --animate-duration: 0.4s;
+            --animate-ease: ease-out;
+        }
+
+        /* 导航栏入场动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        /* 统一夜间模式 */
+        body.dark-mode {
+            --text_primary: var(--text_color_night);
+            --text_secondary: #dddddd;
+            --text_tertiary: #bbbbbb;
+            --card_bg: var(--bg_color_night);
+            --border_light: var(--border_color_night);
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
+            background: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+
+        body {
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg_color);
+            padding: 0.95rem 1rem 2rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* ====================== 顶部导航栏 ====================== */
+        .navbar {
+            position: sticky;
+            top: 0.95rem;
+            z-index: 40;
+            height: var(--header_height);
+            padding: 0 1.15rem;
+            background: var(--theme_color);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--shadow_soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.55rem;
+            opacity: 0;
+            animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            line-height: 1;
+        }
+
+        .logo::before {
+            content: "◯";
+            width: 2.25rem;
+            height: 2.25rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.72);
+            font-size: 1.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .lang-toggle, .theme-toggle {
+            min-height: 38px;
+            padding: 0.45rem 0.9rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 0px;
+        }
+
+        .lang-toggle:hover, .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ====================== 左侧边栏 ====================== */
+        .side_nav {
+            position: fixed;
+            left: 1rem;
+            top: calc(var(--header_height) + 1rem);
+            bottom: 2rem;
+            width: var(--rail_width);
+            background: var(--sub_color);
+            padding: 1.1rem 0.55rem;
+            display: grid;
+            align-content: start;
+            justify-items: center;
+            gap: 0.55rem;
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+            overflow: visible;
+            z-index: 240;
+            opacity: 0;
+            animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
+        }
+
+        .side_nav_link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 3.2rem;
+            min-height: 3.2rem;
+            padding: 0.35rem;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .side_nav_icon {
+            width: 1.52rem;
+            height: 1.52rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .side_nav_icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vector-effect: non-stroke;
+        }
+
+        .side_nav_tooltip {
+            position: absolute;
+            left: calc(100% + 0.72rem);
+            top: 50%;
+            transform: translate(-0.35rem, -50%);
+            opacity: 0;
+            pointer-events: none;
+            background: #141414;
+            color: #ffffff;
+            font-size: 0.86rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+            padding: 0.52rem 0.64rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            z-index: 9999;
+        }
+
+        .side_nav_tooltip::before {
+            content: "";
+            position: absolute;
+            left: -0.38rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border-top: 0.38rem solid transparent;
+            border-bottom: 0.38rem solid transparent;
+            border-right: 0.38rem solid #141414;
+        }
+
+        .side_nav_link:hover,
+        .side_nav_link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.42);
+            transform: none;
+        }
+
+        .side_nav_link:hover .side_nav_tooltip,
+        .side_nav_link:focus-visible .side_nav_tooltip {
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
+
+        /* ====================== 主内容适配布局 ====================== */
+        .main-wrapper {
+            margin-left: calc(var(--rail_width) + 2.5rem);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--rail_width) - 2.5rem);
+            opacity: 0;
+            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
+        }
+
+        /* 原有样式保留 */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--card_bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow_md);
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            padding: 24px 20px;
+        }
+
+        .card {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .card-def {
+            border-left: 4px solid var(--theme_color);
+            background: rgba(13, 50, 115, 0.05);
+        }
+        .card-theorem {
+            border-left: 4px solid var(--sub_color);
+            background: rgba(68, 113, 194, 0.05);
+        }
+        .card-corollary {
+            border-left: 4px solid var(--highlight_color);
+            background: rgba(232, 160, 191, 0.05);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: var(--text_secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+
+        .card li {
+            font-size: 15px;
+            color: var(--text_secondary);
+            line-height: 1.5;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        /* 画布样式 */
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--card_bg);
+            border: 1px solid var(--border_light);
+            border-radius: 8px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        canvas {
+            background: var(--card_bg);
+            border-radius: 6px;
+            touch-action: none;
+            border: 1px solid var(--border_light);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 12px;
+            background: var(--theme_color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            background: var(--sub_color);
+        }
+
+        .data-panel {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translate(30px, -50%);
+            text-align: left;
+            font-size: 15px;
+            line-height: 1.8;
+            min-width: 200px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            letter-spacing: 0.2px;
+            color: var(--text_secondary);
+            transition: color 0.3s ease;
+        }
+        .data-panel .blue { 
+            color: var(--sub_color); 
+            font-weight: 600; 
+        }
+        .data-panel .green {
+            color: var(--highlight_color);
+            font-weight: 600;
+        }
+
+        .canvas-tip {
+            margin-top: 12px;
+            font-size: 15px;
+            color: var(--text_secondary);
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        .zh, .en { display: none; }
+        :lang(zh-CN) .zh { display: initial; }
+        :lang(en) .en { display: initial; }
+
+        /* 夜间模式卡片兼容 */
+        body.dark-mode .card-def {
+            background: #162349;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card-theorem {
+            background: #14293f;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card-corollary {
+            background: #2c2442;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card p, 
+        body.dark-mode .card li,
+        body.dark-mode .canvas-tip,
+        body.dark-mode .data-panel {
+            color: var(--text_color_night);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 980px) {
+            .side_nav {
+                position: sticky;
+                top: calc(var(--header_height) + 0.4rem);
+                min-height: auto;
+                grid-template-columns: repeat(3, 1fr);
+                align-items: center;
+                justify-items: stretch;
+                padding: 0.35rem;
+                width: 100%;
+                left: 0;
+                bottom: auto;
+            }
+            .side_nav_link {
+                width: 100%;
+                min-height: auto;
+                padding: 0.42rem 0.2rem;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .side_nav_tooltip {
+                position: static;
+                transform: none;
+                opacity: 1;
+                background: transparent;
+                box-shadow: none;
+                padding: 0;
+                font-size: 0.78rem;
+            }
+            .side_nav_tooltip::before { display: none; }
+            .main-wrapper {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部导航栏（同game-03） -->
+    <nav class="navbar">
+        <a href="../index.html" class="logo">CircleLab</a>
+        <div class="nav-buttons">
+            <button class="lang-toggle" id="langToggleBtn">English</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
+        </div>
+    </nav>
+
+    <!-- 左侧导航栏（同game-03，游戏页激活） -->
+    <aside class="side_nav" aria-label="Primary menu">
+        <a class="side_nav_link" href="../index.html" aria-label="Homepage">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
+            <span class="side_nav_tooltip" data-zh="主页" data-en="Homepage">主页</span>
+        </a>
+        <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"></rect><path d="M9 4.5H15"></path><path d="M9 10H15"></path><path d="M9 14H13"></path><path d="M9 18H12"></path><path d="M14 14L15.5 15.5L18 13"></path></svg></span>
+            <span class="side_nav_tooltip" data-zh="测验" data-en="Quiz">测验</span>
+        </a>
+        <a class="side_nav_link active" href="./game.html" aria-label="Game">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path><path d="M8.5 13.5V16.5"></path><path d="M7 15H10"></path><circle cx="15.5" cy="14.5" r="0.8" fill="currentColor"></circle><circle cx="17.8" cy="16.2" r="0.8" fill="currentColor"></circle></svg></span>
+            <span class="side_nav_tooltip" data-zh="游戏" data-en="Game">游戏</span>
+        </a>
+    </aside>
+
+    <!-- 主内容区域（包裹原有内容，自动适配布局） -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>
+                    <span class="zh">04 - 圆内接四边形定理</span>
+                    <span class="en">04 - Cyclic Quadrilateral Theorem</span>
+                </h1>
+            </div>
+
+            <div class="content">
+                <div class="card card-def">
+                    <h3><span class="zh">📘 基本定义</span><span class="en">Definition</span></h3>
+                    <p class="zh">四个顶点都在同一个圆上，且按顺时针依次为 A、B、C、D 的四边形，叫做圆内接四边形。</p>
+                    <p class="en">A quadrilateral with vertices A, B, C, D in clockwise order on a circle is called a cyclic quadrilateral.</p>
+                </div>
+
+                <div class="card card-theorem">
+                    <h3><span class="zh">📐 定理内容</span><span class="en">Theorem</span></h3>
+                    <p class="zh"><strong>在任意一个圆中：</strong></p>
+                    <p class="en"><strong>In any circle:</strong></p>
+                    <ul>
+                        <li class="zh">圆内接四边形的对角互补，即对角之和等于 180°</li>
+                        <li class="en">The opposite angles of a cyclic quadrilateral are supplementary, summing to 180°.</li>
+                    </ul>
+                </div>
+
+                <div class="card card-corollary">
+                    <h3><span class="zh">📌 重要推论</span><span class="en">Corollary</span></h3>
+                    <p class="zh">如果一个四边形的一组对角互补，那么这个四边形内接于一个圆。</p>
+                    <p class="en">If a pair of opposite angles of a quadrilateral are supplementary, the quadrilateral is cyclic.</p>
+                </div>
+
+                <!-- 交互式图形区域 -->
+                <div class="canvas-wrapper">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                        <button class="reset-btn" id="resetBtn">
+                            <span class="zh">重置图形</span>
+                            <span class="en">Reset</span>
+                        </button>
+                        <div class="data-panel">
+                            <div class="blue">∠ABC：<span id="angB">0</span>°</div>
+                            <div class="blue">∠BCD：<span id="angC">0</span>°</div>
+                            <div class="blue">∠CDA：<span id="angD">0</span>°</div>
+                            <div class="blue">∠DAB：<span id="angA">0</span>°</div>
+                            <br>
+                            <div class="green">∠DAB + ∠BCD = <span id="sum1">0</span>°</div>
+                            <div class="green">∠ABC + ∠CDA = <span id="sum2">0</span>°</div>
+                        </div>
+                    </div>
+                    <p class="canvas-tip">
+                        <span class="zh">🔹 拖动圆上的点 A、B、C、D 任意移动，靠近直径两端会自动吸附</span>
+                        <span class="en">🔹 Drag points A, B, C, D on the circle</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resetBtn = document.getElementById('resetBtn');
+    const langToggleBtn = document.getElementById('langToggleBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    const cx = 270, cy = 220;
+    const radius = 160;
+    const diamRight = 0;
+    const diamLeft = Math.PI;
+    const snapDistance = 9;
+
+    const initialPoints = {
+      A: 5 * Math.PI / 4,
+      B: 7 * Math.PI / 4,
+      C: Math.PI / 4,
+      D: 3 * Math.PI / 4
+    };
+
+    let points = JSON.parse(JSON.stringify(initialPoints));
+    let dragging = null;
+    let hoverPoint = null;
+    let isChinese = true;
+
+    // 语言初始化（默认中文）
+    function initLang() {
+        document.documentElement.lang = 'zh-CN';
+        langToggleBtn.textContent = "English";
+        updateThemeBtnText();
+        draw();
+    }
+
+    // 语言切换
+    function toggleLang() {
+        isChinese = !isChinese;
+        const html = document.documentElement;
+        if (html.lang === 'zh-CN') {
+            html.lang = 'en';
+            langToggleBtn.textContent = '中文';
+        } else {
+            html.lang = 'zh-CN';
+            langToggleBtn.textContent = 'English';
+        }
+        updateThemeBtnText();
+        draw();
+    }
+
+    // 主题切换
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        updateThemeBtnText();
+        draw();
+    }
+
+    // 更新主题按钮文字
+    function updateThemeBtnText() {
+        const isDark = document.body.classList.contains('dark-mode');
+        themeToggleBtn.textContent = isChinese 
+            ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+            : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+    }
+
+    // 吸附角度
+    function snapAngle(angle) {
+      const diffRight = Math.abs(angle - diamRight);
+      const diffLeft = Math.abs(angle - diamLeft);
+      
+      if (diffRight < snapDistance / radius || (2*Math.PI - diffRight) < snapDistance / radius) {
+        return diamRight;
+      }
+      if (diffLeft < snapDistance / radius || (2*Math.PI - diffLeft) < snapDistance / radius) {
+        return diamLeft;
+      }
+      return angle;
+    }
+
+    // 获取点坐标
+    function getPosition(key) {
+      const angle = points[key];
+      return {
+        x: cx + radius * Math.cos(angle),
+        y: cy + radius * Math.sin(angle)
+      };
+    }
+
+    // 计算角度
+    function angleAtPoint(M, P, Q) {
+      const m = getPosition(M);
+      const p = getPosition(P);
+      const q = getPosition(Q);
+      const v1 = { x: p.x - m.x, y: p.y - m.y };
+      const v2 = { x: q.x - m.x, y: q.y - m.y };
+      const dot = v1.x * v2.x + v1.y * v2.y;
+      const mod1 = Math.hypot(v1.x, v1.y);
+      const mod2 = Math.hypot(v2.x, v2.y);
+      const cos = Math.max(-1, Math.min(1, dot / (mod1 * mod2)));
+      return Math.acos(cos) * 180 / Math.PI;
+    }
+
+    // 计算所有角度
+    function calculateAllAngles() {
+      const DAB = angleAtPoint('A', 'D', 'B');
+      const ABC = angleAtPoint('B', 'A', 'C');
+      const BCD = angleAtPoint('C', 'B', 'D');
+      const CDA = angleAtPoint('D', 'C', 'A');
+
+      return {
+        DAB: Math.round(DAB),
+        ABC: Math.round(ABC),
+        BCD: Math.round(BCD),
+        CDA: Math.round(CDA)
+      };
+    }
+
+    // 绘制函数
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // 适配黑夜模式
+      const isDark = document.body.classList.contains('dark-mode');
+      const strokeColor = isDark ? '#e5e7eb' : '#333';
+      const fillColor = isDark ? '#e5e7eb' : '#000';
+      const dashColor = isDark ? '#94a3b8' : '#999';
+      const lineColor = isDark ? '#94a3b8' : '#666';
+
+      // 画圆
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 虚线直径
+      ctx.save();
+      ctx.setLineDash([5, 3]);
+      ctx.strokeStyle = dashColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx - radius, cy);
+      ctx.lineTo(cx + radius, cy);
+      ctx.stroke();
+      ctx.restore();
+
+      // 圆心
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+      ctx.font = '16px Arial';
+      ctx.fillStyle = fillColor;
+      ctx.fillText('O', cx + 12, cy + 5);
+
+      // 获取四个点坐标
+      const A = getPosition('A');
+      const B = getPosition('B');
+      const C = getPosition('C');
+      const D = getPosition('D');
+
+      // 画四边形
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = lineColor;
+      ctx.beginPath();
+      ctx.moveTo(A.x, A.y);
+      ctx.lineTo(B.x, B.y);
+      ctx.lineTo(C.x, C.y);
+      ctx.lineTo(D.x, D.y);
+      ctx.closePath();
+      ctx.stroke();
+
+      // 绘制顶点
+      const keys = ['A', 'B', 'C', 'D'];
+      keys.forEach(k => {
+        const p = getPosition(k);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+        ctx.font = '18px Arial';
+        ctx.fillStyle = fillColor;
+        ctx.fillText(k, p.x, p.y - 18);
+      });
+
+      // 更新角度数据
+      const ag = calculateAllAngles();
+      document.getElementById('angA').textContent = ag.DAB;
+      document.getElementById('angB').textContent = ag.ABC;
+      document.getElementById('angC').textContent = ag.BCD;
+      document.getElementById('angD').textContent = ag.CDA;
+      document.getElementById('sum1').textContent = ag.DAB + ag.BCD;
+      document.getElementById('sum2').textContent = ag.ABC + ag.CDA;
+    }
+
+    // 获取鼠标位置
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    // 检测点击顶点
+    function checkHit(mx, my) {
+      const keys = ['A', 'B', 'C', 'D'];
+      for (const k of keys) {
+        const p = getPosition(k);
+        const d = Math.hypot(mx - p.x, my - p.y);
+        if (d < 16) return k;
+      }
+      return null;
+    }
+
+    // 鼠标事件
+    canvas.addEventListener('mousedown', (e) => {
+      const m = getMousePos(e);
+      dragging = checkHit(m.x, m.y);
+      if (dragging) canvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) {
+        const m = getMousePos(e);
+        hoverPoint = checkHit(m.x, m.y);
+        canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+        draw();
+        return;
+      }
+      const m = getMousePos(e);
+      let rawAngle = Math.atan2(m.y - cy, m.x - cx);
+      points[dragging] = snapAngle(rawAngle);
+      draw();
+    });
+
+    window.addEventListener('mouseup', () => {
+      dragging = null;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      hoverPoint = null;
+      draw();
+    });
+
+    // 重置按钮
+    resetBtn.onclick = () => {
+      points = JSON.parse(JSON.stringify(initialPoints));
+      draw();
+    };
+
+    // 绑定导航栏事件
+    langToggleBtn.addEventListener('click', toggleLang);
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', initLang);
+    draw();
+</script>
+	<script src="../colorblind.js"></script>
+</body>
+</html>

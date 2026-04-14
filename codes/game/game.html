@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircleLab | 几何定理游戏中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 核心配色变量 - 统一使用index.css的变量体系 */
+        :root {
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #102147;
+            --text_color_night: #edf1ff;
+            --panel_color: #f4f8ff;
+            --panel_color_night: #1a23d;
+            --line_color: rgba(68, 113, 194, 0.25);
+            --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
+            --ui_radius: 0px;
+            --rail_width: 92px; /* 侧边栏宽度和index保持一致 */
+            --header_height: 74px; /* 头部高度和index保持一致 */
+            
+            --text_primary: #333333;
+            --text_secondary: #666666;
+            --text_tertiary: #888888;
+            --card_bg: #ffffff;
+            --border_light: #eeeeee;
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
+
+            /* 动画通用配置变量 */
+            --animate-duration: 0.4s;
+            --animate-ease: ease-out;
+        }
+
+        /* ====================== 入场动画关键帧（新增） ====================== */
+        /* 顶部向下淡入 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 左侧滑入 */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        /* 底部向上淡入 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 纯淡入 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 夜间模式配色覆盖 - 统一index的夜间模式逻辑 */
+        body.dark-mode {
+            --text_primary: var(--text_color_night);
+            --text_secondary: #dddddd;
+            --text_tertiary: #bbbbbb;
+            --card_bg: var(--panel_color_night);
+            --border_light: var(--line_color);
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
+            background: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif; /* 统一字体 */
+            background: var(--bg_color);
+            min-height: 100vh;
+            color: var(--text_color);
+            transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            padding: 0.95rem 1rem 2rem; /* 统一body内边距 */
+            animation: fadeIn 0.5s ease-out forwards; /* 页面整体淡入 */
+        }
+
+        /* --- 顶部导航栏 - 适配index的样式 --- */
+        .navbar {
+            position: sticky;
+            top: 0.95rem;
+            z-index: 40;
+            height: var(--header_height);
+            padding: 0 1.15rem;
+            background: var(--theme_color);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--shadow_soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.55rem;
+            /* 导航栏入场动画（新增） */
+            opacity: 0;
+            animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            line-height: 1;
+        }
+
+        .logo::before {
+            content: "◯";
+            width: 2.25rem;
+            height: 2.25rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.72);
+            font-size: 1.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        /* 统一按钮样式 - 使用index的ghost_btn样式 */
+        .lang-toggle, .theme-toggle {
+            min-height: 38px;
+            padding: 0.45rem 0.9rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 0;
+        }
+
+        .lang-toggle:hover, .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- 左侧边栏样式 - 【精准对齐index.html位置】--- */
+        .side_nav {
+            position: fixed;
+            left: 1rem; /* 核心修改：右移至和index完全一致，解决偏左问题 */
+            top: calc(var(--header_height) + 1rem);
+            bottom: 2rem;
+            width: var(--rail_width);
+            background: var(--sub_color);
+            padding: 1.1rem 0.55rem;
+            display: grid;
+            align-content: start;
+            justify-items: center;
+            gap: 0.55rem;
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+            overflow: visible;
+            z-index: 240;
+            /* 侧边栏入场动画（新增） */
+            opacity: 0;
+            animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
+        }
+
+        .side_nav_link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 3.2rem;
+            min-height: 3.2rem;
+            padding: 0.35rem;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .side_nav_icon {
+            width: 1.52rem;
+            height: 1.52rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .side_nav_icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vector-effect: non-stroke;
+        }
+
+        .side_nav_tooltip {
+            position: absolute;
+            left: calc(100% + 0.72rem);
+            top: 50%;
+            transform: translate(-0.35rem, -50%);
+            opacity: 0;
+            pointer-events: none;
+            background: #141414;
+            color: #ffffff;
+            font-size: 0.86rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+            padding: 0.52rem 0.64rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            z-index: 9999;
+        }
+
+        .side_nav_tooltip::before {
+            content: "";
+            position: absolute;
+            left: -0.38rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border-top: 0.38rem solid transparent;
+            border-bottom: 0.38rem solid transparent;
+            border-right: 0.38rem solid #141414;
+        }
+
+        .side_nav_link:hover,
+        .side_nav_link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.42);
+            transform: none;
+        }
+
+        .side_nav_link:hover .side_nav_tooltip,
+        .side_nav_link:focus-visible .side_nav_tooltip {
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
+
+        .side_nav_link:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.72);
+            outline-offset: 2px;
+        }
+
+        /* --- 主内容区域 - 正常显示，无空白 --- */
+        .main-wrapper {
+            margin-left: calc(var(--rail_width) + 2.5rem);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--rail_width) - 2.5rem);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            width: 100%;
+        }
+
+        /* 页面头部 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            margin-top: 1rem;
+            /* 标题区域入场动画（新增） */
+            opacity: 0;
+            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--theme_color);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text_secondary);
+        }
+
+        /* 游戏网格 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* 游戏卡片 */
+        .game-card {
+            background: var(--card_bg);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text_color);
+            box-shadow: var(--shadow_md);
+            display: block;
+            border: 1px solid var(--border_light);
+            /* 卡片统一同时入场（无延迟，仅保留基础动画） */
+            opacity: 0;
+            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.3s forwards;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow_md);
+            border-color: var(--sub_color);
+        }
+
+        .game-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            color: var(--theme_color);
+        }
+
+        .game-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--theme_color);
+            line-height: 1.4;
+        }
+
+        .game-card p {
+            font-size: 0.85rem;
+            color: var(--text_secondary);
+            line-height: 1.5;
+        }
+
+        .game-card .number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            line-height: 35px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .game-card .description {
+            font-size: 0.8rem;
+            color: var(--text_tertiary);
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border_light);
+        }
+
+        .game-card.placeholder {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed var(--border_light);
+            color: var(--text_secondary);
+        }
+
+        .game-card.placeholder h3,
+        .game-card.placeholder p,
+        .game-card.placeholder .description {
+            color: var(--text_secondary);
+        }
+
+        .game-card.placeholder .number {
+            background: rgba(255,255,255,0.15);
+            color: var(--text_tertiary);
+        }
+
+        .game-card.placeholder:hover {
+            transform: none;
+            box-shadow: var(--shadow_sm);
+            border-color: var(--border_light);
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            color: var(--text_tertiary);
+            padding: 2rem;
+            margin-top: auto;
+            background: var(--card_bg);
+            box-shadow: var(--shadow_sm);
+            border-top: 1px solid var(--border_light);
+            /* 页脚入场动画（新增） */
+            opacity: 0;
+            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.4s forwards;
+        }
+
+        .footer p {
+            margin: 0.3rem 0;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 980px) {
+            body {
+                padding: 0.85rem 0.8rem 1.5rem;
+            }
+            
+            .side_nav {
+                position: sticky;
+                top: calc(var(--header_height) + 0.4rem);
+                min-height: auto;
+                grid-template-columns: repeat(3, 1fr);
+                align-items: center;
+                justify-items: stretch;
+                padding: 0.35rem;
+                width: 100%;
+                left: 0;
+                bottom: auto;
+            }
+
+            .side_nav_link {
+                width: 100%;
+                min-height: auto;
+                padding: 0.42rem 0.2rem;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+
+            .side_nav_icon {
+                width: 1.32rem;
+                height: 1.32rem;
+            }
+
+            .side_nav_tooltip {
+                position: static;
+                transform: none;
+                opacity: 1;
+                pointer-events: auto;
+                background: transparent;
+                box-shadow: none;
+                padding: 0;
+                font-size: 0.78rem;
+                line-height: 1.15;
+                text-align: center;
+            }
+
+            .side_nav_tooltip::before {
+                display: none;
+            }
+            
+            .main-wrapper {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .navbar {
+                height: auto;
+                padding: 0.8rem 0.9rem;
+                align-items: start;
+                flex-direction: column;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+            }
+            
+            .lang-toggle, .theme-toggle {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .side_nav_tooltip {
+                font-size: 0.74rem;
+            }
+            
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 - 适配index样式 -->
+    <nav class="navbar">
+        <a href="../index.html" class="logo">CircleLab</a>
+        <div class="nav-buttons">
+            <button class="lang-toggle" id="langToggleBtn">English</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
+        </div>
+    </nav>
+
+    <!-- 左侧边栏 -->
+    <aside class="side_nav" aria-label="Primary menu">
+        <a class="side_nav_link" href="../index.html" aria-label="Homepage">
+            <span class="side_nav_icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <path d="M3 10.5L12 3L21 10.5"></path>
+                    <path d="M5 9.5V20H19V9.5"></path>
+                    <path d="M10 20V14H14V20"></path>
+                </svg>
+            </span>
+            <span class="side_nav_tooltip" data-zh="主页" data-en="Homepage">主页</span>
+        </a>
+        <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+            <span class="side_nav_icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <rect x="6" y="4" width="12" height="16" rx="2"></rect>
+                    <path d="M9 4.5H15"></path>
+                    <path d="M9 10H15"></path>
+                    <path d="M9 14H13"></path>
+                    <path d="M9 18H12"></path>
+                    <path d="M14 14L15.5 15.5L18 13"></path>
+                </svg>
+            </span>
+            <span class="side_nav_tooltip" data-zh="测验" data-en="Quiz">测验</span>
+        </a>
+        <a class="side_nav_link active" href="./game.html" aria-label="Game">
+            <span class="side_nav_icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
+                    <path d="M8.5 13.5V16.5"></path>
+                    <path d="M7 15H10"></path>
+                    <circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
+                    <circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
+                </svg>
+            </span>
+            <span class="side_nav_tooltip" data-zh="游戏" data-en="Game">游戏</span>
+        </a>
+    </aside>
+
+    <!-- 主内容包装器 -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="page-header">
+                <h1 data-zh="🎮 几何定理游戏中心" data-en="🎮 Circle Geometry Theorem Games">🎮 几何定理游戏中心</h1>
+                <p data-zh="选择定理开始互动学习" data-en="Select a theorem to start interactive learning">选择定理开始互动学习</p>
+            </div>
+
+            <div class="game-grid">
+                <a href="game-01-central-angle.html" class="game-card">
+                    <span class="number">01</span>
+                    <span class="icon">📐</span>
+                    <h3 data-zh="圆心角定理" data-en="Central Angle Theorem">圆心角定理</h3>
+                    <p class="description" data-zh="探索圆心角与弧、弦的关系" data-en="Explore the relationship between central angles, arcs and chords">探索圆心角与弧、弦的关系</p>
+                </a>
+
+                <a href="game-02-inscribed-angle.html" class="game-card">
+                    <span class="number">02</span>
+                    <span class="icon">🔵</span>
+                    <h3 data-zh="同弧圆周角定理" data-en="Inscribed Angle Theorem">同弧圆周角定理</h3>
+                    <p class="description" data-zh="同弧所对圆周角相等" data-en="Inscribed angles subtended by the same arc are equal">同弧所对圆周角相等</p>
+                </a>
+
+                <a href="game-03-semicircle-right.html" class="game-card">
+                    <span class="number">03</span>
+                    <span class="icon">📏</span>
+                    <h3 data-zh="半圆直角定理" data-en="Semicircle Right Angle">半圆直角定理</h3>
+                    <p class="description" data-zh="直径所对圆周角为90°" data-en="The inscribed angle subtended by a diameter is 90°">直径所对圆周角为90°</p>
+                </a>
+
+                <a href="game-04-cyclic-quad.html" class="game-card">
+                    <span class="number">04</span>
+                    <span class="icon">◼️</span>
+                    <h3 data-zh="圆内接四边形定理" data-en="Cyclic Quadrilateral">圆内接四边形定理</h3>
+                    <p class="description" data-zh="对角互补等于180°" data-en="Opposite angles of a cyclic quadrilateral sum to 180°">对角互补等于180°</p>
+                </a>
+
+                <a href="game-05-tangent-radius.html" class="game-card">
+                    <span class="number">05</span>
+                    <span class="icon">✏️</span>
+                    <h3 data-zh="切线半径垂直定理" data-en="Tangent ⊥ Radius">切线半径垂直定理</h3>
+                    <p class="description" data-zh="切线垂直于过切点半径" data-en="A tangent is perpendicular to the radius at the point of contact">切线垂直于过切点半径</p>
+                </a>
+
+                <a href="game-06-tangent-length.html" class="game-card">
+                    <span class="number">06</span>
+                    <span class="icon">✂️</span>
+                    <h3 data-zh="切线长定理" data-en="Tangent Length Theorem">切线长定理</h3>
+                    <p class="description" data-zh="圆外一点引两条切线长相等" data-en="Two tangents from a point outside the circle are equal in length">圆外一点引两条切线长相等</p>
+                </a>
+
+                <!-- 07 垂径定理 - 替换原占位卡片 -->
+                <a href="game-07-perpendicular-bisector.html" class="game-card">
+                    <span class="number">07</span>
+                    <span class="icon">🔍</span>
+                    <h3 data-zh="垂径定理" data-en="Perpendicular Chord Bisector Theorem">垂径定理</h3>
+                    <p class="description" data-zh="垂直于弦的直径平分弦及所对弧" data-en="Diameter perpendicular to chord bisects chord & arcs">垂直于弦的直径平分弦及所对弧</p>
+                </a>
+
+                <!-- 08 弦切角定理 - 替换原占位卡片 -->
+                <a href="game-08-tangent-chord-angle.html" class="game-card">
+                    <span class="number">08</span>
+                    <span class="icon">🔗</span>
+                    <h3 data-zh="弦切角定理" data-en="Tangent-Chord Angle Theorem">弦切角定理</h3>
+                    <p class="description" data-zh="弦切角等于所夹弧的圆周角" data-en="Tangent-chord angle equals inscribed angle of intercepted arc">弦切角等于所夹弧的圆周角</p>
+                </a>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            <p data-zh="EBU5315 第17组 · 圆几何学习平台" data-en="EBU5315 Group 17 · Circle Geometry Learning">EBU5315 第17组 · 圆几何学习平台</p>
+            <p data-zh="CircleLab © 2024" data-en="CircleLab © 2024">CircleLab © 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        // 初始状态：中文模式
+        let isChinese = true;
+        const langBtn = document.getElementById('langToggleBtn');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        
+        // 语言切换核心函数
+        function toggleLang() {
+            isChinese = !isChinese;
+            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+            i18nElements.forEach(el => {
+                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+            });
+
+            langBtn.textContent = isChinese ? "English" : "中文";
+            updateThemeBtnText();
+        }
+
+        // 主题切换函数
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            updateThemeBtnText();
+        }
+
+        // 更新主题按钮文字
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? "☀️ 白天模式" : "🌙 夜间模式";
+            } else {
+                themeBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+            }
+        }
+
+        // 绑定按钮事件
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // 自动高亮当前页面的侧边栏链接
+        const currentPath = window.location.pathname;
+        const sidebarLinks = document.querySelectorAll('.side_nav_link');
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute('href') === './game.html' || 
+                currentPath.endsWith('game.html')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    </script>
+	<script src="../colorblind.js"></script>
+</body>
+</html>

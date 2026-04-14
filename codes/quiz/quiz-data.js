@@ -1,4 +1,4 @@
-[
+window.quiz_question_bank = [
   {
     "id": "l1_q1",
     "level": 1,
@@ -2726,4 +2726,4 @@
     },
     "answer": 1
   }
-]
+];
