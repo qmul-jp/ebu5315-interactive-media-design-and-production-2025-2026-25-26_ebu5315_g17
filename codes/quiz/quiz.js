@@ -49,6 +49,7 @@ let is_chinese =
 
 const SMART_SESSION_LENGTH = 10;
 const SMART_INITIAL_SKILL = 50;
+const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 const SMART_SCORE_RULES = {
   1: { correct: 5, wrong: -4 },
   2: { correct: 7, wrong: -6 },
@@ -90,10 +91,16 @@ const i18n_text = {
     result_title: "本关完成",
     score_prefix: "答对",
     skill_prefix: "能力值",
+    time_prefix: "用时",
     choose_first: "请先选择一个答案。",
     feedback_correct: "回答正确！",
     feedback_wrong: "回答错误。",
     explanation_label: "解析",
+    option_state_correct: "✓ 正确",
+    option_state_wrong: "✕ 你的选择",
+    option_state_answer: "✓ 正确答案",
+    your_answer_label: "你选择了",
+    correct_answer_label: "正确答案",
     smart_delta_label: "能力变化",
     smart_next_label: "下一题趋势",
     smart_reason_balanced: "正常适配当前水平",
@@ -142,10 +149,16 @@ const i18n_text = {
     result_title: "Level Complete",
     score_prefix: "Correct",
     skill_prefix: "Skill",
+    time_prefix: "Time",
     choose_first: "Please choose one option first.",
     feedback_correct: "Correct!",
     feedback_wrong: "Wrong.",
     explanation_label: "Explanation",
+    option_state_correct: "✓ Correct",
+    option_state_wrong: "✕ Your choice",
+    option_state_answer: "✓ Correct answer",
+    your_answer_label: "You chose",
+    correct_answer_label: "Correct answer",
     smart_delta_label: "Skill Change",
     smart_next_label: "Next Trend",
     smart_reason_balanced: "Normally matched to your current level",
@@ -167,25 +180,25 @@ const body_element = document.body;
 
 const language_toggle_btn = document.getElementById("language_toggle_btn");
 const mode_toggle_btn = document.getElementById("mode_toggle_btn");
-
 const level_buttons = Array.from(document.querySelectorAll(".level_btn"));
 const current_level_text = document.getElementById("current_level_text");
 const question_title_text = document.getElementById("question_title_text");
 const progress_text = document.getElementById("progress_text");
 const score_text = document.getElementById("score_text");
+const time_text = document.getElementById("time_text");
 const skill_text = document.getElementById("skill_text");
+const skill_delta_badge = document.getElementById("skill_delta_badge");
 const progress_fill = document.getElementById("progress_fill");
-
 const question_text = document.getElementById("question_text");
 const options_wrap = document.getElementById("options_wrap");
 const submit_btn = document.getElementById("submit_btn");
 const next_btn = document.getElementById("next_btn");
 const restart_btn = document.getElementById("restart_btn");
 const feedback_box = document.getElementById("feedback_box");
-
 const result_card = document.getElementById("result_card");
 const result_title_text = document.getElementById("result_title_text");
 const final_score_text = document.getElementById("final_score_text");
+const final_time_text = document.getElementById("final_time_text");
 const final_message_text = document.getElementById("final_message_text");
 const retry_result_btn = document.getElementById("retry_result_btn");
 
@@ -194,18 +207,18 @@ const state = {
   current_mode: "level",
   current_level: 1,
   current_questions: [],
-  current_question: null,
+  current_history: [],
   current_index: 0,
-  selected_option_index: null,
-  score: 0,
-  answered: false,
   session_length: 0,
+  score: 0,
   skill_score: SMART_INITIAL_SKILL,
+  pending_delta: 0,
   correct_streak: 0,
   wrong_streak: 0,
   asked_question_ids: new Set(),
   smart_draw_reason_key: "smart_reason_balanced",
-  pending_delta: 0,
+  started_at: null,
+  ended_at: null,
 };
 
 function set_theme_variables() {
@@ -267,11 +280,42 @@ function weighted_pick(weight_map) {
   return Number(entries[entries.length - 1][0]);
 }
 
+function create_record(question) {
+  return {
+    question,
+    selected_option_index: null,
+    answered: false,
+    is_correct: false,
+    pending_delta: 0,
+    skill_after: null,
+  };
+}
+
+function get_current_record() {
+  return state.current_history[state.current_index] || null;
+}
+
+function get_current_question() {
+  const record = get_current_record();
+  return record ? record.question : null;
+}
+
+function get_elapsed_ms() {
+  if (!state.started_at) return 0;
+  return (state.ended_at || Date.now()) - state.started_at;
+}
+
+function format_duration(ms) {
+  const total_seconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(total_seconds / 60);
+  const seconds = total_seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 async function load_question_bank() {
   if (Array.isArray(window.quiz_question_bank)) {
     return window.quiz_question_bank;
   }
-
   throw new Error("Question bank not found. Please check quiz-data.js");
 }
 
@@ -287,9 +331,7 @@ function apply_language() {
   });
 
   language_toggle_btn.textContent = is_chinese ? "EN" : "中文";
-  mode_toggle_btn.textContent = is_night
-    ? lang_dict.mode_night
-    : lang_dict.mode_day;
+  mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
 
   update_meta();
   render_question();
@@ -299,52 +341,33 @@ function apply_language() {
 
 function apply_mode() {
   body_element.classList.toggle("night_mode", is_night);
-  mode_toggle_btn.textContent = is_night
-    ? get_text("mode_night")
-    : get_text("mode_day");
+  mode_toggle_btn.textContent = is_night ? get_text("mode_night") : get_text("mode_day");
 }
 
 function build_level_questions(level) {
-  return shuffle_array(
-    state.question_bank.filter((item) => item.level === level),
-  );
+  return shuffle_array(state.question_bank.filter((item) => item.level === level));
 }
 
 function reset_common_state() {
   state.current_questions = [];
-  state.current_question = null;
+  state.current_history = [];
   state.current_index = 0;
-  state.selected_option_index = null;
+  state.session_length = 0;
   state.score = 0;
-  state.answered = false;
+  state.skill_score = SMART_INITIAL_SKILL;
   state.pending_delta = 0;
   state.correct_streak = 0;
   state.wrong_streak = 0;
   state.asked_question_ids = new Set();
   state.smart_draw_reason_key = "smart_reason_balanced";
+  state.started_at = Date.now();
+  state.ended_at = null;
 }
 
 function update_active_entry(activeMatcher) {
   level_buttons.forEach((button) => {
-    const is_active = activeMatcher(button);
-    button.classList.toggle("active_level", is_active);
+    button.classList.toggle("active_level", activeMatcher(button));
   });
-}
-
-function set_level(level) {
-  reset_common_state();
-  state.current_mode = "level";
-  state.current_level = level;
-  state.current_questions = build_level_questions(level);
-  state.session_length = state.current_questions.length;
-  state.current_question = state.current_questions[0] || null;
-  state.skill_score = SMART_INITIAL_SKILL;
-
-  update_active_entry((button) => Number(button.dataset.level) === level);
-  hide_result_and_feedback();
-  update_meta();
-  render_question();
-  render_feedback();
 }
 
 function hide_result_and_feedback() {
@@ -353,11 +376,19 @@ function hide_result_and_feedback() {
   feedback_box.textContent = "";
 }
 
-function get_current_question() {
-  if (state.current_mode === "smart") {
-    return state.current_question;
-  }
-  return state.current_questions[state.current_index] || null;
+function set_level(level) {
+  reset_common_state();
+  state.current_mode = "level";
+  state.current_level = level;
+  state.current_questions = build_level_questions(level);
+  state.current_history = state.current_questions.map(create_record);
+  state.session_length = state.current_history.length;
+
+  update_active_entry((button) => Number(button.dataset.level) === level);
+  hide_result_and_feedback();
+  update_meta();
+  render_question();
+  render_feedback();
 }
 
 function get_smart_base_level() {
@@ -430,9 +461,7 @@ function draw_smart_question() {
   }
 
   const picked_question = random_pick(pool);
-  if (!picked_question) {
-    return null;
-  }
+  if (!picked_question) return null;
 
   state.asked_question_ids.add(picked_question.id);
   return picked_question;
@@ -442,10 +471,10 @@ function start_smart_mode() {
   reset_common_state();
   state.current_mode = "smart";
   state.current_level = 2;
-  state.skill_score = SMART_INITIAL_SKILL;
   state.session_length = Math.min(SMART_SESSION_LENGTH, state.question_bank.length);
-  state.current_question = draw_smart_question();
-  state.current_questions = state.current_question ? [state.current_question] : [];
+
+  const first_question = draw_smart_question();
+  state.current_history = first_question ? [create_record(first_question)] : [];
 
   update_active_entry((button) => button.dataset.mode === "smart");
   hide_result_and_feedback();
@@ -454,28 +483,94 @@ function start_smart_mode() {
   render_feedback();
 }
 
+function get_option_prefix(index) {
+  return OPTION_LETTERS[index] || String(index + 1);
+}
+
+function get_option_marker(index, record) {
+  if (!record || !record.answered) {
+    return record && record.selected_option_index === index ? "●" : "○";
+  }
+
+  if (index === record.question.answer) {
+    return "✓";
+  }
+
+  if (index === record.selected_option_index) {
+    return "✕";
+  }
+
+  return "○";
+}
+
+function get_option_status_text(index, record) {
+  if (!record || !record.answered) return "";
+
+  const is_correct_answer = index === record.question.answer;
+  const is_selected_wrong =
+    index === record.selected_option_index && record.selected_option_index !== record.question.answer;
+
+  if (is_correct_answer && record.selected_option_index === record.question.answer) {
+    return get_text("option_state_correct");
+  }
+
+  if (is_selected_wrong) {
+    return get_text("option_state_wrong");
+  }
+
+  if (is_correct_answer) {
+    return get_text("option_state_answer");
+  }
+
+  return "";
+}
+
+function is_current_record_interactive() {
+  const record = get_current_record();
+  return Boolean(record) && !record.answered;
+}
+
+function update_skill_badge(record) {
+  if (state.current_mode !== "smart") {
+    skill_delta_badge.className = "skill_delta_badge hidden";
+    skill_delta_badge.textContent = "";
+    return;
+  }
+
+  if (!record || !record.answered || !record.pending_delta) {
+    skill_delta_badge.className = "skill_delta_badge hidden";
+    skill_delta_badge.textContent = "";
+    return;
+  }
+
+  const positive = record.pending_delta > 0;
+  skill_delta_badge.className = `skill_delta_badge ${positive ? "positive" : "negative"}`;
+  skill_delta_badge.textContent = `${positive ? "+" : ""}${record.pending_delta}`;
+}
+
 function update_meta() {
-  const total =
-    state.current_mode === "smart"
-      ? state.session_length
-      : state.current_questions.length;
+  const total = state.session_length;
   const question = get_current_question();
+  const record = get_current_record();
+  const answered_bonus = record && record.answered ? 1 : 0;
 
   if (state.current_mode === "smart") {
     current_level_text.textContent = `${get_text("smart_mode_title")} · Level ${question ? question.level : 2}`;
-    question_title_text.textContent = get_text("question_title");
     score_text.textContent = `${get_text("score_prefix")}: ${state.score}`;
     skill_text.classList.remove("hidden");
     skill_text.textContent = `${get_text("skill_prefix")}: ${state.skill_score}`;
   } else {
     current_level_text.textContent = `${get_text("level_label")} ${state.current_level}`;
-    question_title_text.textContent = get_text("question_title");
     score_text.textContent = `${get_text("score_prefix")}: ${state.score}`;
     skill_text.classList.add("hidden");
     skill_text.textContent = `${get_text("skill_prefix")}: ${SMART_INITIAL_SKILL}`;
   }
 
-  if (total === 0) {
+  question_title_text.textContent = get_text("question_title");
+  time_text.textContent = `${get_text("time_prefix")}: ${format_duration(get_elapsed_ms())}`;
+  update_skill_badge(record);
+
+  if (!total) {
     progress_text.textContent = "0 / 0";
     progress_fill.style.width = "0%";
     return;
@@ -483,20 +578,46 @@ function update_meta() {
 
   const current_number = Math.min(state.current_index + 1, total);
   progress_text.textContent = `${current_number} / ${total}`;
+  const progress_percent = ((state.current_index + answered_bonus) / total) * 100;
+  progress_fill.style.width = `${Math.max(0, Math.min(100, progress_percent))}%`;
+}
 
-  const progress_percent = (state.current_index / total) * 100;
-  progress_fill.style.width = `${progress_percent}%`;
+function can_go_next() {
+  const record = get_current_record();
+  if (!record) return false;
+
+  if (state.current_mode === "smart") {
+    return record.answered;
+  }
+
+  if (state.current_index < state.current_history.length - 1) {
+    return record.answered;
+  }
+
+  return record.answered;
+}
+
+function can_go_previous() {
+  if (result_card.classList.contains("hidden")) {
+    return state.current_index > 0;
+  }
+  return state.current_history.length > 0;
 }
 
 function update_action_buttons() {
   const has_question = Boolean(get_current_question());
-  submit_btn.disabled = !has_question || state.answered;
-  next_btn.disabled = !has_question || !state.answered;
-  restart_btn.disabled = !has_question;
+  const can_submit = has_question && is_current_record_interactive();
+  const show_next = has_question && can_go_next();
+
+  submit_btn.disabled = !can_submit;
+  next_btn.disabled = !show_next;
+  next_btn.classList.toggle("action_hidden", !show_next);
+  restart_btn.disabled = !has_question && result_card.classList.contains("hidden");
 }
 
 function render_question() {
-  const question = get_current_question();
+  const record = get_current_record();
+  const question = record ? record.question : null;
   options_wrap.innerHTML = "";
 
   if (!state.question_bank.length) {
@@ -516,50 +637,56 @@ function render_question() {
 
   locale_block.options.forEach((option_text, index) => {
     const button = document.createElement("button");
+    const status_text = get_option_status_text(index, record);
+    const interactive = is_current_record_interactive();
+
     button.type = "button";
     button.className = "option_btn";
-    button.setAttribute(
-      "aria-pressed",
-      state.selected_option_index === index ? "true" : "false",
-    );
+    button.setAttribute("aria-pressed", record.selected_option_index === index ? "true" : "false");
 
-    if (state.selected_option_index === index) {
+    if (record.selected_option_index === index) {
       button.classList.add("selected");
     }
 
     button.innerHTML = `
-      <span class="option_marker">${state.selected_option_index === index ? "●" : "○"}</span>
+      <span class="option_prefix">${get_option_prefix(index)}</span>
+      <span class="option_marker">${get_option_marker(index, record)}</span>
       <span class="option_label">${option_text}</span>
+      <span class="option_state ${status_text ? "visible" : ""}" aria-hidden="true">${status_text}</span>
     `;
 
     button.addEventListener("click", () => {
-      if (state.answered) return;
-      state.selected_option_index = index;
+      if (!interactive) return;
+      record.selected_option_index = index;
       render_question();
       render_feedback();
+      update_action_buttons();
     });
 
     options_wrap.appendChild(button);
   });
 
-  if (state.answered) {
-    paint_answer_result();
+  if (record.answered) {
+    paint_answer_result(record);
   }
 
   update_action_buttons();
 }
 
-function paint_answer_result() {
-  const question = get_current_question();
-  if (!question) return;
-
+function paint_answer_result(record) {
   const option_buttons = Array.from(document.querySelectorAll(".option_btn"));
 
   option_buttons.forEach((button, index) => {
-    if (index === question.answer) {
+    button.classList.add("answered");
+
+    if (index === record.question.answer) {
       button.classList.add("correct");
+      if (state.current_index === state.current_history.length - 1) {
+        button.classList.add("correct_flash");
+      }
     }
-    if (index === state.selected_option_index && index !== question.answer) {
+
+    if (index === record.selected_option_index && index !== record.question.answer) {
       button.classList.add("wrong");
     }
   });
@@ -568,29 +695,18 @@ function paint_answer_result() {
 function get_next_trend_text() {
   if (state.current_mode !== "smart") return "";
 
-  if (state.correct_streak >= 3) {
-    return get_text("smart_reason_challenge");
-  }
-
-  if (state.wrong_streak >= 2) {
-    return get_text("smart_reason_recover");
-  }
-
-  if (state.skill_score < 35) {
-    return get_text("smart_reason_support");
-  }
-
-  if (state.skill_score >= 75) {
-    return get_text("smart_reason_raise");
-  }
-
+  if (state.correct_streak >= 3) return get_text("smart_reason_challenge");
+  if (state.wrong_streak >= 2) return get_text("smart_reason_recover");
+  if (state.skill_score < 35) return get_text("smart_reason_support");
+  if (state.skill_score >= 75) return get_text("smart_reason_raise");
   return get_text("smart_reason_balanced");
 }
 
 function render_feedback() {
-  const question = get_current_question();
+  const record = get_current_record();
+  const question = record ? record.question : null;
 
-  if (!question || !state.answered) {
+  if (!question || !record.answered) {
     if (
       feedback_box.className !== "feedback_box wrong_text" ||
       feedback_box.textContent !== get_text("choose_first")
@@ -601,28 +717,35 @@ function render_feedback() {
     return;
   }
 
-  const is_correct = state.selected_option_index === question.answer;
+  const is_correct = record.is_correct;
   let extra_feedback = "";
 
   if (state.current_mode === "smart") {
-    const delta_prefix = state.pending_delta > 0 ? "+" : "";
+    const delta_prefix = record.pending_delta > 0 ? "+" : "";
     extra_feedback = `
-      <br>${get_text("smart_delta_label")}: ${delta_prefix}${state.pending_delta}
-      <br>${get_text("skill_prefix")}: ${state.skill_score}
+      <br>${get_text("smart_delta_label")}: ${delta_prefix}${record.pending_delta}
+      <br>${get_text("skill_prefix")}: ${record.skill_after}
       <br>${get_text("smart_next_label")}: ${get_next_trend_text()}
     `;
   }
 
+  const locale_block = question[get_locale()];
+  const selected_answer_text =
+    record.selected_option_index === null ? "-" : locale_block.options[record.selected_option_index];
+  const correct_answer_text = locale_block.options[question.answer];
+
   feedback_box.className = `feedback_box ${is_correct ? "correct_text" : "wrong_text"}`;
   feedback_box.innerHTML = `
     <strong>${is_correct ? get_text("feedback_correct") : get_text("feedback_wrong")}</strong><br>
-    ${get_text("explanation_label")}: ${question[get_locale()].explanation}
+    <span class="feedback_answer_line"><strong>${get_text("your_answer_label")}</strong>: ${selected_answer_text}</span><br>
+    <span class="feedback_answer_line"><strong>${get_text("correct_answer_label")}</strong>: ${correct_answer_text}</span><br>
+    ${get_text("explanation_label")}: ${locale_block.explanation}
     ${extra_feedback}
   `;
 }
 
-function apply_smart_score(questionLevel, is_correct) {
-  const rules = SMART_SCORE_RULES[questionLevel] || SMART_SCORE_RULES[2];
+function apply_smart_score(question_level, is_correct) {
+  const rules = SMART_SCORE_RULES[question_level] || SMART_SCORE_RULES[2];
   state.pending_delta = is_correct ? rules.correct : rules.wrong;
   state.skill_score = clamp_number(state.skill_score + state.pending_delta, 0, 100);
 
@@ -636,34 +759,45 @@ function apply_smart_score(questionLevel, is_correct) {
 }
 
 function submit_answer() {
-  const question = get_current_question();
-  if (!question || state.answered) return;
+  const record = get_current_record();
+  const question = record ? record.question : null;
 
-  if (state.selected_option_index === null) {
+  if (!record || !question || record.answered || !is_current_record_interactive()) return;
+
+  if (record.selected_option_index === null) {
     feedback_box.className = "feedback_box wrong_text";
     feedback_box.textContent = get_text("choose_first");
     return;
   }
 
-  state.answered = true;
-  const is_correct = state.selected_option_index === question.answer;
+  record.answered = true;
+  record.is_correct = record.selected_option_index === question.answer;
 
   if (state.current_mode === "smart") {
-    if (is_correct) {
+    if (record.is_correct) {
       state.score += 1;
     }
-    apply_smart_score(question.level, is_correct);
-  } else if (is_correct) {
-    state.score += 1;
+    apply_smart_score(question.level, record.is_correct);
+    record.pending_delta = state.pending_delta;
+    record.skill_after = state.skill_score;
+  } else {
+    if (record.is_correct) {
+      state.score += 1;
+    }
+    record.pending_delta = 0;
   }
 
-  paint_answer_result();
+  render_question();
   render_feedback();
   update_meta();
   update_action_buttons();
 }
 
 function show_result() {
+  if (!state.ended_at) {
+    state.ended_at = Date.now();
+  }
+
   if (state.current_mode === "smart") {
     result_title_text.textContent = get_text("smart_mode_result_title");
     final_score_text.textContent = `${get_text("score_prefix")}: ${state.score} / ${state.session_length} · ${get_text("skill_prefix")}: ${state.skill_score}`;
@@ -676,7 +810,7 @@ function show_result() {
       final_message_text.textContent = get_text("smart_final_low");
     }
   } else {
-    const total = state.current_questions.length || 1;
+    const total = state.current_history.length || 1;
     const percent = state.score / total;
 
     result_title_text.textContent = get_text("result_title");
@@ -691,8 +825,10 @@ function show_result() {
     }
   }
 
+  final_time_text.textContent = `${get_text("time_prefix")}: ${format_duration(get_elapsed_ms())}`;
   result_card.classList.remove("hidden");
   progress_fill.style.width = "100%";
+  update_meta();
 }
 
 function render_result_text() {
@@ -700,36 +836,64 @@ function render_result_text() {
   show_result();
 }
 
-function next_question() {
-  if (!state.answered) return;
+function go_to_previous_question() {
+  if (!can_go_previous()) return;
 
-  const total =
-    state.current_mode === "smart"
-      ? state.session_length
-      : state.current_questions.length;
+  if (!result_card.classList.contains("hidden")) {
+    result_card.classList.add("hidden");
+    state.current_index = Math.max(0, state.current_history.length - 1);
+  } else {
+    state.current_index = Math.max(0, state.current_index - 1);
+  }
 
-  if (state.current_index < total - 1) {
+  render_question();
+  render_feedback();
+  update_meta();
+  update_action_buttons();
+}
+
+function go_to_next_question() {
+  const record = get_current_record();
+  if (!record) return;
+
+  if (state.current_index < state.current_history.length - 1) {
     state.current_index += 1;
-    state.selected_option_index = null;
-    state.answered = false;
-    state.pending_delta = 0;
-    feedback_box.className = "feedback_box";
-    feedback_box.textContent = "";
-
-    if (state.current_mode === "smart") {
-      state.current_question = draw_smart_question();
-      if (state.current_question) {
-        state.current_questions.push(state.current_question);
-      }
-    } else {
-      state.current_question = state.current_questions[state.current_index] || null;
-    }
-
+    result_card.classList.add("hidden");
     render_question();
+    render_feedback();
     update_meta();
     update_action_buttons();
-  } else {
-    show_result();
+    return;
+  }
+
+  if (!record.answered) return;
+
+  if (state.current_mode === "smart") {
+    if (state.current_history.length >= state.session_length) {
+      show_result();
+      return;
+    }
+
+    const next_question = draw_smart_question();
+    if (next_question) {
+      state.current_history.push(create_record(next_question));
+      state.current_index = state.current_history.length - 1;
+      result_card.classList.add("hidden");
+      feedback_box.className = "feedback_box";
+      feedback_box.textContent = "";
+      render_question();
+      render_feedback();
+      update_meta();
+      update_action_buttons();
+      return;
+    }
+  }
+
+  if (state.current_mode === "level") {
+    if (state.current_index >= state.current_history.length - 1) {
+      show_result();
+      return;
+    }
   }
 }
 
@@ -741,6 +905,60 @@ function restart_current_mode() {
   }
 }
 
+function move_option_selection(direction) {
+  const record = get_current_record();
+  const question = record ? record.question : null;
+  if (!record || !question || !is_current_record_interactive()) return;
+
+  const option_count = question[get_locale()].options.length;
+  if (!option_count) return;
+
+  if (record.selected_option_index === null) {
+    record.selected_option_index = direction > 0 ? 0 : option_count - 1;
+  } else {
+    const next_index = (record.selected_option_index + direction + option_count) % option_count;
+    record.selected_option_index = next_index;
+  }
+
+  render_question();
+  render_feedback();
+  update_action_buttons();
+}
+
+function handle_keydown(event) {
+  const active_tag = document.activeElement?.tagName;
+  if (active_tag === "INPUT" || active_tag === "TEXTAREA") return;
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    move_option_selection(-1);
+    return;
+  }
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    move_option_selection(1);
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    go_to_previous_question();
+    return;
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    go_to_next_question();
+    return;
+  }
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submit_answer();
+  }
+}
+
 async function initialise_quiz() {
   set_theme_variables();
   apply_mode();
@@ -748,15 +966,12 @@ async function initialise_quiz() {
 
   try {
     const loaded_questions = await load_question_bank();
-    state.question_bank = Array.isArray(loaded_questions)
-      ? loaded_questions
-      : [];
+    state.question_bank = Array.isArray(loaded_questions) ? loaded_questions : [];
     set_level(1);
     apply_language();
   } catch (error) {
     console.error(error);
     const error_message = get_text("load_error");
-
     question_text.textContent = error_message;
     options_wrap.innerHTML = "";
     feedback_box.className = "feedback_box wrong_text";
@@ -790,8 +1005,10 @@ level_buttons.forEach((button) => {
 });
 
 submit_btn.addEventListener("click", submit_answer);
-next_btn.addEventListener("click", next_question);
+next_btn.addEventListener("click", go_to_next_question);
 restart_btn.addEventListener("click", restart_current_mode);
 retry_result_btn.addEventListener("click", restart_current_mode);
+document.addEventListener("keydown", handle_keydown);
+setInterval(() => update_meta(), 1000);
 
 initialise_quiz();
