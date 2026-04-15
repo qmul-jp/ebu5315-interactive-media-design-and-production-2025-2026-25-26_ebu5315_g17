@@ -199,7 +199,7 @@
 	</div>
 
 	<div class="floating_actions" aria-label="floating action buttons">
-		<button id="back_to_top_btn" class="floating_btn hidden_btn" type="button" data-i18n="back_to_top">回到顶部</button>
+		<button id="back_to_top_btn" class="floating_btn icon_btn" type="button" aria-label="Back to top" title="Back to top">↑</button>
 		<button id="chat_fab_btn" class="floating_btn" type="button" data-i18n="chat_with_ai">Chat with AI</button>
 	</div>
 
@@ -219,7 +219,11 @@
 		<p data-i18n="footer_text">EBU5315 Group 17 · Circle Geometry Learning</p>
 	</footer>
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" integrity="sha512-7zkQWjfqxNqfNQdNQvEihQ/HVbUaz2QmiVjCwXTlzAIXazhbugzuDUFcPRl1BDpRP70dNDO7xjMnIKh4j/wcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js" integrity="sha512-0O0AmeY9ycYzaPt+VxDRKCVh0b07XHtcwPa5RW2XxI75PwQxzb62LF8A3+yQUwpsOSJyY8cmBHQYaWV7kR0O5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js" integrity="sha512-hCXGrW6PitkRt6R7sRKqGZo4PMBVXgS5aXoaZySUdkGFUTkOcJCIZy9FHn5Vf3L7hIwrKyYVJZZzKzbwQ6VykQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script>
 		window.MathJax = {
 			tex: {
@@ -233,5 +237,6 @@
 	<script src="./config_ai.js"></script>
 	<script src="./config.js"></script>
 	<script src="./index.js"></script>
+	<script src="./colorblind.js"></script>
 </body>
 </html>

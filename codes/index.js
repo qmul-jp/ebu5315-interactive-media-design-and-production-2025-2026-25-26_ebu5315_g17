@@ -317,6 +317,10 @@ function apply_language() {
 
 	language_toggle_btn.textContent = is_chinese ? "EN" : "中文";
 	mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+	if (back_to_top_btn) {
+		back_to_top_btn.setAttribute("aria-label", lang_dict.back_to_top);
+		back_to_top_btn.setAttribute("title", lang_dict.back_to_top);
+	}
 
 	if (chat_messages.children.length === 0) {
 		add_chat_message("bot", lang_dict.chat_welcome);
@@ -372,12 +376,105 @@ function start_slider_timer() {
 	}, slider_interval_ms);
 }
 
+function normalize_math_notation(raw_content) {
+	if (typeof raw_content !== "string") {
+		return raw_content;
+	}
+
+	let normalized = raw_content;
+
+	function looks_like_math(expr_text) {
+		if (typeof expr_text !== "string") {
+			return false;
+		}
+
+		const expr = expr_text.trim();
+		if (!expr) {
+			return false;
+		}
+
+		if (/\\[a-zA-Z]+/.test(expr)) {
+			return true;
+		}
+
+		if (/[=^_π∏√]|\d\s*[+\-*/]\s*\d/.test(expr)) {
+			return true;
+		}
+
+		if (/^[a-zA-Z](?:\^[0-9]+|_[a-zA-Z0-9]+)?$/.test(expr)) {
+			return true;
+		}
+
+		if (/\bpi\b/i.test(expr)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	function normalize_math_expr(expr_text) {
+		let expr = expr_text.trim();
+		expr = expr.replace(/\bpi\b/gi, "\\\\pi");
+		return expr;
+	}
+
+	// Convert API style display blocks like: [ A = \pi r^2 ] -> \[ A = \pi r^2 \]
+	// Skip markdown links [text](url) by checking the immediate next non-space char.
+	normalized = normalized.replace(/\[([^\]\n]+)\]/g, (match, inner, offset, source) => {
+		const rest = source.slice(offset + match.length);
+		const next_non_space = rest.match(/^\s*(.)/);
+		if (next_non_space && next_non_space[1] === "(") {
+			return match;
+		}
+
+		if (looks_like_math(inner)) {
+			return `\\[${normalize_math_expr(inner)}\\]`;
+		}
+
+		return match;
+	});
+
+	// Convert inline parenthesized math like: ( \\pi r^2 ) or ( r ) -> \( ... \)
+	normalized = normalized.replace(/\(([^()\n]+)\)/g, (match, inner) => {
+		if (looks_like_math(inner)) {
+			return `\\(${normalize_math_expr(inner)}\\)`;
+		}
+
+		return match;
+	});
+
+	return normalized;
+}
+
+function render_katex_in_element(container_element) {
+	if (typeof renderMathInElement !== "function") {
+		return false;
+	}
+
+	renderMathInElement(container_element, {
+		delimiters: [
+			{ left: "$$", right: "$$", display: true },
+			{ left: "\\[", right: "\\]", display: true },
+			{ left: "\\(", right: "\\)", display: false }
+		],
+		throwOnError: false
+	});
+
+	return true;
+}
+
 function render_markdown_and_math(bubble_element, raw_content) {
+	const normalized_content = normalize_math_notation(raw_content);
+
 	// Parse Markdown (if marked is available)
 	if (typeof marked !== "undefined") {
-		bubble_element.innerHTML = marked.parse(raw_content);
+		bubble_element.innerHTML = marked.parse(normalized_content);
 	} else {
-		bubble_element.textContent = raw_content;
+		bubble_element.textContent = normalized_content;
+	}
+
+	if (render_katex_in_element(bubble_element)) {
+		return;
 	}
 
 	// Typeset MathJax equations (if MathJax is available)
@@ -633,11 +730,7 @@ function update_back_to_top_visibility() {
 		return;
 	}
 
-	if (window.scrollY > 280) {
-		back_to_top_btn.classList.remove("hidden_btn");
-	} else {
-		back_to_top_btn.classList.add("hidden_btn");
-	}
+	back_to_top_btn.classList.remove("hidden_btn");
 }
 
 function scroll_to_top() {
