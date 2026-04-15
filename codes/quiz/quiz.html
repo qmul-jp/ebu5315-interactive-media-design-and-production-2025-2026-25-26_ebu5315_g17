@@ -75,7 +75,9 @@
           <div class="quiz_meta">
             <span id="progress_text">0 / 0</span>
             <span id="score_text">Score: 0</span>
+            <span id="time_text">用时: 00:00</span>
             <span id="skill_text" class="hidden">Skill: 50</span>
+            <span id="skill_delta_badge" class="skill_delta_badge hidden"></span>
           </div>
         </div>
 
@@ -111,6 +113,7 @@
       <p class="hero_kicker" data-i18n="result_kicker">Result</p>
       <h2 id="result_title_text" data-i18n="result_title">本关完成</h2>
       <p id="final_score_text" class="final_score_text">0 / 0</p>
+      <p id="final_time_text" class="final_time_text">用时: 00:00</p>
       <p id="final_message_text" class="final_message_text"></p>
       <div class="action_row center_actions">
         <button id="retry_result_btn" class="primary_btn" type="button" data-i18n="restart_level">
@@ -123,6 +126,6 @@
   <script src="../config.js"></script>
   <script src="./quiz-data.js"></script>
   <script src="./quiz.js"></script>
-	<script src="../colorblind.js"></script>
+  <script src="../colorblind.js"></script>
 </body>
 </html>
