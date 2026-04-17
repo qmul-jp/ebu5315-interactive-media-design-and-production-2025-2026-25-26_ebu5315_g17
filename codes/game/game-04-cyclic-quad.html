@@ -47,7 +47,7 @@
         }
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -78,15 +78,18 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            padding: 0.95rem 1rem 2rem;
+            /* 修正内边距，防止被固定导航栏遮挡 */
+            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* ====================== 顶部导航栏 ====================== */
+        /* ====================== 顶部导航栏 固定定位 ====================== */
         .navbar {
-            position: sticky;
+            position: fixed;
             top: 0.95rem;
-            z-index: 40;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999;
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -97,7 +100,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0;
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -146,7 +149,7 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 ====================== */
+        /* ====================== 左侧边栏 保持固定不变 ====================== */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -384,10 +387,19 @@
             color: var(--text_secondary);
             pointer-events: none;
         }
-        .data-panel .blue { 
-            color: var(--sub_color); 
-            font-weight: 600; 
+        /* 核心颜色定义：对角分组配色 */
+        .angle1 { 
+            color: #165DFF; 
+            font-weight: 700; 
         }
+        .angle2 {
+            color: #FF6B6B;
+            font-weight: 700;
+        }
+        /* 深色模式完美适配 */
+        body.dark-mode .angle1 { color: #60a5fa; }
+        body.dark-mode .angle2 { color: #f87171; }
+
         .data-panel .green {
             color: var(--highlight_color);
             font-weight: 600;
@@ -542,11 +554,12 @@
                     <div class="canvas-container">
                         <canvas id="canvas" width="540" height="440"></canvas>
                         <button class="reset-btn" id="resetBtn" data-zh="↻ 重置图形" data-en="↻ Reset"></button>
+                        <!-- 核心修改：对角文字精准配色 -->
                         <div class="data-panel">
-                            <div class="blue"><span data-zh="∠DAB：" data-en="∠DAB："></span><span id="angA">0</span>°</div>
-                            <div class="blue"><span data-zh="∠ABC：" data-en="∠ABC："></span><span id="angB">0</span>°</div>
-                            <div class="blue"><span data-zh="∠BCD：" data-en="∠BCD："></span><span id="angC">0</span>°</div>
-                            <div class="blue"><span data-zh="∠CDA：" data-en="∠CDA："></span><span id="angD">0</span>°</div>
+                            <div class="angle1"><span data-zh="∠DAB：" data-en="∠DAB："></span><span id="angA">0</span>°</div>
+                            <div class="angle2"><span data-zh="∠ABC：" data-en="∠ABC："></span><span id="angB">0</span>°</div>
+                            <div class="angle1"><span data-zh="∠BCD：" data-en="∠BCD："></span><span id="angC">0</span>°</div>
+                            <div class="angle2"><span data-zh="∠CDA：" data-en="∠CDA："></span><span id="angD">0</span>°</div>
                             <br>
                             <div class="green"><span data-zh="∠DAB + ∠BCD = " data-en="∠DAB + ∠BCD = "></span><span id="sum1">180</span>°</div>
                             <div class="green"><span data-zh="∠ABC + ∠CDA = " data-en="∠ABC + ∠CDA = "></span><span id="sum2">180</span>°</div>
@@ -669,22 +682,6 @@
                 };
             }
 
-            // ---------- 绘制对角互补的弧线标记 (增强视觉效果) ----------
-            function drawAngleArc(centerAngle, startAngle, endAngle, color, clockwise = true) {
-                const arcRadius = 36;
-                const start = {
-                    x: cx + arcRadius * Math.cos(startAngle),
-                    y: cy + arcRadius * Math.sin(startAngle)
-                };
-                ctx.beginPath();
-                ctx.arc(cx, cy, arcRadius, startAngle, endAngle, !clockwise);
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2.2;
-                ctx.setLineDash([4, 3]);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
             // 主绘制函数
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -704,7 +701,7 @@
                 ctx.lineWidth = 2.2;
                 ctx.stroke();
                 
-                // 绘制两条虚线直径 (辅助参考)
+                // 恢复 虚线十字辅助线（水平+垂直直径）
                 ctx.save();
                 ctx.setLineDash([5, 4]);
                 ctx.beginPath();
@@ -747,21 +744,6 @@
                 ctx.lineWidth = 2.0;
                 ctx.stroke();
                 
-                // 绘制对角互补的弧线 (用柔和颜色)
-                const angles = calculateAngles();
-                const sum1 = angles.DAB + angles.BCD;
-                const sum2 = angles.ABC + angles.CDA;
-                
-                // 如果和接近180°，绘制两条短弧表示对角互补
-                if (Math.abs(sum1 - 180) < 1) {
-                    drawAngleArc(points.A, points.D, points.B, '#e8a0bf', true);
-                    drawAngleArc(points.C, points.B, points.D, '#e8a0bf', true);
-                }
-                if (Math.abs(sum2 - 180) < 1) {
-                    drawAngleArc(points.B, points.A, points.C, '#88aadd', true);
-                    drawAngleArc(points.D, points.C, points.A, '#88aadd', true);
-                }
-                
                 // 绘制顶点标记 (圆点)
                 const keys = ['A', 'B', 'C', 'D'];
                 keys.forEach(k => {
@@ -786,6 +768,7 @@
                 });
                 
                 // 更新数据面板
+                const angles = calculateAngles();
                 document.getElementById('angA').textContent = angles.DAB;
                 document.getElementById('angB').textContent = angles.ABC;
                 document.getElementById('angC').textContent = angles.BCD;
@@ -885,5 +868,6 @@
             draw();
         })();
     </script>
+	<script src="../colorblind.js"></script>
 </body>
 </html>

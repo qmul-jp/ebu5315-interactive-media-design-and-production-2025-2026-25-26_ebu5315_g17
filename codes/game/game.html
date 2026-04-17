@@ -102,15 +102,18 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            padding: 0.95rem 1rem 2rem; /* 统一body内边距 */
+            /* 核心修改：顶部内边距适配固定导航栏，防止内容被遮挡 */
+            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards; /* 页面整体淡入 */
         }
 
-        /* --- 顶部导航栏 - 适配index的样式 --- */
+        /* --- 顶部导航栏 - 固定定位，不随滚动移动 --- */
         .navbar {
-            position: sticky;
+            position: fixed; /* 固定定位核心修改 */
             top: 0.95rem;
-            z-index: 40;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999; /* 最高层级，永远置顶 */
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -121,7 +124,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0; /* 固定定位取消外边距 */
             /* 导航栏入场动画（新增） */
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
@@ -172,10 +175,10 @@
             transform: translateY(-2px);
         }
 
-        /* --- 左侧边栏样式 - 【精准对齐index.html位置】--- */
+        /* --- 左侧边栏样式 - 固定定位，不随滚动移动 --- */
         .side_nav {
-            position: fixed;
-            left: 1rem; /* 核心修改：右移至和index完全一致，解决偏左问题 */
+            position: fixed; /* 保持固定定位 */
+            left: 1rem;
             top: calc(var(--header_height) + 1rem);
             bottom: 2rem;
             width: var(--rail_width);
@@ -187,7 +190,7 @@
             gap: 0.55rem;
             box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
             overflow: visible;
-            z-index: 240;
+            z-index: 998; /* 层级低于导航栏 */
             /* 侧边栏入场动画（新增） */
             opacity: 0;
             animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
@@ -694,5 +697,6 @@
             }
         });
     </script>
+	<script src="../colorblind.js"></script>
 </body>
 </html>
