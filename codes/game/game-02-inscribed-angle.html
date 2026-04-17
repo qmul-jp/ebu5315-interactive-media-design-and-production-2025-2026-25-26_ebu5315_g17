@@ -79,15 +79,18 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            padding: 0.95rem 1rem 2rem;
+            /* 防止被固定导航栏遮挡 */
+            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* ====================== 顶部导航栏 ====================== */
+        /* ====================== 顶部导航栏 固定定位 ====================== */
         .navbar {
-            position: sticky;
+            position: fixed;
             top: 0.95rem;
-            z-index: 40;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999;
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -98,7 +101,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0;
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -147,7 +150,7 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 ====================== */
+        /* ====================== 左侧边栏 固定不变 ====================== */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -254,7 +257,7 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* ====================== 原有页面样式（优化兼容） ====================== */
+        /* ====================== 原有页面样式 ====================== */
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -307,7 +310,7 @@
 
         .card h3 {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 60;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -476,7 +479,7 @@
 </head>
 
 <body>
-    <!-- 顶部导航栏（与game.html完全一致） -->
+    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -485,7 +488,7 @@
         </div>
     </nav>
 
-    <!-- 左侧边栏（与game.html完全一致，游戏页默认高亮） -->
+    <!-- 左侧边栏 -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
@@ -501,7 +504,7 @@
         </a>
     </aside>
 
-    <!-- 主内容区域（适配导航栏，无重叠） -->
+    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
@@ -626,7 +629,7 @@
                     : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
             }
 
-            // 更新弧标签（完美适配中英文）
+            // 更新弧标签
             function updateArcLabels() {
                 document.getElementById('arcLabelZh').textContent = showMinorArc ? '劣弧AB' : '优弧AB';
                 document.getElementById('arcLabelEn').textContent = showMinorArc ? 'Minor AB' : 'Major AB';
@@ -694,7 +697,7 @@
                 return angle;
             }
 
-            // 绘制直角符号 (仅当角度≈90°时调用，与game-03逻辑一致)
+            // 【已修复】原始直角符号代码，完全还原你的效果
             function drawRightAngleSymbol(C, A, B) {
                 const size = 16;
                 const u = { x: A.x - C.x, y: A.y - C.y };
@@ -774,15 +777,14 @@
                 ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
 
-                // 计算角度（劣弧）
+                // 计算角度
                 let minorArcAB = Math.abs(points.B.angle - points.A.angle);
                 if (minorArcAB > Math.PI) minorArcAB = 2 * Math.PI - minorArcAB;
-                // 根据切换模式选择劣弧/优弧
                 const arcAB = showMinorArc ? minorArcAB : 2 * Math.PI - minorArcAB;
                 const angleC = minorArcAB / 2;
                 const degC = Math.round(angleC * 180 / Math.PI);
 
-                // ★ 修改点：当角度接近90°时绘制直角符号（容差0.6°）
+                // 直角符号显示
                 const isRightAngle = Math.abs(degC - 90) < 0.6;
                 if (isRightAngle) {
                     drawRightAngleSymbol(pos.C, pos.A, pos.B);

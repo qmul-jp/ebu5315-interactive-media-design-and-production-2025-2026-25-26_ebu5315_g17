@@ -17,7 +17,7 @@
             --sub_color: #4471c2;
             --highlight_color: #e8a0bf;
             --bg_color: #ffffff;
-            --bg_color_night: #0f132a;
+            --bg_color_night: #0f32a;
             --text_color: #102147;
             --text_color_night: #edf1ff;
             --panel_color: #f4f8ff;
@@ -66,22 +66,24 @@
         }
 
         body {
-            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
             background: var(--bg_color);
             min-height: 100vh;
             color: var(--text_color);
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            padding: 0.95rem 1rem 2rem;
+            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* 导航栏 */
+        /* 固定顶部导航栏 */
         .navbar {
-            position: sticky;
+            position: fixed;
             top: 0.95rem;
-            z-index: 40;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999;
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -92,7 +94,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0;
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -141,7 +143,7 @@
             transform: translateY(-2px);
         }
 
-        /* 侧边栏 */
+        /* 固定左侧导航栏 */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -522,8 +524,6 @@
                             <div class="blue"><span data-zh="弦切角 ∠ABC = " data-en="Tangent-chord ∠ABC = "></span><span id="angleABC">0.0</span>°</div>
                             <div class="blue"><span data-zh="邻补角 ∠ABD = " data-en="Adjacent ∠ABD = "></span><span id="angleABD">0.0</span>°</div>
                             <div class="green"><span data-zh="圆周角 ∠AMB = " data-en="Inscribed ∠AMB = "></span><span id="angleAMB">0.0</span>°</div>
-                            <hr>
-                            <div><span data-zh="弧 AMB 度数 = " data-en="Arc AMB = "></span><span id="arcAMB">0.0</span>°</div>
                         </div>
 
                         <div class="control-bar">
@@ -531,14 +531,6 @@
                                 <label class="control-check">
                                     <input type="checkbox" id="showRadiusCheck"> 
                                     <span data-zh="显示半径 OB" data-en="Show radius OB"></span>
-                                </label>
-                                <label class="control-check">
-                                    <input type="checkbox" id="showRightAngleCheck" checked> 
-                                    <span data-zh="显示直角标记" data-en="Show right angle"></span>
-                                </label>
-                                <label class="control-check">
-                                    <input type="checkbox" id="showArcCheck"> 
-                                    <span data-zh="显示弧 AMB" data-en="Show arc AMB"></span>
                                 </label>
                             </div>
                             <button class="reset-btn" id="resetBtn">
@@ -567,11 +559,8 @@
         const angleABCspan = document.getElementById('angleABC');
         const angleABDspan = document.getElementById('angleABD');
         const angleAMBspan = document.getElementById('angleAMB');
-        const arcAMBspan = document.getElementById('arcAMB');
         
         const showRadiusCheck = document.getElementById('showRadiusCheck');
-        const showRightAngleCheck = document.getElementById('showRightAngleCheck');
-        const showArcCheck = document.getElementById('showArcCheck');
 
         // ---------- 全局变量 ----------
         let isChinese = true;
@@ -584,8 +573,6 @@
         let dragTarget = null;
         
         let showRadius = false;
-        let showRightAngle = true;
-        let showArc = false;
 
         // 初始化位置
         function initPoints() {
@@ -627,55 +614,6 @@
             const mod1 = Math.hypot(v1x, v1y);
             const mod2 = Math.hypot(v2x, v2y);
             return Math.acos(Math.max(-1, Math.min(1, dot / (mod1 * mod2)))) * 180 / Math.PI;
-        }
-
-        // 计算圆心角AOB（用于弧AMB度数，取优弧或劣弧需判断）
-        function centralAngleAOB() {
-            let angle = Math.atan2(B.y - O.y, B.x - O.x) - Math.atan2(A.y - O.y, A.x - O.x);
-            angle = (angle + 2 * Math.PI) % (2 * Math.PI);
-            // 根据M的位置决定取劣弧还是优弧（M在哪一侧就取对应的弧）
-            const cross = (A.x - O.x) * (M.y - O.y) - (A.y - O.y) * (M.x - O.x);
-            if (cross > 0) {
-                return angle < Math.PI ? angle : 2 * Math.PI - angle;
-            } else {
-                return angle > Math.PI ? angle : 2 * Math.PI - angle;
-            }
-        }
-
-        // 绘制直角标记（在B点，半径OB与切线垂直）
-        function drawRightAngleAtB() {
-            const dx = B.x - O.x;
-            const dy = B.y - O.y;
-            const len = Math.hypot(dx, dy);
-            const ux = dx / len;
-            const uy = dy / len;
-            const vx = -uy;
-            const vy = ux;
-            const size = 16;
-            
-            const p1 = { x: B.x - ux * size, y: B.y - uy * size };
-            const p2 = { x: B.x + vx * size, y: B.y + vy * size };
-            const p3 = { x: B.x - ux * size + vx * size, y: B.y - uy * size + vy * size };
-            
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p3.x, p3.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-        }
-
-        // 绘制弧AMB
-        function drawArcAMB() {
-            const startAng = Math.atan2(A.y - O.y, A.x - O.x);
-            const endAng = Math.atan2(B.y - O.y, B.x - O.x);
-            const cross = (A.x - O.x) * (M.y - O.y) - (A.y - O.y) * (M.x - O.x);
-            const counterclockwise = cross > 0;
-            ctx.beginPath();
-            ctx.arc(O.x, O.y, rDraw * 0.7, startAng, endAng, !counterclockwise);
-            ctx.strokeStyle = ctx.fillStyle;
-            ctx.lineWidth = 2.5;
-            ctx.setLineDash([]);
-            ctx.stroke();
         }
 
         function draw() {
@@ -723,24 +661,6 @@
             ctx.stroke();
             ctx.setLineDash([]);
             
-            // 弧AMB（可选）
-            if (showArc) {
-                ctx.save();
-                ctx.strokeStyle = isDark ? '#e8a0bf' : '#b45389';
-                ctx.fillStyle = ctx.strokeStyle;
-                drawArcAMB();
-                ctx.restore();
-            }
-            
-            // 直角标记
-            if (showRightAngle) {
-                ctx.save();
-                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
-                ctx.lineWidth = 2.2;
-                drawRightAngleAtB();
-                ctx.restore();
-            }
-            
             // 绘制点
             const drawPoint = (pt, radius, label, offX = 12, offY = 6) => {
                 ctx.beginPath();
@@ -766,12 +686,10 @@
             const abc = angleBetween(A, B, C);
             const abd = 180 - abc;
             const amb = angleBetween(A, M, B);
-            const arcDeg = centralAngleAOB() * 180 / Math.PI;
             
             angleABCspan.textContent = abc.toFixed(1);
             angleABDspan.textContent = abd.toFixed(1);
             angleAMBspan.textContent = amb.toFixed(1);
-            arcAMBspan.textContent = arcDeg.toFixed(1);
         }
 
         // ---------- 交互 ----------
@@ -885,8 +803,6 @@
             themeBtn.addEventListener('click', toggleTheme);
             
             showRadiusCheck.addEventListener('change', e => { showRadius = e.target.checked; draw(); });
-            showRightAngleCheck.addEventListener('change', e => { showRightAngle = e.target.checked; draw(); });
-            showArcCheck.addEventListener('change', e => { showArc = e.target.checked; draw(); });
             
             window.addEventListener('resize', () => draw());
         }

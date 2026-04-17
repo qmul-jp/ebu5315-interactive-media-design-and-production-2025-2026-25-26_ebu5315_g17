@@ -80,15 +80,18 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            padding: 0.95rem 1rem 2rem;
+            /* 核心修改：顶部内边距适配固定导航栏，防止内容被遮挡 */
+            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* --- 顶部导航栏 - 同game.html --- */
+        /* --- 顶部导航栏 - 固定定位，不随滚动移动 --- */
         .navbar {
-            position: sticky;
+            position: fixed; /* 改为固定定位 */
             top: 0.95rem;
-            z-index: 40;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999; /* 最高层级，永远置顶 */
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -99,7 +102,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0; /* 固定定位取消外边距 */
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -148,7 +151,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- 左侧边栏 - 同game.html --- */
+        /* --- 左侧边栏 - 固定定位，保持不变 --- */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -163,7 +166,7 @@
             gap: 0.55rem;
             box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
             overflow: visible;
-            z-index: 240;
+            z-index: 998; /* 层级低于导航栏 */
             opacity: 0;
             animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
         }
