@@ -678,6 +678,51 @@ function register_events() {
 	chat_send_btn.addEventListener("click", handle_send_message);
 	back_to_top_btn.addEventListener("click", scroll_to_top);
 
+	let is_dragging_chat = false;
+	let drag_start_x = 0;
+	let drag_start_y = 0;
+	let panel_start_left = 0;
+	let panel_start_top = 0;
+	const chat_head = chat_panel.querySelector('.chat_head');
+
+	chat_head.addEventListener('mousedown', (e) => {
+		if (window.innerWidth <= 760) return; // Disable drag on mobile layout
+		is_dragging_chat = true;
+		drag_start_x = e.clientX;
+		drag_start_y = e.clientY;
+		const rect = chat_panel.getBoundingClientRect();
+		// Convert fixed right/bottom offsets to explicit left/top for stable dragging/resizing
+		chat_panel.style.left = `${rect.left}px`;
+		chat_panel.style.top = `${rect.top}px`;
+		chat_panel.style.right = 'auto';
+		chat_panel.style.bottom = 'auto';
+		panel_start_left = rect.left;
+		panel_start_top = rect.top;
+		document.body.style.userSelect = 'none';
+	});
+
+	window.addEventListener('mousemove', (e) => {
+		if (!is_dragging_chat) return;
+		const dx = e.clientX - drag_start_x;
+		const dy = e.clientY - drag_start_y;
+		let new_left = panel_start_left + dx;
+		let new_top = panel_start_top + dy;
+		
+		// Boundaries
+		const max_left = window.innerWidth - chat_panel.offsetWidth;
+		const max_top = window.innerHeight - chat_panel.offsetHeight;
+		new_left = Math.max(0, Math.min(new_left, max_left));
+		new_top = Math.max(0, Math.min(new_top, max_top));
+
+		chat_panel.style.left = `${new_left}px`;
+		chat_panel.style.top = `${new_top}px`;
+	});
+
+	window.addEventListener('mouseup', () => {
+		is_dragging_chat = false;
+		document.body.style.userSelect = '';
+	});
+
 	chat_input.addEventListener("keydown", (event) => {
 		if (event.key === "Enter") {
 			handle_send_message();
