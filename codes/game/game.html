@@ -177,7 +177,7 @@
             position: fixed;
             left: 1rem; /* 核心修改：右移至和index完全一致，解决偏左问题 */
             top: calc(var(--header_height) + 1rem);
-            bottom: 2rem;
+            height: auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(13, 50, 115, 0.15);
             width: var(--rail_width);
             background: var(--sub_color);
             padding: 1.1rem 0.55rem;
@@ -185,7 +185,7 @@
             align-content: start;
             justify-items: center;
             gap: 0.55rem;
-            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+            
             overflow: visible;
             z-index: 240;
             /* 侧边栏入场动画（新增） */

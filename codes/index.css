@@ -188,13 +188,14 @@ position: fixed;
 top: calc(0.95rem + var(--header_height) + 0.55rem);
 left: 0.8rem;
 width: var(--rail_width);
-height: calc(100vh - (0.95rem + var(--header_height) + 1.5rem));
-min-height: calc(100vh - var(--header_height) - 2rem);
+height: auto;
+min-height: auto;
 background: var(--sub_color);
-box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+box-shadow: 0 4px 16px rgba(13, 50, 115, 0.15);
 padding: 1.1rem 0.55rem;
 overflow: visible;
 z-index: 240;
+border-radius: 12px;
 }
 
 .side_nav_inner {
