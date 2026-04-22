@@ -843,6 +843,7 @@ padding-left: 0;
 .side_nav {
 position: sticky;
 top: 0;
+height: auto;
 min-height: auto;
 background: var(--sub_color);
 padding: 0.35rem;
