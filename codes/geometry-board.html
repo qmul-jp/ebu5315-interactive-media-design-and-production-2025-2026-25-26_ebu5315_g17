@@ -312,6 +312,21 @@
 			return { width, height };
 		}
 
+		function adapt_coord_system(api, safe_width, safe_height) {
+			if (typeof api.setCoordSystem === "function") {
+				const aspect = safe_width / safe_height;
+				let y_span = 13;
+				let x_span = 13;
+
+				if (aspect > 1) {
+					x_span = y_span * aspect;
+				} else {
+					y_span = x_span / aspect;
+				}
+				api.setCoordSystem(-x_span / 2, x_span / 2, -y_span / 2, y_span / 2);
+			}
+		}
+
 		function seed_circle_scene(api, size) {
 			if (typeof api.setErrorDialogsActive === "function") {
 				api.setErrorDialogsActive(false);
@@ -411,13 +426,7 @@
 				api.setGridVisible(1, true);
 			}
 
-			if (typeof api.setCoordSystem === "function") {
-				const safe_width = Math.max(1, size.width);
-				const safe_height = Math.max(1, size.height);
-				const x_span = 20;
-				const y_span = x_span * (safe_height / safe_width);
-				api.setCoordSystem(-10, 10, -y_span / 2, y_span / 2);
-			}
+			adapt_coord_system(api, Math.max(1, size.width), Math.max(1, size.height));
 		}
 
 		function mount_geogebra(force_reload) {
@@ -506,7 +515,10 @@
 						const box = wrap.getBoundingClientRect();
 						const width = Math.floor(box.width);
 						const height = Math.floor(box.height);
-						window.ggbApplet.setSize(width > 0 ? width : 320, height > 0 ? height : 360);
+						const safe_w = width > 0 ? width : 320;
+						const safe_h = height > 0 ? height : 360;
+						window.ggbApplet.setSize(safe_w, safe_h);
+						adapt_coord_system(window.ggbApplet, safe_w, safe_h);
 					}
 				}, 150);
 			});
