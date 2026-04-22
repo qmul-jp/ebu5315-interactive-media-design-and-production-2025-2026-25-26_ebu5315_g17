@@ -55,7 +55,7 @@
 					</article>
 				</div>
 
-				<p class="demo_notice" data-i18n="demo_notice">注册后即可开启你的 CircleLab 学习之旅，更轻松地进入圆几何世界。</p>
+				<p class="demo_notice" data-i18n="demo_notice">本页使用浏览器会话级本地账号：注册后本次打开期间可真实登录，关闭标签页或浏览器后失效。</p>
 			</section>
 
 			<section class="auth_panel">
@@ -97,7 +97,8 @@
 
 					<div class="sub_actions">
 						<button id="switch_mode_btn" class="text_link_btn" type="button" data-i18n="switch_to_register">还没有账号？去注册</button>
-						<button id="clear_demo_btn" class="text_link_btn" type="button" data-i18n="clear_demo">清除记录</button>
+						<button id="logout_btn" class="text_link_btn hidden" type="button" data-i18n="logout">退出登录</button>
+						<button id="clear_demo_btn" class="text_link_btn" type="button" data-i18n="clear_demo">清空本次会话</button>
 					</div>
 				</form>
 
@@ -107,10 +108,10 @@
 				</section>
 
 				<section id="saved_demo_card" class="saved_demo">
-					<h2 data-i18n="saved_title">最近保存的信息</h2>
-					<p id="saved_demo_empty" data-i18n="saved_empty">还没有保存的信息，登录或注册后会显示在这里。</p>
+					<h2 data-i18n="saved_title">当前会话账号</h2>
+					<p id="saved_demo_empty" data-i18n="saved_empty">本次会话还没有已登录账号。</p>
 					<div class="saved_meta">
-						<p><strong data-i18n="saved_mode">模式</strong>: <span id="saved_mode_value">-</span></p>
+						<p><strong data-i18n="saved_mode">状态</strong>: <span id="saved_mode_value">-</span></p>
 						<p id="saved_name_row"><strong data-i18n="saved_name">昵称</strong>: <span id="saved_name_value">-</span></p>
 						<p><strong data-i18n="saved_email">邮箱</strong>: <span id="saved_email_value">-</span></p>
 						<p><strong data-i18n="saved_time">时间</strong>: <span id="saved_time_value">-</span></p>
