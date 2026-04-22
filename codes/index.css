@@ -826,10 +826,13 @@ padding: 0.85rem 0.8rem 1.5rem;
 }
 
 .site_header {
+position: relative;
+top: 0;
 height: auto;
 padding: 0.8rem 0.9rem;
 align-items: start;
 flex-direction: column;
+margin-bottom: 0.8rem;
 }
 
 .page_shell {
@@ -839,10 +842,15 @@ padding-left: 0;
 
 .side_nav {
 position: sticky;
-top: calc(var(--header_height) + 0.4rem);
+top: 0;
 min-height: auto;
 background: var(--sub_color);
 padding: 0.35rem;
+width: 100%;
+left: 0;
+z-index: 240;
+margin-bottom: 1rem;
+box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .side_nav_inner {
