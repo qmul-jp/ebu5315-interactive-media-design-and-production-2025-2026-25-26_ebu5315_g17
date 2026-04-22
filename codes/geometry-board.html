@@ -53,7 +53,7 @@
 
 		.board_shell {
 			height: 100%;
-			min-height: 680px;
+			min-height: 100%;
 			border: 1px solid var(--line);
 			background: var(--panel);
 			display: grid;
@@ -88,19 +88,28 @@
 		.diagram_wrap {
 			padding: 0.45rem 0.7rem 0.36rem;
 			display: grid;
-			align-items: center;
+			align-items: stretch;
+			justify-items: stretch;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		.geogebra_wrap {
 			display: grid;
+			grid-template-rows: 1fr auto;
 			gap: 0.4rem;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		#ggb-element {
 			width: 100%;
-			min-height: 560px;
+			height: 100%;
+			min-width: 0;
+			min-height: 0;
 			border: 1px solid var(--line);
 			background: #ffffff;
+			overflow: hidden;
 		}
 
 		#ggb-status {
@@ -170,7 +179,7 @@
 			}
 
 			.board_shell {
-				min-height: 520px;
+				min-height: 100%;
 			}
 
 			.formula_strip,
@@ -179,7 +188,7 @@
 			}
 
 			#ggb-element {
-				min-height: 420px;
+				min-height: 0;
 			}
 		}
 	</style>
@@ -189,7 +198,6 @@
 		<header class="board_head">
 			<p class="chip" data-key="chip">独立图示</p>
 			<h2 data-key="title">GeoGebra 圆几何交互控件</h2>
-			<p class="subtitle" data-key="subtitle">课堂展示模式：仅保留核心交互，弦 FG 与直径 DE 已明确分离展示。</p>
 		</header>
 
 		<div class="diagram_wrap" aria-label="GeoGebra interactive circle board">
@@ -298,9 +306,24 @@
 		function get_applet_size() {
 			const host = document.getElementById("ggb-element");
 			const box = host.getBoundingClientRect();
-			const width = Math.max(320, Math.floor(box.width || 760));
-			const height = Math.max(360, Math.floor(box.height || 430));
+			const width = Math.floor(box.width || 760);
+			const height = Math.floor(box.height || 430);
 			return { width, height };
+		}
+
+		function adapt_coord_system(api, safe_width, safe_height) {
+			if (typeof api.setCoordSystem === "function") {
+				const aspect = safe_width / safe_height;
+				let y_span = 13;
+				let x_span = 13;
+
+				if (aspect > 1) {
+					x_span = y_span * aspect;
+				} else {
+					y_span = x_span / aspect;
+				}
+				api.setCoordSystem(-x_span / 2, x_span / 2, -y_span / 2, y_span / 2);
+			}
 		}
 
 		function seed_circle_scene(api, size) {
@@ -402,13 +425,7 @@
 				api.setGridVisible(1, true);
 			}
 
-			if (typeof api.setCoordSystem === "function") {
-				const safe_width = Math.max(1, size.width);
-				const safe_height = Math.max(1, size.height);
-				const x_span = 20;
-				const y_span = x_span * (safe_height / safe_width);
-				api.setCoordSystem(-10, 10, -y_span / 2, y_span / 2);
-			}
+			adapt_coord_system(api, Math.max(1, size.width), Math.max(1, size.height));
 		}
 
 		function mount_geogebra(force_reload) {
@@ -475,9 +492,31 @@
 
 			const next_locale = data.locale === "en" ? "en" : "zh";
 			const locale_changed = next_locale !== state.locale;
+			const is_mobile = Boolean(data.isMobile);
+			const hide_units = Boolean(data.hideUnits);
 
 			apply_night_mode(data.night);
 			apply_locale(next_locale);
+
+			// 处理移动端状态
+			if (window.ggbApplet && typeof window.ggbApplet.setLabelVisible === "function") {
+				// 在移动端隐藏单位显示
+				if (hide_units) {
+					// 隐藏所有可能显示单位的标签
+					["O", "A", "B", "D", "E", "F", "G", "radius1", "radius2"].forEach((name) => {
+						window.ggbApplet.setLabelVisible(name, false);
+					});
+				} else {
+					// 在非移动端显示必要的标签
+					window.ggbApplet.setLabelVisible("O", true);
+					window.ggbApplet.setLabelVisible("A", true);
+					window.ggbApplet.setLabelVisible("B", true);
+					window.ggbApplet.setLabelVisible("D", true);
+					window.ggbApplet.setLabelVisible("E", true);
+					window.ggbApplet.setLabelVisible("F", true);
+					window.ggbApplet.setLabelVisible("G", true);
+				}
+			}
 
 			if (locale_changed) {
 				mount_geogebra(true);
@@ -487,6 +526,24 @@
 		window.addEventListener("load", () => {
 			apply_locale("zh");
 			mount_geogebra(true);
+
+			let resize_timer;
+			const wrap = document.getElementById("ggb-element");
+			const observer = new ResizeObserver(() => {
+				clearTimeout(resize_timer);
+				resize_timer = setTimeout(() => {
+					if (window.ggbApplet && typeof window.ggbApplet.setSize === "function") {
+						const box = wrap.getBoundingClientRect();
+						const width = Math.floor(box.width);
+						const height = Math.floor(box.height);
+						const safe_w = width > 0 ? width : 320;
+						const safe_h = height > 0 ? height : 360;
+						window.ggbApplet.setSize(safe_w, safe_h);
+						adapt_coord_system(window.ggbApplet, safe_w, safe_h);
+					}
+				}, 150);
+			});
+			if(wrap) observer.observe(wrap);
 		});
 	</script>
 </body>

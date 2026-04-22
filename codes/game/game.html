@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CircleLab | 几何定理游戏中心</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="../auth-entry.css">
+=======
+    <link rel="stylesheet" href="../index.css">
+>>>>>>> backup-mobile-optimization
     <style>
         * {
             margin: 0;
@@ -82,19 +86,8 @@
             to { opacity: 1; }
         }
 
-        /* 夜间模式配色覆盖 - 统一index的夜间模式逻辑 */
-        body.dark-mode {
-            --text_primary: var(--text_color_night);
-            --text_secondary: #dddddd;
-            --text_tertiary: #bbbbbb;
-            --card_bg: var(--panel_color_night);
-            --border_light: var(--line_color);
-            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
-            --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
-            background: var(--bg_color_night);
-            color: var(--text_color_night);
-        }
 
+<<<<<<< HEAD
         body {
             font-family: "Trebuchet MS", "Segoe UI", sans-serif; /* 统一字体 */
             background: var(--bg_color);
@@ -293,6 +286,8 @@
             padding: 1rem;
             width: 100%;
         }
+=======
+>>>>>>> backup-mobile-optimization
 
         /* 页面头部 */
         .page-header {
@@ -430,58 +425,19 @@
         }
 
         /* 响应式适配 */
-        @media (max-width: 980px) {
+        @media (max-width: 980px), (max-aspect-ratio: 5/4) {
             body {
-                padding: 0.85rem 0.8rem 1.5rem;
-            }
-            
-            .side_nav {
-                position: sticky;
-                top: calc(var(--header_height) + 0.4rem);
-                min-height: auto;
-                grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
-                padding: 0.35rem;
-                width: 100%;
-                left: 0;
-                bottom: auto;
-            }
-
-            .side_nav_link {
-                width: 100%;
-                min-height: auto;
-                padding: 0.42rem 0.2rem;
-                flex-direction: column;
-                gap: 0.2rem;
-            }
-
-            .side_nav_icon {
-                width: 1.32rem;
-                height: 1.32rem;
-            }
-
-            .side_nav_tooltip {
-                position: static;
-                transform: none;
-                opacity: 1;
-                pointer-events: auto;
-                background: transparent;
-                box-shadow: none;
-                padding: 0;
-                font-size: 0.78rem;
-                line-height: 1.15;
-                text-align: center;
-            }
-
-            .side_nav_tooltip::before {
-                display: none;
+                padding: 0.85rem 0.8rem 6rem;
             }
             
             .main-wrapper {
                 margin-left: 0;
-                margin-top: 1rem;
+                margin-top: 0.5rem;
                 width: 100%;
+            }
+
+            .footer {
+                padding-bottom: 1rem;
             }
         }
 
@@ -495,28 +451,9 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
-            .navbar {
-                height: auto;
-                padding: 0.8rem 0.9rem;
-                align-items: start;
-                flex-direction: column;
-            }
-            
-            .nav-buttons {
-                width: 100%;
-            }
-            
-            .lang-toggle, .theme-toggle {
-                flex: 1;
-            }
         }
 
         @media (max-width: 560px) {
-            .side_nav_tooltip {
-                font-size: 0.74rem;
-            }
-            
             .game-grid {
                 grid-template-columns: 1fr;
             }
@@ -524,53 +461,67 @@
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 - 适配index样式 -->
-    <nav class="navbar">
-        <a href="../index.html" class="logo">CircleLab</a>
-        <div class="nav-buttons">
-            <button class="lang-toggle" id="langToggleBtn">English</button>
-            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
-        </div>
-    </nav>
+	<div class="bg_orb bg_orb_left"></div>
+	<div class="bg_orb bg_orb_right"></div>
 
-    <!-- 左侧边栏 -->
-    <aside class="side_nav" aria-label="Primary menu">
-        <a class="side_nav_link" href="../index.html" aria-label="Homepage">
-            <span class="side_nav_icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                    <path d="M3 10.5L12 3L21 10.5"></path>
-                    <path d="M5 9.5V20H19V9.5"></path>
-                    <path d="M10 20V14H14V20"></path>
-                </svg>
-            </span>
-            <span class="side_nav_tooltip" data-zh="主页" data-en="Homepage">主页</span>
-        </a>
-        <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
-            <span class="side_nav_icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                    <rect x="6" y="4" width="12" height="16" rx="2"></rect>
-                    <path d="M9 4.5H15"></path>
-                    <path d="M9 10H15"></path>
-                    <path d="M9 14H13"></path>
-                    <path d="M9 18H12"></path>
-                    <path d="M14 14L15.5 15.5L18 13"></path>
-                </svg>
-            </span>
-            <span class="side_nav_tooltip" data-zh="测验" data-en="Quiz">测验</span>
-        </a>
-        <a class="side_nav_link active" href="./game.html" aria-label="Game">
-            <span class="side_nav_icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                    <path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
-                    <path d="M8.5 13.5V16.5"></path>
-                    <path d="M7 15H10"></path>
-                    <circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
-                    <circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
-                </svg>
-            </span>
-            <span class="side_nav_tooltip" data-zh="游戏" data-en="Game">游戏</span>
-        </a>
-    </aside>
+	<header class="site_header">
+		<div class="brand_wrap">
+			<div class="brand_logo" aria-hidden="true">◯</div>
+			<div>
+				<p class="brand_name">CircleLab</p>
+				<p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
+			</div>
+		</div>
+
+		<div class="control_group">
+			<button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
+			<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
+		</div>
+	</header>
+
+	<div class="page_shell">
+		<aside class="side_nav fade_in_up" aria-label="Primary menu">
+			<div class="side_nav_inner">
+			<a class="side_nav_link" href="../index.html" aria-label="Homepage">
+				<span class="side_nav_icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+						<path d="M3 10.5L12 3L21 10.5"></path>
+						<path d="M5 9.5V20H19V9.5"></path>
+						<path d="M10 20V14H14V20"></path>
+					</svg>
+				</span>
+				<span class="side_nav_tooltip" data-i18n="nav_home">主页</span>
+			</a>
+			<a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+				<span class="side_nav_icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+						<rect x="6" y="4" width="12" height="16" rx="2"></rect>
+						<path d="M9 4.5H15"></path>
+						<path d="M9 10H15"></path>
+						<path d="M9 14H13"></path>
+						<path d="M9 18H12"></path>
+						<path d="M14 14L15.5 15.5L18 13"></path>
+					</svg>
+				</span>
+				<span class="side_nav_tooltip" data-i18n="nav_quiz">测验</span>
+			</a>
+			<a class="side_nav_link active" href="./game.html" aria-label="Game">
+				<span class="side_nav_icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+						<path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
+						<path d="M8.5 13.5V16.5"></path>
+						<path d="M7 15H10"></path>
+						<circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
+						<circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
+					</svg>
+				</span>
+				<span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
+			</a>
+			</div>
+		</aside>
+
+		<main class="content_area">
+    
 
     <!-- 主内容包装器 -->
     <div class="main-wrapper">
@@ -648,44 +599,8 @@
         </footer>
     </div>
 
+    <script src="../index.js"></script>
     <script>
-        // 初始状态：中文模式
-        let isChinese = true;
-        const langBtn = document.getElementById('langToggleBtn');
-        const themeBtn = document.getElementById('themeToggleBtn');
-        
-        // 语言切换核心函数
-        function toggleLang() {
-            isChinese = !isChinese;
-            const i18nElements = document.querySelectorAll('[data-zh][data-en]');
-            i18nElements.forEach(el => {
-                el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
-            });
-
-            langBtn.textContent = isChinese ? "English" : "中文";
-            updateThemeBtnText();
-        }
-
-        // 主题切换函数
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            updateThemeBtnText();
-        }
-
-        // 更新主题按钮文字
-        function updateThemeBtnText() {
-            const isDark = document.body.classList.contains('dark-mode');
-            if (isChinese) {
-                themeBtn.textContent = isDark ? "☀️ 白天模式" : "🌙 夜间模式";
-            } else {
-                themeBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-            }
-        }
-
-        // 绑定按钮事件
-        langBtn.addEventListener('click', toggleLang);
-        themeBtn.addEventListener('click', toggleTheme);
-
         // 自动高亮当前页面的侧边栏链接
         const currentPath = window.location.pathname;
         const sidebarLinks = document.querySelectorAll('.side_nav_link');
@@ -702,3 +617,7 @@
 	<script src="../colorblind.js"></script>
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> backup-mobile-optimization
