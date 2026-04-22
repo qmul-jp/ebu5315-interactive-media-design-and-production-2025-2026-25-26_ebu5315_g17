@@ -333,7 +333,7 @@ function apply_mode() {
 	sync_geometry_board_state();
 }
 
-function sync_geometry_board_state() {
+function sync_geometry_board_state(isMobile = false) {
 	if (!geometry_frame || !geometry_frame.contentWindow) {
 		return;
 	}
@@ -342,10 +342,61 @@ function sync_geometry_board_state() {
 		{
 			type: "circlab_state",
 			night: is_night,
-			locale: get_locale()
+			locale: get_locale(),
+			isMobile: isMobile,
+			hideUnits: isMobile
 		},
 		"*"
 	);
+}
+
+// 调整GeoGebra大小
+function adjustGeoGebraSize() {
+	const geometryFrame = document.querySelector('.geometry_frame');
+	const geometryFrameShell = document.querySelector('.geometry_frame_shell');
+	
+	if (geometryFrame && geometryFrameShell) {
+		// 计算屏幕比例
+		const aspectRatio = window.innerWidth / window.innerHeight;
+		const isMobile = aspectRatio < 1 || window.innerWidth < 760;
+		
+		// 根据屏幕比例设置GeoGebra大小
+		if (isMobile) { // 移动端
+			// 调整高度
+			if (window.innerWidth < 480) {
+				geometryFrame.style.minHeight = '320px';
+				geometryFrame.style.maxHeight = '45vh';
+				geometryFrameShell.style.minHeight = '320px';
+				geometryFrameShell.style.maxHeight = '45vh';
+			} else if (window.innerWidth < 560) {
+				geometryFrame.style.minHeight = '380px';
+				geometryFrame.style.maxHeight = '50vh';
+				geometryFrameShell.style.minHeight = '380px';
+				geometryFrameShell.style.maxHeight = '50vh';
+			} else {
+				geometryFrame.style.minHeight = '480px';
+				geometryFrame.style.maxHeight = '60vh';
+				geometryFrameShell.style.minHeight = '480px';
+				geometryFrameShell.style.maxHeight = '60vh';
+			}
+			// 发送移动端状态到GeoGebra
+			sync_geometry_board_state(true);
+		} else if (aspectRatio < 1.5) { // 横屏但不是特别宽
+			geometryFrame.style.minHeight = '540px';
+			geometryFrame.style.maxHeight = '70vh';
+			geometryFrameShell.style.minHeight = '540px';
+			geometryFrameShell.style.maxHeight = '70vh';
+			// 发送非移动端状态到GeoGebra
+			sync_geometry_board_state(false);
+		} else { // 宽屏
+			geometryFrame.style.minHeight = '620px';
+			geometryFrame.style.maxHeight = '80vh';
+			geometryFrameShell.style.minHeight = '620px';
+			geometryFrameShell.style.maxHeight = '80vh';
+			// 发送非移动端状态到GeoGebra
+			sync_geometry_board_state(false);
+		}
+	}
 }
 
 function show_slide(next_index) {
@@ -745,6 +796,12 @@ function init_homepage() {
 	start_slider_timer();
 	register_events();
 	update_back_to_top_visibility();
+	
+	// 初始化GeoGebra大小
+	adjustGeoGebraSize();
+	
+	// 监听屏幕大小变化
+	window.addEventListener('resize', adjustGeoGebraSize);
 }
 
 init_homepage();

@@ -198,7 +198,6 @@
 		<header class="board_head">
 			<p class="chip" data-key="chip">独立图示</p>
 			<h2 data-key="title">GeoGebra 圆几何交互控件</h2>
-			<p class="subtitle" data-key="subtitle">课堂展示模式：仅保留核心交互，弦 FG 与直径 DE 已明确分离展示。</p>
 		</header>
 
 		<div class="diagram_wrap" aria-label="GeoGebra interactive circle board">
@@ -493,9 +492,31 @@
 
 			const next_locale = data.locale === "en" ? "en" : "zh";
 			const locale_changed = next_locale !== state.locale;
+			const is_mobile = Boolean(data.isMobile);
+			const hide_units = Boolean(data.hideUnits);
 
 			apply_night_mode(data.night);
 			apply_locale(next_locale);
+
+			// 处理移动端状态
+			if (window.ggbApplet && typeof window.ggbApplet.setLabelVisible === "function") {
+				// 在移动端隐藏单位显示
+				if (hide_units) {
+					// 隐藏所有可能显示单位的标签
+					["O", "A", "B", "D", "E", "F", "G", "radius1", "radius2"].forEach((name) => {
+						window.ggbApplet.setLabelVisible(name, false);
+					});
+				} else {
+					// 在非移动端显示必要的标签
+					window.ggbApplet.setLabelVisible("O", true);
+					window.ggbApplet.setLabelVisible("A", true);
+					window.ggbApplet.setLabelVisible("B", true);
+					window.ggbApplet.setLabelVisible("D", true);
+					window.ggbApplet.setLabelVisible("E", true);
+					window.ggbApplet.setLabelVisible("F", true);
+					window.ggbApplet.setLabelVisible("G", true);
+				}
+			}
 
 			if (locale_changed) {
 				mount_geogebra(true);
