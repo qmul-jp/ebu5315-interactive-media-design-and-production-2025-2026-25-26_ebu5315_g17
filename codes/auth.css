@@ -430,3 +430,8 @@ body.night_mode .text_link_btn {
 		width: 100%;
 	}
 }
+
+
+.sub_actions .hidden {
+	display: none;
+}

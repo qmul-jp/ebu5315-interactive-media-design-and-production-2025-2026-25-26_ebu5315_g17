@@ -5,7 +5,9 @@
 	flex-wrap: wrap;
 }
 
-.control_group .auth_link {
+.control_group .auth_link,
+.control_group .auth_logout_btn,
+.control_group .auth_status_badge {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -26,13 +28,34 @@
 	background: #ffffff;
 }
 
+.control_group .auth_status_badge {
+	border: 1px solid rgba(255, 255, 255, 0.34);
+	background: rgba(255, 255, 255, 0.12);
+	font-weight: 800;
+}
+
+.control_group .auth_logout_btn {
+	border: 1px solid rgba(255, 255, 255, 0.34);
+	background: transparent;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.control_group .auth_logout_btn:hover {
+	transform: translateY(-2px);
+	background: rgba(255, 255, 255, 0.12);
+}
+
 body.night_mode .control_group .auth_primary_btn {
 	background: rgba(255, 255, 255, 0.92);
 	color: var(--theme_color, #0d3273);
 }
 
 .nav-buttons .auth-link,
-.nav-buttons .auth-link-primary {
+.nav-buttons .auth-link-primary,
+.nav-buttons .auth-logout-btn,
+.nav-buttons .auth-status-badge {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -46,7 +69,8 @@ body.night_mode .control_group .auth_primary_btn {
 	white-space: nowrap;
 }
 
-.nav-buttons .auth-link {
+.nav-buttons .auth-link,
+.nav-buttons .auth-status-badge {
 	background: rgba(255, 255, 255, 0.12);
 }
 
@@ -56,12 +80,20 @@ body.night_mode .control_group .auth_primary_btn {
 	color: var(--theme_color, #0d3273);
 }
 
+.nav-buttons .auth-logout-btn {
+	background: transparent;
+	font: inherit;
+	cursor: pointer;
+}
+
 .nav-buttons .auth-link:hover,
-.nav-buttons .auth-link-primary:hover {
+.nav-buttons .auth-link-primary:hover,
+.nav-buttons .auth-logout-btn:hover {
 	transform: translateY(-2px);
 }
 
-.nav-buttons .auth-link:hover {
+.nav-buttons .auth-link:hover,
+.nav-buttons .auth-logout-btn:hover {
 	background: rgba(255, 255, 255, 0.2);
 }
 
@@ -88,8 +120,12 @@ body.dark-mode .nav-buttons .auth-link-primary {
 	}
 
 	.control_group .auth_link_group .auth_link,
+	.control_group .auth_link_group .auth_logout_btn,
+	.control_group .auth_link_group .auth_status_badge,
 	.nav-buttons .auth_link_group .auth-link,
-	.nav-buttons .auth_link_group .auth-link-primary {
+	.nav-buttons .auth_link_group .auth-link-primary,
+	.nav-buttons .auth_link_group .auth-logout-btn,
+	.nav-buttons .auth_link_group .auth-status-badge {
 		flex: 1;
 	}
 }
