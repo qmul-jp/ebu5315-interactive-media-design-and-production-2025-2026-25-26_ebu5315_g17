@@ -152,7 +152,7 @@
             position: fixed;
             left: 1rem;
             top: calc(var(--header_height) + 1rem);
-            height: auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(13, 50, 115, 0.15);
+            height: auto;  box-shadow: 0 4px 16px rgba(13, 50, 115, 0.15);
             width: var(--rail_width);
             background: var(--sub_color);
             padding: 1.1rem 0.55rem;
@@ -259,7 +259,7 @@
             max-width: 960px;
             margin: 0 auto;
             background: var(--card_bg);
-            border-radius: 12px;
+            
             box-shadow: var(--shadow_md);
             overflow: hidden;
             transition: all 0.3s ease;
@@ -431,7 +431,7 @@
         }
 
         /* 响应式适配 */
-        @media (max-width: 980px) {
+        @media (max-width: 980px), (max-aspect-ratio: 5/4) {
             .side_nav {
                 position: sticky;
                 top: calc(var(--header_height) + 0.4rem);
