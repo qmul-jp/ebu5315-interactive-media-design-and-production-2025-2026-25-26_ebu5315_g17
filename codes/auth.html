@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CircleLab | 登录</title>
+	<link rel="stylesheet" href="./auth.css">
+</head>
+<body>
+	<main class="auth_page">
+		<header class="auth_header">
+			<a class="brand_link" href="./index.html">
+				<span class="brand_badge" aria-hidden="true">CL</span>
+				<span class="brand_copy">
+					<strong>CircleLab</strong>
+					<span data-i18n="brand_tag">圆几何学习入口</span>
+				</span>
+			</a>
+
+			<div class="header_actions">
+				<a class="ghost_btn" href="./index.html" data-i18n="header_back">返回主页</a>
+				<button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
+				<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
+			</div>
+		</header>
+
+		<section class="auth_layout">
+			<section class="auth_intro">
+				<div>
+					<p class="eyebrow" data-i18n="intro_eyebrow">学习入口</p>
+					<h1 class="auth_title">
+						<span data-i18n="intro_line_1">加入</span>
+						<span data-i18n="intro_line_2">CircleLab</span>
+						<span data-i18n="intro_line_3">一起感受圆的魅力</span>
+					</h1>
+					<p class="auth_desc" data-i18n="intro_desc">加入 CircleLab，一起探索圆形与几何的魅力。通过互动图示、趣味游戏和分级测验，让学习变得更直观、更轻松。</p>
+				</div>
+
+				<div class="feature_grid">
+					<article class="feature_card">
+						<h3 data-i18n="feature_1_title">双语学习</h3>
+						<p data-i18n="feature_1_desc">延续站内的中英文切换体验，帮助你在不同语言环境下都能顺畅学习。</p>
+					</article>
+					<article class="feature_card">
+						<h3 data-i18n="feature_2_title">个人入口</h3>
+						<p data-i18n="feature_2_desc">填写昵称、邮箱和密码，快速进入你的 CircleLab 学习空间。</p>
+					</article>
+					<article class="feature_card">
+						<h3 data-i18n="feature_3_title">白天 / 夜间</h3>
+						<p data-i18n="feature_3_desc">根据你的学习习惯自由切换主题模式，获得更舒适的浏览体验。</p>
+					</article>
+					<article class="feature_card">
+						<h3 data-i18n="feature_4_title">学习旅程</h3>
+						<p data-i18n="feature_4_desc">从首页、游戏到测验形成完整学习闭环，更方便持续探索圆几何知识。</p>
+					</article>
+				</div>
+
+				<p class="demo_notice" data-i18n="demo_notice">注册后即可开启你的 CircleLab 学习之旅，更轻松地进入圆几何世界。</p>
+			</section>
+
+			<section class="auth_panel">
+				<div class="tab_row" aria-label="auth mode tabs">
+					<button id="login_tab_btn" class="tab_btn active_tab" type="button" data-i18n="tab_login">登录</button>
+					<button id="register_tab_btn" class="tab_btn" type="button" data-i18n="tab_register">注册</button>
+				</div>
+
+				<div class="panel_heading">
+					<h1 id="panel_heading_title">欢迎回来</h1>
+					<p id="panel_heading_desc">登录你的 CircleLab 账号，继续上次的学习旅程。</p>
+				</div>
+
+				<form id="auth_form" class="auth_form" novalidate>
+					<div id="name_field" class="field_group hidden">
+						<label for="name_input" data-i18n="label_name">昵称</label>
+						<input id="name_input" name="name" type="text" data-i18n-placeholder="placeholder_name" placeholder="请输入你的昵称">
+						<p class="field_hint" data-i18n="hint_register">建议填写一个你喜欢的学习昵称，方便识别你的个人账号。</p>
+					</div>
+
+					<div class="field_group">
+						<label for="email_input" data-i18n="label_email">邮箱</label>
+						<input id="email_input" name="email" type="email" required data-i18n-placeholder="placeholder_email" placeholder="请输入邮箱地址">
+					</div>
+
+					<div class="field_row">
+						<div class="field_group">
+							<label for="password_input" data-i18n="label_password">密码</label>
+							<input id="password_input" name="password" type="password" required data-i18n-placeholder="placeholder_password" placeholder="请输入密码">
+						</div>
+
+						<div id="confirm_field" class="field_group hidden">
+							<label for="confirm_input" data-i18n="label_confirm">确认密码</label>
+							<input id="confirm_input" name="confirm_password" type="password" data-i18n-placeholder="placeholder_confirm" placeholder="请再次输入密码">
+						</div>
+					</div>
+
+					<button id="submit_btn" class="primary_btn" type="submit" data-i18n="submit_login">登录</button>
+
+					<div class="sub_actions">
+						<button id="switch_mode_btn" class="text_link_btn" type="button" data-i18n="switch_to_register">还没有账号？去注册</button>
+						<button id="clear_demo_btn" class="text_link_btn" type="button" data-i18n="clear_demo">清除记录</button>
+					</div>
+				</form>
+
+				<section id="status_box" class="status_box hidden" aria-live="polite">
+					<h2 class="status_title" data-i18n="status_title">操作结果</h2>
+					<p id="status_text" class="status_text"></p>
+				</section>
+
+				<section id="saved_demo_card" class="saved_demo">
+					<h2 data-i18n="saved_title">最近保存的信息</h2>
+					<p id="saved_demo_empty" data-i18n="saved_empty">还没有保存的信息，登录或注册后会显示在这里。</p>
+					<div class="saved_meta">
+						<p><strong data-i18n="saved_mode">模式</strong>: <span id="saved_mode_value">-</span></p>
+						<p id="saved_name_row"><strong data-i18n="saved_name">昵称</strong>: <span id="saved_name_value">-</span></p>
+						<p><strong data-i18n="saved_email">邮箱</strong>: <span id="saved_email_value">-</span></p>
+						<p><strong data-i18n="saved_time">时间</strong>: <span id="saved_time_value">-</span></p>
+					</div>
+				</section>
+			</section>
+		</section>
+	</main>
+
+	<script src="./auth.js"></script>
+</body>
+</html>
