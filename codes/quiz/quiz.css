@@ -97,6 +97,14 @@ body.night_mode {
   gap: 1rem;
 }
 
+.header_left_group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  flex: 1;
+}
+
 .brand_wrap {
   display: grid;
   gap: 0.25rem;
@@ -116,10 +124,26 @@ body.night_mode {
   opacity: 0.86;
 }
 
+.back_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.back_btn:hover {
+  text-decoration: none;
+}
+
 .control_group {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .quiz_shell {
@@ -261,6 +285,13 @@ body.night_mode .level_btn.active_level {
   margin-top: 0.25rem;
   font-size: 0.9rem;
   opacity: 0.8;
+}
+
+.level_status {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  opacity: 0.72;
 }
 
 .smart_entry {
@@ -814,13 +845,27 @@ body.night_mode .skill_delta_badge.negative {
     align-items: stretch;
   }
 
+  .header_left_group {
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
   .control_group {
     width: 100%;
+    justify-content: flex-start;
   }
 
   .ghost_btn {
     flex: 1;
     justify-content: center;
+  }
+
+  .back_btn {
+    flex: 0 0 auto;
+    min-width: 96px;
   }
 
   .quiz_workspace {
@@ -843,6 +888,38 @@ body.night_mode .skill_delta_badge.negative {
   .quiz_card,
   .result_card {
     padding: 1rem;
+  }
+
+  .quiz_card .action_row {
+    position: sticky;
+    bottom: 0;
+    z-index: 8;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding-top: 0.85rem;
+    padding-bottom: max(0.2rem, env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(68, 113, 194, 0.12);
+  }
+
+  body.night_mode .quiz_card .action_row {
+    background: rgba(18, 22, 42, 0.94);
+  }
+
+  .quiz_card .action_row .action_hidden {
+    display: none;
+  }
+
+  .quiz_card .primary_btn,
+  .quiz_card .secondary_btn {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  #restart_btn {
+    grid-column: 1 / -1;
   }
 }
 
@@ -922,7 +999,7 @@ body.night_mode .skill_delta_badge.negative {
     padding: 0.18rem 0.5rem;
   }
 
-  .action_row {
+  .result_card .action_row {
     flex-direction: column;
   }
 

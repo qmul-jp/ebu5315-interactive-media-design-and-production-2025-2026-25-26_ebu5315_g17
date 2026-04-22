@@ -56,9 +56,14 @@ const SMART_SCORE_RULES = {
   3: { correct: 9, wrong: -8 },
 };
 
+const PREFS_KEY = "circlelab_quiz_preferences_v1";
+const LEVEL_STATS_KEY = "circlelab_quiz_level_stats_v1";
+const SESSION_KEY = "circlelab_quiz_session_v1";
+
 const i18n_text = {
   zh: {
     brand_tag: "GCSE 圆几何测验",
+    back_home: "← 返回",
     mode_day: "夜间模式",
     mode_night: "白天模式",
     quiz_kicker: "Level-based Quiz",
@@ -74,6 +79,10 @@ const i18n_text = {
     level_3: "Level 3 · 挑战",
     level_3_hint: "综合应用 / 推理题",
     level_label: "Level",
+    level_status_not_started: "未开始",
+    level_status_in_progress: "进行中",
+    level_status_done: "已完成",
+    best_label: "Best",
     smart_badge: "推荐",
     smart_mode: "智能闯关",
     smart_mode_hint: "按你的实时表现自动调节题目难度",
@@ -93,6 +102,7 @@ const i18n_text = {
     skill_prefix: "能力值",
     time_prefix: "用时",
     choose_first: "请先选择一个答案。",
+    confirm_restart_current: "确定要重做本关吗？当前进度会被清空。",
     feedback_correct: "回答正确！",
     feedback_wrong: "回答错误。",
     explanation_label: "解析",
@@ -117,6 +127,7 @@ const i18n_text = {
   },
   en: {
     brand_tag: "GCSE Circle Geometry Quiz",
+    back_home: "← Back",
     mode_day: "Night Mode",
     mode_night: "Day Mode",
     quiz_kicker: "Level-based Quiz",
@@ -132,6 +143,10 @@ const i18n_text = {
     level_3: "Level 3 · Challenge",
     level_3_hint: "Mixed application / reasoning",
     level_label: "Level",
+    level_status_not_started: "Not started",
+    level_status_in_progress: "In progress",
+    level_status_done: "Done",
+    best_label: "Best",
     smart_badge: "Recommended",
     smart_mode: "Smart Challenge",
     smart_mode_hint: "Adjust question difficulty in real time based on your performance",
@@ -151,6 +166,7 @@ const i18n_text = {
     skill_prefix: "Skill",
     time_prefix: "Time",
     choose_first: "Please choose one option first.",
+    confirm_restart_current: "Restart this level? Current progress will be cleared.",
     feedback_correct: "Correct!",
     feedback_wrong: "Wrong.",
     explanation_label: "Explanation",
@@ -201,6 +217,9 @@ const final_score_text = document.getElementById("final_score_text");
 const final_time_text = document.getElementById("final_time_text");
 const final_message_text = document.getElementById("final_message_text");
 const retry_result_btn = document.getElementById("retry_result_btn");
+
+let last_selected_level = 1;
+let pending_color_mode = null;
 
 const state = {
   question_bank: [],
@@ -319,6 +338,280 @@ async function load_question_bank() {
   throw new Error("Question bank not found. Please check quiz-data.js");
 }
 
+function safe_storage_get(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    return null;
+  }
+}
+
+function safe_storage_set(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.warn("Failed to save local data:", error);
+  }
+}
+
+function safe_storage_remove(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.warn("Failed to remove local data:", error);
+  }
+}
+
+function get_color_mode_select() {
+  return document.querySelector(".quiz_header select");
+}
+
+function get_preferences_payload() {
+  return {
+    is_chinese,
+    is_night,
+    last_selected_level,
+    color_mode: get_color_mode_select()?.value || pending_color_mode || null,
+  };
+}
+
+function save_preferences() {
+  safe_storage_set(PREFS_KEY, JSON.stringify(get_preferences_payload()));
+}
+
+function load_preferences() {
+  const raw = safe_storage_get(PREFS_KEY);
+  if (!raw) return;
+
+  try {
+    const prefs = JSON.parse(raw);
+    if (typeof prefs.is_chinese === "boolean") {
+      is_chinese = prefs.is_chinese;
+    }
+    if (typeof prefs.is_night === "boolean") {
+      is_night = prefs.is_night;
+    }
+    if (typeof prefs.last_selected_level === "number") {
+      last_selected_level = clamp_number(prefs.last_selected_level, 1, 3);
+    }
+    if (typeof prefs.color_mode === "string" && prefs.color_mode) {
+      pending_color_mode = prefs.color_mode;
+    }
+  } catch (error) {
+    console.warn("Failed to parse saved preferences:", error);
+  }
+}
+
+function setup_color_mode_persistence() {
+  const try_bind = () => {
+    const select = get_color_mode_select();
+    if (!select) return false;
+
+    if (pending_color_mode && Array.from(select.options).some((option) => option.value === pending_color_mode)) {
+      select.value = pending_color_mode;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    if (!select.dataset.quizPrefsBound) {
+      select.addEventListener("change", () => {
+        pending_color_mode = select.value;
+        save_preferences();
+      });
+      select.dataset.quizPrefsBound = "1";
+    }
+
+    return true;
+  };
+
+  if (try_bind()) return;
+
+  const observer = new MutationObserver(() => {
+    if (try_bind()) {
+      observer.disconnect();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  window.addEventListener("beforeunload", () => observer.disconnect(), { once: true });
+}
+
+function get_level_stats() {
+  const raw = safe_storage_get(LEVEL_STATS_KEY);
+  if (!raw) return {};
+
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    console.warn("Failed to parse level stats:", error);
+    return {};
+  }
+}
+
+function save_level_stats(stats) {
+  safe_storage_set(LEVEL_STATS_KEY, JSON.stringify(stats));
+}
+
+function get_level_progress_count() {
+  return state.current_history.filter((record) => record.answered).length;
+}
+
+function clear_level_progress_state(level) {
+  const stats = get_level_stats();
+  const level_key = String(level);
+  if (!stats[level_key]) return;
+
+  stats[level_key].inProgress = false;
+  stats[level_key].progressCount = 0;
+  save_level_stats(stats);
+}
+
+function update_level_stats_from_state() {
+  if (state.current_mode !== "level") return;
+
+  const total = state.session_length || state.current_history.length;
+  const progress_count = get_level_progress_count();
+  const level_key = String(state.current_level);
+  const stats = get_level_stats();
+  const existing = stats[level_key] || {
+    bestScore: 0,
+    total,
+    completed: false,
+    inProgress: false,
+    progressCount: 0,
+  };
+
+  const next = {
+    ...existing,
+    total,
+  };
+
+  if (state.ended_at) {
+    next.completed = true;
+    next.inProgress = false;
+    next.progressCount = total;
+    next.bestScore = Math.max(existing.bestScore || 0, state.score);
+  } else if (progress_count > 0) {
+    next.inProgress = true;
+    next.progressCount = progress_count;
+  } else {
+    next.inProgress = false;
+    next.progressCount = 0;
+  }
+
+  stats[level_key] = next;
+  save_level_stats(stats);
+}
+
+function render_level_statuses() {
+  const stats = get_level_stats();
+
+  level_buttons.forEach((button) => {
+    if (!button.dataset.level) return;
+
+    let status_node = button.querySelector(".level_status");
+    if (!status_node) {
+      status_node = document.createElement("span");
+      status_node.className = "level_status";
+      button.appendChild(status_node);
+    }
+
+    const info = stats[button.dataset.level];
+
+    if (!info) {
+      status_node.textContent = get_text("level_status_not_started");
+      return;
+    }
+
+    if (info.inProgress && info.progressCount > 0) {
+      status_node.textContent = `${get_text("level_status_in_progress")} · ${info.progressCount} / ${info.total}`;
+      return;
+    }
+
+    if (info.completed) {
+      status_node.textContent = `${get_text("level_status_done")} · ${get_text("best_label")} ${info.bestScore} / ${info.total}`;
+      return;
+    }
+
+    status_node.textContent = get_text("level_status_not_started");
+  });
+}
+
+function clear_session_snapshot() {
+  safe_storage_remove(SESSION_KEY);
+}
+
+function save_session_snapshot() {
+  if (!state.question_bank.length || !state.current_history.length) return;
+
+  const snapshot = {
+    current_mode: state.current_mode,
+    current_level: state.current_level,
+    current_index: state.current_index,
+    session_length: state.session_length,
+    score: state.score,
+    started_at: state.started_at,
+    ended_at: state.ended_at,
+    current_history: state.current_history,
+    skill_score: state.skill_score,
+    pending_delta: state.pending_delta,
+    correct_streak: state.correct_streak,
+    wrong_streak: state.wrong_streak,
+    asked_question_ids: Array.from(state.asked_question_ids),
+    smart_draw_reason_key: state.smart_draw_reason_key,
+  };
+
+  safe_storage_set(SESSION_KEY, JSON.stringify(snapshot));
+}
+
+function restore_session_snapshot() {
+  const raw = safe_storage_get(SESSION_KEY);
+  if (!raw) return false;
+
+  try {
+    const snapshot = JSON.parse(raw);
+    if (!Array.isArray(snapshot.current_history) || !snapshot.current_history.length) {
+      return false;
+    }
+
+    state.current_mode = snapshot.current_mode || "level";
+    state.current_level = clamp_number(Number(snapshot.current_level) || 1, 1, 3);
+    state.current_index = Math.max(0, Number(snapshot.current_index) || 0);
+    state.session_length = Number(snapshot.session_length) || snapshot.current_history.length;
+    state.score = Number(snapshot.score) || 0;
+    state.started_at = snapshot.started_at || Date.now();
+    state.ended_at = snapshot.ended_at || null;
+    state.current_history = snapshot.current_history;
+    state.current_index = Math.min(state.current_index, state.current_history.length - 1);
+    state.skill_score = snapshot.skill_score ?? SMART_INITIAL_SKILL;
+    state.pending_delta = Number(snapshot.pending_delta) || 0;
+    state.correct_streak = Number(snapshot.correct_streak) || 0;
+    state.wrong_streak = Number(snapshot.wrong_streak) || 0;
+    state.asked_question_ids = new Set(snapshot.asked_question_ids || []);
+    state.smart_draw_reason_key = snapshot.smart_draw_reason_key || "smart_reason_balanced";
+
+    if (state.current_mode === "level") {
+      last_selected_level = state.current_level;
+      update_active_entry((button) => Number(button.dataset.level) === state.current_level);
+    } else {
+      update_active_entry((button) => button.dataset.mode === "smart");
+    }
+
+    result_card.classList.toggle("hidden", !state.ended_at);
+    update_level_stats_from_state();
+    render_level_statuses();
+    return true;
+  } catch (error) {
+    console.warn("Failed to restore saved session:", error);
+    return false;
+  }
+}
+
+function has_unfinished_progress() {
+  return Boolean(state.started_at && !state.ended_at && state.current_history.length);
+}
+
+
 function apply_language() {
   const lang_dict = i18n_text[get_locale()];
   document.documentElement.lang = is_chinese ? "zh-CN" : "en";
@@ -337,6 +630,7 @@ function apply_language() {
   render_question();
   render_feedback();
   render_result_text();
+  render_level_statuses();
 }
 
 function apply_mode() {
@@ -380,6 +674,7 @@ function set_level(level) {
   reset_common_state();
   state.current_mode = "level";
   state.current_level = level;
+  last_selected_level = level;
   state.current_questions = build_level_questions(level);
   state.current_history = state.current_questions.map(create_record);
   state.session_length = state.current_history.length;
@@ -389,6 +684,10 @@ function set_level(level) {
   update_meta();
   render_question();
   render_feedback();
+  update_level_stats_from_state();
+  render_level_statuses();
+  save_preferences();
+  save_session_snapshot();
 }
 
 function get_smart_base_level() {
@@ -481,6 +780,9 @@ function start_smart_mode() {
   update_meta();
   render_question();
   render_feedback();
+  render_level_statuses();
+  save_preferences();
+  save_session_snapshot();
 }
 
 function get_option_prefix(index) {
@@ -606,7 +908,8 @@ function can_go_previous() {
 
 function update_action_buttons() {
   const has_question = Boolean(get_current_question());
-  const can_submit = has_question && is_current_record_interactive();
+  const record = get_current_record();
+  const can_submit = has_question && is_current_record_interactive() && record?.selected_option_index !== null;
   const show_next = has_question && can_go_next();
 
   submit_btn.disabled = !can_submit;
@@ -661,6 +964,7 @@ function render_question() {
       render_question();
       render_feedback();
       update_action_buttons();
+      save_session_snapshot();
     });
 
     options_wrap.appendChild(button);
@@ -791,6 +1095,9 @@ function submit_answer() {
   render_feedback();
   update_meta();
   update_action_buttons();
+  update_level_stats_from_state();
+  render_level_statuses();
+  save_session_snapshot();
 }
 
 function show_result() {
@@ -829,6 +1136,9 @@ function show_result() {
   result_card.classList.remove("hidden");
   progress_fill.style.width = "100%";
   update_meta();
+  update_level_stats_from_state();
+  render_level_statuses();
+  save_session_snapshot();
 }
 
 function render_result_text() {
@@ -850,6 +1160,9 @@ function go_to_previous_question() {
   render_feedback();
   update_meta();
   update_action_buttons();
+  update_level_stats_from_state();
+  render_level_statuses();
+  save_session_snapshot();
 }
 
 function go_to_next_question() {
@@ -863,6 +1176,9 @@ function go_to_next_question() {
     render_feedback();
     update_meta();
     update_action_buttons();
+    update_level_stats_from_state();
+    render_level_statuses();
+    save_session_snapshot();
     return;
   }
 
@@ -885,6 +1201,7 @@ function go_to_next_question() {
       render_feedback();
       update_meta();
       update_action_buttons();
+      save_session_snapshot();
       return;
     }
   }
@@ -898,9 +1215,16 @@ function go_to_next_question() {
 }
 
 function restart_current_mode() {
+  const should_restart = !has_unfinished_progress() || window.confirm(get_text("confirm_restart_current"));
+  if (!should_restart) return;
+
+  clear_session_snapshot();
+
   if (state.current_mode === "smart") {
     start_smart_mode();
   } else {
+    clear_level_progress_state(state.current_level);
+    render_level_statuses();
     set_level(state.current_level);
   }
 }
@@ -923,6 +1247,7 @@ function move_option_selection(direction) {
   render_question();
   render_feedback();
   update_action_buttons();
+  save_session_snapshot();
 }
 
 function handle_keydown(event) {
@@ -961,14 +1286,28 @@ function handle_keydown(event) {
 
 async function initialise_quiz() {
   set_theme_variables();
+  load_preferences();
   apply_mode();
   apply_language();
+  setup_color_mode_persistence();
 
   try {
     const loaded_questions = await load_question_bank();
     state.question_bank = Array.isArray(loaded_questions) ? loaded_questions : [];
-    set_level(1);
+
+    const restored = restore_session_snapshot();
+    if (!restored) {
+      set_level(last_selected_level);
+    } else {
+      render_question();
+      render_feedback();
+      update_meta();
+      update_action_buttons();
+      render_result_text();
+    }
+
     apply_language();
+    render_level_statuses();
   } catch (error) {
     console.error(error);
     const error_message = get_text("load_error");
@@ -983,11 +1322,13 @@ async function initialise_quiz() {
 language_toggle_btn.addEventListener("click", () => {
   is_chinese = !is_chinese;
   apply_language();
+  save_preferences();
 });
 
 mode_toggle_btn.addEventListener("click", () => {
   is_night = !is_night;
   apply_mode();
+  save_preferences();
 });
 
 level_buttons.forEach((button) => {
@@ -1012,3 +1353,9 @@ document.addEventListener("keydown", handle_keydown);
 setInterval(() => update_meta(), 1000);
 
 initialise_quiz();
+
+window.addEventListener("beforeunload", () => {
+  save_preferences();
+  update_level_stats_from_state();
+  save_session_snapshot();
+});
