@@ -1028,3 +1028,43 @@ padding-bottom: 1rem;
 	}
 }
 
+@media (max-aspect-ratio: 9/19) and (max-width: 480px) {
+	.site_header {
+		padding: 0.5rem 0.6rem;
+		gap: 0.4rem;
+	}
+
+	.brand_wrap {
+		gap: 0.4rem;
+	}
+
+	.brand_logo {
+		width: 1.8rem;
+		height: 1.8rem;
+		font-size: 1rem;
+	}
+
+	.brand_name {
+		font-size: 1.3rem;
+	}
+
+	.brand_tag {
+		display: none;
+	}
+
+	.ghost_btn {
+		min-height: 32px;
+		padding: 0.3rem 0.6rem;
+		font-size: 0.85rem;
+	}
+
+	.geometry_frame_shell,
+	.geometry_frame {
+		display: none;
+	}
+
+	.showcase_visual {
+		display: none;
+	}
+}
+
