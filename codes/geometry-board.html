@@ -53,7 +53,7 @@
 
 		.board_shell {
 			height: 100%;
-			min-height: 680px;
+			min-height: 100%;
 			border: 1px solid var(--line);
 			background: var(--panel);
 			display: grid;
@@ -88,19 +88,27 @@
 		.diagram_wrap {
 			padding: 0.45rem 0.7rem 0.36rem;
 			display: grid;
-			align-items: center;
+			align-items: stretch;
+			justify-items: stretch;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		.geogebra_wrap {
 			display: grid;
 			gap: 0.4rem;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		#ggb-element {
 			width: 100%;
-			min-height: 560px;
+			height: 100%;
+			min-width: 0;
+			min-height: 0;
 			border: 1px solid var(--line);
 			background: #ffffff;
+			overflow: hidden;
 		}
 
 		#ggb-status {
@@ -170,7 +178,7 @@
 			}
 
 			.board_shell {
-				min-height: 520px;
+				min-height: 100%;
 			}
 
 			.formula_strip,
@@ -179,7 +187,7 @@
 			}
 
 			#ggb-element {
-				min-height: 420px;
+				min-height: 0;
 			}
 		}
 	</style>
@@ -298,8 +306,8 @@
 		function get_applet_size() {
 			const host = document.getElementById("ggb-element");
 			const box = host.getBoundingClientRect();
-			const width = Math.max(320, Math.floor(box.width || 760));
-			const height = Math.max(360, Math.floor(box.height || 430));
+			const width = Math.floor(box.width || 760);
+			const height = Math.floor(box.height || 430);
 			return { width, height };
 		}
 
@@ -487,6 +495,21 @@
 		window.addEventListener("load", () => {
 			apply_locale("zh");
 			mount_geogebra(true);
+
+			let resize_timer;
+			const wrap = document.getElementById("ggb-element");
+			const observer = new ResizeObserver(() => {
+				clearTimeout(resize_timer);
+				resize_timer = setTimeout(() => {
+					if (window.ggbApplet && typeof window.ggbApplet.setSize === "function") {
+						const box = wrap.getBoundingClientRect();
+						const width = Math.floor(box.width);
+						const height = Math.floor(box.height);
+						window.ggbApplet.setSize(width > 0 ? width : 320, height > 0 ? height : 360);
+					}
+				}, 150);
+			});
+			if(wrap) observer.observe(wrap);
 		});
 	</script>
 </body>
