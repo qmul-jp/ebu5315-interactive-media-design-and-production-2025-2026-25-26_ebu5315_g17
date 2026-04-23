@@ -1,0 +1,1411 @@
+#!/usr/bin/env python3
+import os
+
+# 定义游戏页面文件列表
+game_files = [
+    'game-01-central-angle.html',
+    'game-02-inscribed-angle.html',
+    'game-03-semicircle-right.html',
+    'game-04-cyclic-quad.html',
+    'game-05-tangent-radius.html',
+    'game-06-tangent-length.html',
+    'game-07-Perpendicular-Bisector.html',
+    'game-08-tangent-chord-angle.html'
+]
+
+# 完整的页面模板
+def get_page_template(title, game_content, game_js):
+    return f'''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../auth-entry.css">
+</head>
+<body>
+    <div class="bg_orb bg_orb_left"></div>
+    <div class="bg_orb bg_orb_right"></div>
+
+    <header class="site_header">
+        <div class="brand_wrap">
+            <img class="brand_logo" src="../../images/logo_standard.png" alt="CircleLab Logo">
+            <div>
+                <p class="brand_name">CircleLab</p>
+                <p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
+            </div>
+        </div>
+
+        <div class="control_group">
+            <button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
+            <button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
+            <button id="color_toggle_btn" class="ghost_btn" type="button" data-i18n="color_mode">Color 色彩</button>
+            <button id="color_status_btn" class="ghost_btn" type="button" data-i18n="color_normal">Normal / 标准</button>
+            <div class="auth_link_group" id="auth_link_group">
+                <span class="auth_status_badge" id="auth_status_badge">
+                    <span data-i18n="logged_in">已登录：</span>
+                    <span id="logged_in_user">Developer</span>
+                </span>
+                <button class="auth_logout_btn" id="auth_logout_btn" data-i18n="logout">退出登录</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile_settings_panel" id="mobile_settings_panel">
+        <div class="mobile_settings_header">
+            <span data-i18n="settings_title">设置</span>
+            <button class="mobile_settings_close" id="mobile_settings_close" aria-label="Close">×</button>
+        </div>
+        <div class="mobile_settings_content">
+            <div class="mobile_setting_group">
+                <div class="mobile_setting_group_title" data-i18n="setting_group_display">显示设置</div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_language">语言</span>
+                    <button class="mobile_setting_btn" id="mobile_lang_toggle">EN / 中</button>
+                </div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_theme">主题</span>
+                    <button class="mobile_setting_btn" id="mobile_theme_toggle" data-i18n="mode_day">夜间模式</button>
+                </div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_color">色彩</span>
+                    <span class="mobile_setting_status" id="mobile_color_status">标准</span>
+                </div>
+            </div>
+
+            <div class="mobile_setting_divider"></div>
+
+            <div class="mobile_setting_group">
+                <div class="mobile_setting_group_title" data-i18n="setting_group_account">账户设置</div>
+                <div id="mobile_login_status" class="mobile_login_status hidden">
+                    <p><strong data-i18n="login_status">已登录：</strong><span id="mobile_login_user">Developer</span></p>
+                    <button class="mobile_logout_btn" id="mobile_logout_btn" data-i18n="logout">退出登录</button>
+                </div>
+                <div id="mobile_login_prompt" class="mobile_setting_item">
+                    <span data-i18n="login_prompt">登录/注册</span>
+                    <button class="mobile_setting_btn" id="mobile_login_btn" data-i18n="login">去登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mobile_settings_overlay" id="mobile_settings_overlay"></div>
+
+    <div class="page_shell">
+        <aside class="side_nav fade_in_up" aria-label="Primary menu">
+            <div class="side_nav_inner">
+            <a class="side_nav_link" href="../index.html" aria-label="Homepage">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M3 10.5L12 3L21 10.5"></path>
+                        <path d="M5 9.5V20H19V9.5"></path>
+                        <path d="M10 20V14H14V20"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_home">主页</span>
+            </a>
+            <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <rect x="6" y="4" width="12" height="16" rx="2"></rect>
+                        <path d="M9 4.5H15"></path>
+                        <path d="M9 10H15"></path>
+                        <path d="M9 14H13"></path>
+                        <path d="M9 18H12"></path>
+                        <path d="M14 14L15.5 15.5L18 13"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_quiz">测验</span>
+            </a>
+            <a class="side_nav_link active" href="./game.html" aria-label="Game">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
+                        <path d="M8.5 13.5V16.5"></path>
+                        <path d="M7 15H10"></path>
+                        <circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
+                        <circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
+            </a>
+            <button class="side_nav_link" id="mobile_settings_btn" aria-label="Settings">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_settings">设置</span>
+            </button>
+            </div>
+        </aside>
+
+        <main class="content_area">
+            {game_content}
+        </main>
+    </div>
+
+    {game_js}
+
+    <script src="../index.js"></script>
+    <script src="../auth-entry.js"></script>
+    <script src="../colorblind.js"></script>
+</body>
+</html>
+'''
+
+# 为每个游戏页面创建完整的内容
+def create_game_pages():
+    # 切换到游戏目录
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    
+    # 游戏页面的内容
+    game_contents = {
+        'game-01-central-angle.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">01-圆心角定理</span>
+                        <span class="en">01-Central Angle Theorem</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠AOB: <span id="ang1">60</span>°</p>
+                            <p>弧AB: <span id="arc1">1.05</span></p>
+                        </div>
+                        <div class="angle-info">
+                            <p>∠COD: <span id="ang2">60</span>°</p>
+                            <p>弧CD: <span id="arc2">1.05</span></p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>圆心角定理</h2>
+                        <p>在同圆或等圆中，相等的圆心角所对的弧相等，所对的弦相等。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-02-inscribed-angle.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">02-圆周角定理</span>
+                        <span class="en">02-Inscribed Angle Theorem</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠AOB: <span id="centralAngle">60</span>°</p>
+                        </div>
+                        <div class="angle-info">
+                            <p>∠ACB: <span id="inscribedAngle">30</span>°</p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>圆周角定理</h2>
+                        <p>圆周角的度数等于它所对弧上的圆心角度数的一半。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-03-semicircle-right.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">03-半圆上的直角</span>
+                        <span class="en">03-Right Angle in Semicircle</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠ACB: <span id="angle">90</span>°</p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>半圆上的直角</h2>
+                        <p>半圆上的圆周角是直角。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-04-cyclic-quad.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">04-圆内接四边形</span>
+                        <span class="en">04-Cyclic Quadrilateral</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠A: <span id="angleA">80</span>°</p>
+                            <p>∠C: <span id="angleC">100</span>°</p>
+                        </div>
+                        <div class="angle-info">
+                            <p>∠B: <span id="angleB">90</span>°</p>
+                            <p>∠D: <span id="angleD">90</span>°</p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>圆内接四边形</h2>
+                        <p>圆内接四边形的对角互补。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-05-tangent-radius.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">05-切线与半径垂直</span>
+                        <span class="en">05-Tangent Perpendicular to Radius</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠OAT: <span id="angle">90</span>°</p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>切线与半径垂直</h2>
+                        <p>圆的切线垂直于经过切点的半径。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-06-tangent-length.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">06-切线长度相等</span>
+                        <span class="en">06-Tangent Lengths</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="length-info">
+                            <p>PA: <span id="lengthPA">2.83</span></p>
+                            <p>PB: <span id="lengthPB">2.83</span></p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>切线长度相等</h2>
+                        <p>从圆外一点引圆的两条切线，它们的切线长相等。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-07-Perpendicular-Bisector.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">07-垂直平分线</span>
+                        <span class="en">07-Perpendicular Bisector</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="length-info">
+                            <p>OA: <span id="lengthOA">2.00</span></p>
+                            <p>OB: <span id="lengthOB">2.00</span></p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>垂直平分线</h2>
+                        <p>线段的垂直平分线上的点到线段两端点的距离相等。</p>
+                    </div>
+                </div>
+            </div>
+''',
+        'game-08-tangent-chord-angle.html': '''
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">08-切线弦角定理</span>
+                        <span class="en">08-Tangent-Chord Angle Theorem</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠BAT: <span id="angle">45</span>°</p>
+                            <p>∠ACB: <span id="arcAngle">45</span>°</p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>切线弦角定理</h2>
+                        <p>切线与弦的夹角等于弦所对的圆周角。</p>
+                    </div>
+                </div>
+            </div>
+'''
+    }
+    
+    # 游戏页面的JavaScript代码
+    game_js = {
+        'game-01-central-angle.html': '''
+    <script>
+        // ==================== 统一导航栏交互（同game.html） ====================
+        let isChinese = localStorage.getItem('circlab_language') !== 'en';
+        const langBtn = document.getElementById('language_toggle_btn');
+        const themeBtn = document.getElementById('mode_toggle_btn');
+        
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-i18n]');
+            const html = document.documentElement;
+            html.lang = isChinese ? 'zh-CN' : 'en';
+            i18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translations = {
+                    'brand_tag': { 'zh': 'GCSE Circle Geometry', 'en': 'GCSE Circle Geometry' },
+                    'mode_day': { 'zh': '夜间模式', 'en': 'Night Mode' },
+                    'color_mode': { 'zh': 'Color 色彩', 'en': 'Color' },
+                    'color_normal': { 'zh': 'Normal / 标准', 'en': 'Normal' },
+                    'logged_in': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'logout': { 'zh': '退出登录', 'en': 'Logout' },
+                    'settings_title': { 'zh': '设置', 'en': 'Settings' },
+                    'setting_group_display': { 'zh': '显示设置', 'en': 'Display Settings' },
+                    'setting_language': { 'zh': '语言', 'en': 'Language' },
+                    'setting_theme': { 'zh': '主题', 'en': 'Theme' },
+                    'setting_color': { 'zh': '色彩', 'en': 'Color' },
+                    'setting_group_account': { 'zh': '账户设置', 'en': 'Account Settings' },
+                    'login_status': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'login_prompt': { 'zh': '登录/注册', 'en': 'Login/Register' },
+                    'login': { 'zh': '去登录', 'en': 'Login' },
+                    'nav_home': { 'zh': '主页', 'en': 'Home' },
+                    'nav_quiz': { 'zh': '测验', 'en': 'Quiz' },
+                    'nav_game': { 'zh': '游戏', 'en': 'Game' },
+                    'nav_settings': { 'zh': '设置', 'en': 'Settings' }
+                };
+                if (translations[key]) {
+                    el.textContent = isChinese ? translations[key].zh : translations[key].en;
+                }
+            });
+            langBtn.textContent = isChinese ? 'EN' : '中文';
+            updateThemeBtnText();
+        }
+
+        function toggleLang() {
+            isChinese = !isChinese;
+            localStorage.setItem('circlab_language', isChinese ? 'zh' : 'en');
+            applyLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('night_mode');
+            localStorage.setItem('circlab_night_mode', document.body.classList.contains('night_mode'));
+            updateThemeBtnText();
+            draw();
+        }
+
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('night_mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? '白天模式' : '夜间模式';
+            } else {
+                themeBtn.textContent = isDark ? 'Light Mode' : 'Night Mode';
+            }
+        }
+
+        if (localStorage.getItem('circlab_night_mode') === 'true') {
+            document.body.classList.add('night_mode');
+        }
+        applyLanguage();
+
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // ==================== 原有圆心角画布逻辑（无修改） ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+        const unitR = 1;
+
+        const initialPoints = {
+            A: { angle: 0 },
+            B: { angle: Math.PI / 3 },
+            C: { angle: Math.PI },
+            D: { angle: Math.PI + Math.PI / 3 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function getMinorAngle(a1, a2) {
+            let diff = Math.abs(a2 - a1);
+            if (diff > Math.PI) diff = 2 * Math.PI - diff;
+            diff = Math.abs(diff);
+            return {
+                rad: diff,
+                deg: Math.round(diff * 180 / Math.PI)
+            };
+        }
+
+        function getArcLength(rad) {
+            return (unitR * Math.abs(rad)).toFixed(2);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const isDark = document.body.classList.contains('night_mode');
+            const strokeColor = isDark ? '#edf1ff' : '#333';
+            const fillColor = isDark ? '#edf1ff' : '#333';
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.font = '16px Arial';
+            ctx.fillStyle = fillColor;
+            ctx.fillText('O', cx + 12, cy + 5);
+
+            const pos = {};
+            for (let key in points) {
+                pos[key] = getPosition(points[key].angle);
+            }
+
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            for (let key in pos) {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(pos[key].x, pos[key].y);
+                ctx.stroke();
+            }
+
+            const keys = ['A', 'B', 'C', 'D'];
+            keys.forEach(k => {
+                const p = pos[k];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.font = '18px Arial';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(k, p.x, p.y - 18);
+            });
+
+            document.getElementById('ang1').textContent = getMinorAngle(points.A.angle, points.B.angle).deg;
+            document.getElementById('arc1').textContent = getArcLength(getMinorAngle(points.A.angle, points.B.angle).rad);
+            document.getElementById('ang2').textContent = getMinorAngle(points.C.angle, points.D.angle).deg;
+            document.getElementById('arc2').textContent = getArcLength(getMinorAngle(points.C.angle, points.D.angle).rad);
+        }
+
+        // 画布鼠标交互
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function checkHit(mx, my) {
+            const keys = ['A', 'B', 'C', 'D'];
+            for (const k of keys) {
+                const p = getPosition(points[k].angle);
+                if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const m = getMousePos(e);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) {
+                const m = getMousePos(e);
+                hoverPoint = checkHit(m.x, m.y);
+                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                draw();
+                return;
+            }
+            const m = getMousePos(e);
+            points[dragging].angle = Math.atan2(m.y - cy, m.x - cx);
+            draw();
+        });
+
+        window.addEventListener('mouseup', () => dragging = null);
+        canvas.addEventListener('mouseleave', () => { hoverPoint = null; draw(); });
+        resetBtn.onclick = () => { points = JSON.parse(JSON.stringify(initialPoints)); draw(); };
+
+        // 初始化
+        draw();
+        updateThemeBtnText();
+    </script>
+''',
+        'game-02-inscribed-angle.html': '''
+    <script>
+        // ==================== 统一导航栏交互（同game.html） ====================
+        let isChinese = localStorage.getItem('circlab_language') !== 'en';
+        const langBtn = document.getElementById('language_toggle_btn');
+        const themeBtn = document.getElementById('mode_toggle_btn');
+        
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-i18n]');
+            const html = document.documentElement;
+            html.lang = isChinese ? 'zh-CN' : 'en';
+            i18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translations = {
+                    'brand_tag': { 'zh': 'GCSE Circle Geometry', 'en': 'GCSE Circle Geometry' },
+                    'mode_day': { 'zh': '夜间模式', 'en': 'Night Mode' },
+                    'color_mode': { 'zh': 'Color 色彩', 'en': 'Color' },
+                    'color_normal': { 'zh': 'Normal / 标准', 'en': 'Normal' },
+                    'logged_in': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'logout': { 'zh': '退出登录', 'en': 'Logout' },
+                    'settings_title': { 'zh': '设置', 'en': 'Settings' },
+                    'setting_group_display': { 'zh': '显示设置', 'en': 'Display Settings' },
+                    'setting_language': { 'zh': '语言', 'en': 'Language' },
+                    'setting_theme': { 'zh': '主题', 'en': 'Theme' },
+                    'setting_color': { 'zh': '色彩', 'en': 'Color' },
+                    'setting_group_account': { 'zh': '账户设置', 'en': 'Account Settings' },
+                    'login_status': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'login_prompt': { 'zh': '登录/注册', 'en': 'Login/Register' },
+                    'login': { 'zh': '去登录', 'en': 'Login' },
+                    'nav_home': { 'zh': '主页', 'en': 'Home' },
+                    'nav_quiz': { 'zh': '测验', 'en': 'Quiz' },
+                    'nav_game': { 'zh': '游戏', 'en': 'Game' },
+                    'nav_settings': { 'zh': '设置', 'en': 'Settings' }
+                };
+                if (translations[key]) {
+                    el.textContent = isChinese ? translations[key].zh : translations[key].en;
+                }
+            });
+            langBtn.textContent = isChinese ? 'EN' : '中文';
+            updateThemeBtnText();
+        }
+
+        function toggleLang() {
+            isChinese = !isChinese;
+            localStorage.setItem('circlab_language', isChinese ? 'zh' : 'en');
+            applyLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('night_mode');
+            localStorage.setItem('circlab_night_mode', document.body.classList.contains('night_mode'));
+            updateThemeBtnText();
+            draw();
+        }
+
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('night_mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? '白天模式' : '夜间模式';
+            } else {
+                themeBtn.textContent = isDark ? 'Light Mode' : 'Night Mode';
+            }
+        }
+
+        if (localStorage.getItem('circlab_night_mode') === 'true') {
+            document.body.classList.add('night_mode');
+        }
+        applyLanguage();
+
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // ==================== 原有圆周角画布逻辑（无修改） ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+
+        const initialPoints = {
+            A: { angle: 0 },
+            B: { angle: Math.PI / 3 },
+            C: { angle: (Math.PI / 3 + Math.PI) / 2 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function getMinorAngle(a1, a2) {
+            let diff = Math.abs(a2 - a1);
+            if (diff > Math.PI) diff = 2 * Math.PI - diff;
+            diff = Math.abs(diff);
+            return {
+                rad: diff,
+                deg: Math.round(diff * 180 / Math.PI)
+            };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const isDark = document.body.classList.contains('night_mode');
+            const strokeColor = isDark ? '#edf1ff' : '#333';
+            const fillColor = isDark ? '#edf1ff' : '#333';
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.font = '16px Arial';
+            ctx.fillStyle = fillColor;
+            ctx.fillText('O', cx + 12, cy + 5);
+
+            const pos = {};
+            for (let key in points) {
+                pos[key] = getPosition(points[key].angle);
+            }
+
+            // 绘制圆心角
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(pos.A.x, pos.A.y);
+            ctx.lineTo(pos.B.x, pos.B.y);
+            ctx.closePath();
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 绘制圆周角
+            ctx.beginPath();
+            ctx.moveTo(pos.A.x, pos.A.y);
+            ctx.lineTo(pos.C.x, pos.C.y);
+            ctx.lineTo(pos.B.x, pos.B.y);
+            ctx.closePath();
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            const keys = ['A', 'B', 'C'];
+            keys.forEach(k => {
+                const p = pos[k];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.font = '18px Arial';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(k, p.x, p.y - 18);
+            });
+
+            const centralAngle = getMinorAngle(points.A.angle, points.B.angle).deg;
+            const inscribedAngle = Math.round(centralAngle / 2);
+            document.getElementById('centralAngle').textContent = centralAngle;
+            document.getElementById('inscribedAngle').textContent = inscribedAngle;
+        }
+
+        // 画布鼠标交互
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function checkHit(mx, my) {
+            const keys = ['A', 'B'];
+            for (const k of keys) {
+                const p = getPosition(points[k].angle);
+                if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const m = getMousePos(e);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) {
+                const m = getMousePos(e);
+                hoverPoint = checkHit(m.x, m.y);
+                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                draw();
+                return;
+            }
+            const m = getMousePos(e);
+            points[dragging].angle = Math.atan2(m.y - cy, m.x - cx);
+            // 更新C点位置（保持在弧AB的中点）
+            const angleA = points.A.angle;
+            const angleB = points.B.angle;
+            let angleC = (angleA + angleB) / 2;
+            if (Math.abs(angleB - angleA) > Math.PI) {
+                angleC += Math.PI;
+                if (angleC > 2 * Math.PI) angleC -= 2 * Math.PI;
+            }
+            points.C.angle = angleC;
+            draw();
+        });
+
+        window.addEventListener('mouseup', () => dragging = null);
+        canvas.addEventListener('mouseleave', () => { hoverPoint = null; draw(); });
+        resetBtn.onclick = () => { points = JSON.parse(JSON.stringify(initialPoints)); draw(); };
+
+        // 初始化
+        draw();
+        updateThemeBtnText();
+    </script>
+''',
+        'game-03-semicircle-right.html': '''
+    <script>
+        // ==================== 统一导航栏交互（同game.html） ====================
+        let isChinese = localStorage.getItem('circlab_language') !== 'en';
+        const langBtn = document.getElementById('language_toggle_btn');
+        const themeBtn = document.getElementById('mode_toggle_btn');
+        
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-i18n]');
+            const html = document.documentElement;
+            html.lang = isChinese ? 'zh-CN' : 'en';
+            i18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translations = {
+                    'brand_tag': { 'zh': 'GCSE Circle Geometry', 'en': 'GCSE Circle Geometry' },
+                    'mode_day': { 'zh': '夜间模式', 'en': 'Night Mode' },
+                    'color_mode': { 'zh': 'Color 色彩', 'en': 'Color' },
+                    'color_normal': { 'zh': 'Normal / 标准', 'en': 'Normal' },
+                    'logged_in': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'logout': { 'zh': '退出登录', 'en': 'Logout' },
+                    'settings_title': { 'zh': '设置', 'en': 'Settings' },
+                    'setting_group_display': { 'zh': '显示设置', 'en': 'Display Settings' },
+                    'setting_language': { 'zh': '语言', 'en': 'Language' },
+                    'setting_theme': { 'zh': '主题', 'en': 'Theme' },
+                    'setting_color': { 'zh': '色彩', 'en': 'Color' },
+                    'setting_group_account': { 'zh': '账户设置', 'en': 'Account Settings' },
+                    'login_status': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'login_prompt': { 'zh': '登录/注册', 'en': 'Login/Register' },
+                    'login': { 'zh': '去登录', 'en': 'Login' },
+                    'nav_home': { 'zh': '主页', 'en': 'Home' },
+                    'nav_quiz': { 'zh': '测验', 'en': 'Quiz' },
+                    'nav_game': { 'zh': '游戏', 'en': 'Game' },
+                    'nav_settings': { 'zh': '设置', 'en': 'Settings' }
+                };
+                if (translations[key]) {
+                    el.textContent = isChinese ? translations[key].zh : translations[key].en;
+                }
+            });
+            langBtn.textContent = isChinese ? 'EN' : '中文';
+            updateThemeBtnText();
+        }
+
+        function toggleLang() {
+            isChinese = !isChinese;
+            localStorage.setItem('circlab_language', isChinese ? 'zh' : 'en');
+            applyLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('night_mode');
+            localStorage.setItem('circlab_night_mode', document.body.classList.contains('night_mode'));
+            updateThemeBtnText();
+            draw();
+        }
+
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('night_mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? '白天模式' : '夜间模式';
+            } else {
+                themeBtn.textContent = isDark ? 'Light Mode' : 'Night Mode';
+            }
+        }
+
+        if (localStorage.getItem('circlab_night_mode') === 'true') {
+            document.body.classList.add('night_mode');
+        }
+        applyLanguage();
+
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // ==================== 原有半圆上的直角画布逻辑（无修改） ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+
+        const initialPoints = {
+            A: { angle: Math.PI },
+            B: { angle: 0 },
+            C: { angle: Math.PI / 2 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function getAngle(a, b, c) {
+            const ab = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+            const bc = Math.sqrt(Math.pow(c.x - b.x, 2) + Math.pow(c.y - b.y, 2));
+            const ac = Math.sqrt(Math.pow(c.x - a.x, 2) + Math.pow(c.y - a.y, 2));
+            const angle = Math.acos((ab * ab + bc * bc - ac * ac) / (2 * ab * bc));
+            return Math.round(angle * 180 / Math.PI);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const isDark = document.body.classList.contains('night_mode');
+            const strokeColor = isDark ? '#edf1ff' : '#333';
+            const fillColor = isDark ? '#edf1ff' : '#333';
+
+            // 绘制圆
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 绘制直径AB
+            const posA = getPosition(points.A.angle);
+            const posB = getPosition(points.B.angle);
+            ctx.beginPath();
+            ctx.moveTo(posA.x, posA.y);
+            ctx.lineTo(posB.x, posB.y);
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 绘制点C
+            const posC = getPosition(points.C.angle);
+            ctx.beginPath();
+            ctx.arc(posC.x, posC.y, hoverPoint === 'C' ? 8 : 7, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.font = '18px Arial';
+            ctx.fillStyle = fillColor;
+            ctx.fillText('C', posC.x, posC.y - 18);
+
+            // 绘制点A和B
+            const keys = ['A', 'B'];
+            keys.forEach(k => {
+                const p = getPosition(points[k].angle);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.font = '18px Arial';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(k, p.x, p.y - 18);
+            });
+
+            // 绘制三角形ABC
+            ctx.beginPath();
+            ctx.moveTo(posA.x, posA.y);
+            ctx.lineTo(posB.x, posB.y);
+            ctx.lineTo(posC.x, posC.y);
+            ctx.closePath();
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 计算并显示角度
+            const angle = getAngle(posA, posC, posB);
+            document.getElementById('angle').textContent = angle;
+        }
+
+        // 画布鼠标交互
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function checkHit(mx, my) {
+            const p = getPosition(points.C.angle);
+            if (Math.hypot(mx - p.x, my - p.y) < 16) return 'C';
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const m = getMousePos(e);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) {
+                const m = getMousePos(e);
+                hoverPoint = checkHit(m.x, m.y);
+                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                draw();
+                return;
+            }
+            const m = getMousePos(e);
+            points.C.angle = Math.atan2(m.y - cy, m.x - cx);
+            draw();
+        });
+
+        window.addEventListener('mouseup', () => dragging = null);
+        canvas.addEventListener('mouseleave', () => { hoverPoint = null; draw(); });
+        resetBtn.onclick = () => { points = JSON.parse(JSON.stringify(initialPoints)); draw(); };
+
+        // 初始化
+        draw();
+        updateThemeBtnText();
+    </script>
+''',
+        'game-04-cyclic-quad.html': '''
+    <script>
+        // ==================== 统一导航栏交互（同game.html） ====================
+        let isChinese = localStorage.getItem('circlab_language') !== 'en';
+        const langBtn = document.getElementById('language_toggle_btn');
+        const themeBtn = document.getElementById('mode_toggle_btn');
+        
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-i18n]');
+            const html = document.documentElement;
+            html.lang = isChinese ? 'zh-CN' : 'en';
+            i18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translations = {
+                    'brand_tag': { 'zh': 'GCSE Circle Geometry', 'en': 'GCSE Circle Geometry' },
+                    'mode_day': { 'zh': '夜间模式', 'en': 'Night Mode' },
+                    'color_mode': { 'zh': 'Color 色彩', 'en': 'Color' },
+                    'color_normal': { 'zh': 'Normal / 标准', 'en': 'Normal' },
+                    'logged_in': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'logout': { 'zh': '退出登录', 'en': 'Logout' },
+                    'settings_title': { 'zh': '设置', 'en': 'Settings' },
+                    'setting_group_display': { 'zh': '显示设置', 'en': 'Display Settings' },
+                    'setting_language': { 'zh': '语言', 'en': 'Language' },
+                    'setting_theme': { 'zh': '主题', 'en': 'Theme' },
+                    'setting_color': { 'zh': '色彩', 'en': 'Color' },
+                    'setting_group_account': { 'zh': '账户设置', 'en': 'Account Settings' },
+                    'login_status': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'login_prompt': { 'zh': '登录/注册', 'en': 'Login/Register' },
+                    'login': { 'zh': '去登录', 'en': 'Login' },
+                    'nav_home': { 'zh': '主页', 'en': 'Home' },
+                    'nav_quiz': { 'zh': '测验', 'en': 'Quiz' },
+                    'nav_game': { 'zh': '游戏', 'en': 'Game' },
+                    'nav_settings': { 'zh': '设置', 'en': 'Settings' }
+                };
+                if (translations[key]) {
+                    el.textContent = isChinese ? translations[key].zh : translations[key].en;
+                }
+            });
+            langBtn.textContent = isChinese ? 'EN' : '中文';
+            updateThemeBtnText();
+        }
+
+        function toggleLang() {
+            isChinese = !isChinese;
+            localStorage.setItem('circlab_language', isChinese ? 'zh' : 'en');
+            applyLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('night_mode');
+            localStorage.setItem('circlab_night_mode', document.body.classList.contains('night_mode'));
+            updateThemeBtnText();
+            draw();
+        }
+
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('night_mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? '白天模式' : '夜间模式';
+            } else {
+                themeBtn.textContent = isDark ? 'Light Mode' : 'Night Mode';
+            }
+        }
+
+        if (localStorage.getItem('circlab_night_mode') === 'true') {
+            document.body.classList.add('night_mode');
+        }
+        applyLanguage();
+
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // ==================== 原有圆内接四边形画布逻辑（无修改） ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+
+        const initialPoints = {
+            A: { angle: 0 },
+            B: { angle: Math.PI / 2 },
+            C: { angle: Math.PI },
+            D: { angle: Math.PI * 3 / 2 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function getAngle(a, b, c) {
+            const ab = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+            const bc = Math.sqrt(Math.pow(c.x - b.x, 2) + Math.pow(c.y - b.y, 2));
+            const ac = Math.sqrt(Math.pow(c.x - a.x, 2) + Math.pow(c.y - a.y, 2));
+            const angle = Math.acos((ab * ab + bc * bc - ac * ac) / (2 * ab * bc));
+            return Math.round(angle * 180 / Math.PI);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const isDark = document.body.classList.contains('night_mode');
+            const strokeColor = isDark ? '#edf1ff' : '#333';
+            const fillColor = isDark ? '#edf1ff' : '#333';
+
+            // 绘制圆
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 绘制圆心
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.font = '16px Arial';
+            ctx.fillStyle = fillColor;
+            ctx.fillText('O', cx + 12, cy + 5);
+
+            // 绘制四边形
+            const pos = {};
+            for (let key in points) {
+                pos[key] = getPosition(points[key].angle);
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(pos.A.x, pos.A.y);
+            ctx.lineTo(pos.B.x, pos.B.y);
+            ctx.lineTo(pos.C.x, pos.C.y);
+            ctx.lineTo(pos.D.x, pos.D.y);
+            ctx.closePath();
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 绘制点
+            const keys = ['A', 'B', 'C', 'D'];
+            keys.forEach(k => {
+                const p = pos[k];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, 2 * Math.PI);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.font = '18px Arial';
+                ctx.fillStyle = fillColor;
+                ctx.fillText(k, p.x, p.y - 18);
+            });
+
+            // 计算并显示角度
+            const angleA = getAngle(pos.D, pos.A, pos.B);
+            const angleB = getAngle(pos.A, pos.B, pos.C);
+            const angleC = getAngle(pos.B, pos.C, pos.D);
+            const angleD = getAngle(pos.C, pos.D, pos.A);
+
+            document.getElementById('angleA').textContent = angleA;
+            document.getElementById('angleB').textContent = angleB;
+            document.getElementById('angleC').textContent = angleC;
+            document.getElementById('angleD').textContent = angleD;
+        }
+
+        // 画布鼠标交互
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function checkHit(mx, my) {
+            const keys = ['A', 'B', 'C', 'D'];
+            for (const k of keys) {
+                const p = getPosition(points[k].angle);
+                if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const m = getMousePos(e);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) {
+                const m = getMousePos(e);
+                hoverPoint = checkHit(m.x, m.y);
+                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                draw();
+                return;
+            }
+            const m = getMousePos(e);
+            points[dragging].angle = Math.atan2(m.y - cy, m.x - cx);
+            draw();
+        });
+
+        window.addEventListener('mouseup', () => dragging = null);
+        canvas.addEventListener('mouseleave', () => { hoverPoint = null; draw(); });
+        resetBtn.onclick = () => { points = JSON.parse(JSON.stringify(initialPoints)); draw(); };
+
+        // 初始化
+        draw();
+        updateThemeBtnText();
+    </script>
+''',
+        'game-05-tangent-radius.html': '''
+    <script>
+        // ==================== 统一导航栏交互（同game.html） ====================
+        let isChinese = localStorage.getItem('circlab_language') !== 'en';
+        const langBtn = document.getElementById('language_toggle_btn');
+        const themeBtn = document.getElementById('mode_toggle_btn');
+        
+        function applyLanguage() {
+            const i18nElements = document.querySelectorAll('[data-i18n]');
+            const html = document.documentElement;
+            html.lang = isChinese ? 'zh-CN' : 'en';
+            i18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translations = {
+                    'brand_tag': { 'zh': 'GCSE Circle Geometry', 'en': 'GCSE Circle Geometry' },
+                    'mode_day': { 'zh': '夜间模式', 'en': 'Night Mode' },
+                    'color_mode': { 'zh': 'Color 色彩', 'en': 'Color' },
+                    'color_normal': { 'zh': 'Normal / 标准', 'en': 'Normal' },
+                    'logged_in': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'logout': { 'zh': '退出登录', 'en': 'Logout' },
+                    'settings_title': { 'zh': '设置', 'en': 'Settings' },
+                    'setting_group_display': { 'zh': '显示设置', 'en': 'Display Settings' },
+                    'setting_language': { 'zh': '语言', 'en': 'Language' },
+                    'setting_theme': { 'zh': '主题', 'en': 'Theme' },
+                    'setting_color': { 'zh': '色彩', 'en': 'Color' },
+                    'setting_group_account': { 'zh': '账户设置', 'en': 'Account Settings' },
+                    'login_status': { 'zh': '已登录：', 'en': 'Logged in: ' },
+                    'login_prompt': { 'zh': '登录/注册', 'en': 'Login/Register' },
+                    'login': { 'zh': '去登录', 'en': 'Login' },
+                    'nav_home': { 'zh': '主页', 'en': 'Home' },
+                    'nav_quiz': { 'zh': '测验', 'en': 'Quiz' },
+                    'nav_game': { 'zh': '游戏', 'en': 'Game' },
+                    'nav_settings': { 'zh': '设置', 'en': 'Settings' }
+                };
+                if (translations[key]) {
+                    el.textContent = isChinese ? translations[key].zh : translations[key].en;
+                }
+            });
+            langBtn.textContent = isChinese ? 'EN' : '中文';
+            updateThemeBtnText();
+        }
+
+        function toggleLang() {
+            isChinese = !isChinese;
+            localStorage.setItem('circlab_language', isChinese ? 'zh' : 'en');
+            applyLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('night_mode');
+            localStorage.setItem('circlab_night_mode', document.body.classList.contains('night_mode'));
+            updateThemeBtnText();
+            draw();
+        }
+
+        function updateThemeBtnText() {
+            const isDark = document.body.classList.contains('night_mode');
+            if (isChinese) {
+                themeBtn.textContent = isDark ? '白天模式' : '夜间模式';
+            } else {
+                themeBtn.textContent = isDark ? 'Light Mode' : 'Night Mode';
+            }
+        }
+
+        if (localStorage.getItem('circlab_night_mode') === 'true') {
+            document.body.classList.add('night_mode');
+        }
+        applyLanguage();
+
+        langBtn.addEventListener('click', toggleLang);
+        themeBtn.addEventListener('click', toggleTheme);
+
+        // ==================== 原有切线与半径垂直画布逻辑（无修改） ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const cx = 270, cy = 220;
+        const radius = 160;
+
+        const initialPoints = {
+            A: { angle: Math.PI / 4 }
+        };
+
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
+
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function getTangentPoint(angle) {
+            return getPosition(angle);
+        }
+
+        function getTangentLine(angle) {
+            const posA = getTangentPoint(angle);
+            const dx = posA.x - cx;
+            const dy = posA.y - cy;
+            const length = 200;
+            return {
+                start: {
+                    x: posA.x - dy * length / radius,
+                    y: posA.y + dx * length / radius
+                },
+                end: {
+                    x: posA.x + dy * length / radius,
+                    y: posA.y - dx * length / radius
+                }
+            };
+        }
+
+        function draw() {
+            ctx.clearRect(

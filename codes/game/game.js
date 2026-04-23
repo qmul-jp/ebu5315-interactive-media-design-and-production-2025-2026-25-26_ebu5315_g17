@@ -149,15 +149,9 @@ const reset_progress_btn = document.getElementById("reset_progress_btn");
 const progress_text_element = document.getElementById("progress_text");
 const level_cards = Array.from(document.querySelectorAll(".level_card[data-level]"));
 
-let is_night =
-	typeof runtime_config.is_night === "boolean"
-		? runtime_config.is_night
-		: default_config.is_night;
+let is_night = localStorage.getItem('circlab_night_mode') === 'true';
 
-let is_chinese =
-	typeof runtime_config.is_chinese === "boolean"
-		? runtime_config.is_chinese
-		: default_config.is_chinese;
+let is_chinese = localStorage.getItem('circlab_language') !== 'en';
 
 function get_locale() {
 	return is_chinese ? "zh" : "en";
@@ -225,12 +219,14 @@ function update_progress_view() {
 
 function apply_mode() {
 	body_element.classList.toggle("night_mode", is_night);
+	localStorage.setItem('circlab_night_mode', is_night);
 	mode_toggle_btn.textContent = is_night ? get_text("mode_night") : get_text("mode_day");
 }
 
 function apply_language() {
 	const lang_dict = i18n_text[get_locale()];
 	document.documentElement.lang = is_chinese ? "zh-CN" : "en";
+	localStorage.setItem('circlab_language', is_chinese ? 'zh' : 'en');
 
 	document.querySelectorAll("[data-i18n]").forEach((element) => {
 		const key = element.getAttribute("data-i18n");

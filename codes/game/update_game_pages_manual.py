@@ -1,115 +1,29 @@
+#!/usr/bin/env python3
+import os
+
+# 定义游戏页面文件列表
+game_files = [
+    'game-01-central-angle.html',
+    'game-02-inscribed-angle.html',
+    'game-03-semicircle-right.html',
+    'game-04-cyclic-quad.html',
+    'game-05-tangent-radius.html',
+    'game-06-tangent-length.html',
+    'game-07-Perpendicular-Bisector.html',
+    'game-08-tangent-chord-angle.html'
+]
+
+# 完整的页面模板
+def get_page_template(title, game_content, game_js):
+    return f'''
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CircleLab | 几何定理游戏中心</title>
+    <title>{title}</title>
     <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="../auth-entry.css">
-    <style>
-        .page-title {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-top: 0.5rem;
-        }
-
-        .page-title h1 {
-            font-size: 2rem;
-            color: var(--theme_color);
-            margin-bottom: 0.5rem;
-        }
-
-        .page-title p {
-            font-size: 1rem;
-            opacity: 0.7;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .game-card {
-            background: var(--panel_color);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text_color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            display: block;
-            border: 1px solid var(--line_color);
-        }
-
-        .game-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-            border-color: var(--sub_color);
-        }
-
-        .game-card .number {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            line-height: 36px;
-            margin-bottom: 1rem;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .game-card .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .game-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--theme_color);
-            line-height: 1.4;
-        }
-
-        .game-card .description {
-            font-size: 0.85rem;
-            color: var(--text_color);
-            opacity: 0.7;
-            margin-top: 0.8rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid var(--line_color);
-        }
-
-        .footer {
-            text-align: center;
-            color: var(--text_color);
-            opacity: 0.6;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .footer p {
-            margin: 0.25rem 0;
-        }
-
-        @media (max-width: 1100px) {
-            .game-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 560px) {
-            .game-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="bg_orb bg_orb_left"></div>
@@ -229,78 +143,85 @@
         </aside>
 
         <main class="content_area">
-            <div class="page-title">
-                <h1>🎮 几何定理游戏中心</h1>
-                <p>选择定理开始互动学习</p>
-            </div>
-
-            <div class="game-grid">
-                <a href="game-01-central-angle.html" class="game-card">
-                    <span class="number">01</span>
-                    <span class="icon">📐</span>
-                    <h3>圆心角定理</h3>
-                    <p class="description">探索圆心角与弧、弦的关系</p>
-                </a>
-
-                <a href="game-02-inscribed-angle.html" class="game-card">
-                    <span class="number">02</span>
-                    <span class="icon">🔵</span>
-                    <h3>同弧圆周角定理</h3>
-                    <p class="description">同弧所对圆周角相等</p>
-                </a>
-
-                <a href="game-03-semicircle-right.html" class="game-card">
-                    <span class="number">03</span>
-                    <span class="icon">📏</span>
-                    <h3>半圆直角定理</h3>
-                    <p class="description">直径所对圆周角为90°</p>
-                </a>
-
-                <a href="game-04-cyclic-quad.html" class="game-card">
-                    <span class="number">04</span>
-                    <span class="icon">◼️</span>
-                    <h3>圆内接四边形定理</h3>
-                    <p class="description">对角互补等于180°</p>
-                </a>
-
-                <a href="game-05-tangent-radius.html" class="game-card">
-                    <span class="number">05</span>
-                    <span class="icon">✏️</span>
-                    <h3>切线半径垂直定理</h3>
-                    <p class="description">切线垂直于过切点半径</p>
-                </a>
-
-                <a href="game-06-tangent-length.html" class="game-card">
-                    <span class="number">06</span>
-                    <span class="icon">✂️</span>
-                    <h3>切线长定理</h3>
-                    <p class="description">圆外一点引两条切线长相等</p>
-                </a>
-
-                <a href="game-07-perpendicular-bisector.html" class="game-card">
-                    <span class="number">07</span>
-                    <span class="icon">🔍</span>
-                    <h3>垂径定理</h3>
-                    <p class="description">垂直于弦的直径平分弦及所对弧</p>
-                </a>
-
-                <a href="game-08-tangent-chord-angle.html" class="game-card">
-                    <span class="number">08</span>
-                    <span class="icon">🔗</span>
-                    <h3>弦切角定理</h3>
-                    <p class="description">弦切角等于所夹弧的圆周角</p>
-                </a>
-            </div>
-
-            <footer class="footer">
-                <p>EBU5315 第17组 · 圆几何学习平台</p>
-                <p>CircleLab © 2024</p>
-            </footer>
+            {game_content}
         </main>
     </div>
+
+    {game_js}
 
     <script src="../index.js"></script>
     <script src="../auth-entry.js"></script>
     <script src="../colorblind.js"></script>
 </body>
 </html>
+'''
+
+# 手动更新每个游戏页面
+def update_game_pages_manually():
+    # 切换到游戏目录
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    
+    # 游戏页面的标题和内容映射
+    game_titles = {
+        'game-01-central-angle.html': 'CircleLab | 圆心角定理',
+        'game-02-inscribed-angle.html': 'CircleLab | 圆周角定理',
+        'game-03-semicircle-right.html': 'CircleLab | 半圆上的直角',
+        'game-04-cyclic-quad.html': 'CircleLab | 圆内接四边形',
+        'game-05-tangent-radius.html': 'CircleLab | 切线与半径垂直',
+        'game-06-tangent-length.html': 'CircleLab | 切线长度相等',
+        'game-07-Perpendicular-Bisector.html': 'CircleLab | 垂直平分线',
+        'game-08-tangent-chord-angle.html': 'CircleLab | 切线弦角定理'
+    }
+    
+    # 为每个游戏页面创建内容
+    for game_file in game_files:
+        title = game_titles.get(game_file, 'CircleLab | 几何定理游戏')
+        
+        # 读取原始文件内容
+        with open(game_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 提取游戏内容（从<body>开始到<script>前）
+        body_start = content.find('<body>')
+        script_start = content.find('<script>')
+        
+        if body_start != -1 and script_start != -1:
+            # 提取<body>标签内的内容
+            body_content = content[body_start+6:script_start]
+            
+            # 提取游戏内容（从<div class="container">开始）
+            container_start = body_content.find('<div class="container">')
+            if container_start != -1:
+                game_content = body_content[container_start:].strip()
+            else:
+                game_content = body_content.strip()
+            
+            # 提取JavaScript部分
+            script_end = content.find('</script>', script_start)
+            if script_end != -1:
+                game_js = content[script_start:script_end+9].strip()
+            else:
+                game_js = ''
+        else:
+            game_content = ''
+            game_js = ''
+        
+        if not game_content or not game_js:
+            print(f"警告：在{game_file}中未找到完整内容")
+            continue
+        
+        # 生成新的页面内容
+        new_content = get_page_template(title, game_content, game_js)
+        
+        # 写入新内容
+        with open(game_file, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        
+        print(f"已更新：{game_file}")
+
+# 主函数
+def main():
+    update_game_pages_manually()
+
+if __name__ == "__main__":
+    main()

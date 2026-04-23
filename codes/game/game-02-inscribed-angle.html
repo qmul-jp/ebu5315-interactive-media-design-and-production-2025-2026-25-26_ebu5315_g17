@@ -1,901 +1,430 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>02-同弧圆周角定理 | CircleLab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircleLab | 圆周角定理</title>
+    <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="../auth-entry.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* 核心配色变量 - 完全对齐game.html */
-        :root {
-            --theme_color: #0d3273;
-            --sub_color: #4471c2;
-            --highlight_color: #e8a0bf;
-            --bg_color: #ffffff;
-            --bg_color_night: #0f132a;
-            --text_color: #102147;
-            --text_color_night: #edf1ff;
-            --panel_color: #f4f8ff;
-            --panel_color_night: #1a234d;
-            --line_color: rgba(68, 113, 194, 0.25);
-            --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
-            --ui_radius: 0px;
-            --rail_width: 92px;
-            --header_height: 74px;
-            
-            --text_primary: #333333;
-            --text_secondary: #666666;
-            --text_tertiary: #888888;
-            --card_bg: #ffffff;
-            --border_light: #eeeeee;
-            --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
-
-            /* 动画通用配置 */
-            --animate-duration: 0.4s;
-            --animate-ease: ease-out;
-        }
-
-        /* 导航栏入场动画 */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
-
-        /* 统一夜间模式 */
-        body.dark-mode {
-            --text_primary: var(--text_color_night);
-            --text_secondary: #dddddd;
-            --text_tertiary: #bbbbbb;
-            --card_bg: var(--panel_color_night);
-            --border_light: var(--line_color);
-            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
-            --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
-            background: var(--bg_color_night);
-            color: var(--text_color_night);
-        }
-
-        body {
-            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-            background: var(--bg_color);
-            min-height: 100vh;
-            color: var(--text_color);
-            transition: background 0.3s, color 0.3s;
-            display: flex;
-            flex-direction: column;
-            /* 防止被固定导航栏遮挡 */
-            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        /* ====================== 顶部导航栏 固定定位 ====================== */
-        .navbar {
-            position: fixed;
-            top: 0.95rem;
-            left: 1rem;
-            right: 1rem;
-            z-index: 999;
-            height: var(--header_height);
-            padding: 0 1.15rem;
-            background: var(--theme_color);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: var(--shadow_soft);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 0;
-            opacity: 0;
-            animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
-        }
-
-        .logo {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #ffffff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            line-height: 1;
-        }
-
-        .logo::before {
-            content: "◯";
-            width: 2.25rem;
-            height: 2.25rem;
-            display: grid;
-            place-items: center;
-            border: 2px solid rgba(255, 255, 255, 0.72);
-            font-size: 1.2rem;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 0.6rem;
-        }
-
-        .lang-toggle, .theme-toggle {
-            min-height: 38px;
-            padding: 0.45rem 0.9rem;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.34);
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            font-weight: 800;
-            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-            border-radius: 0px;
-        }
-
-        .lang-toggle:hover, .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* ====================== 左侧边栏 固定不变 ====================== */
-        .side_nav {
-            position: fixed;
-            left: 1rem;
-            top: calc(var(--header_height) + 1rem);
-            height: calc(100vh - 1.5rem - var(--header_height) - 0.55rem);  box-shadow: 0 4px 16px rgba(13, 50, 115, 0.15);
-            width: var(--rail_width);
-            background: var(--sub_color);
-            padding: 1.1rem 0.55rem;
-            display: grid;
-            align-content: start;
-            justify-items: center;
-            gap: 0.55rem;
-            
-            overflow: visible;
-            z-index: 240;
-            opacity: 0;
-            animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
-        }
-
-        .side_nav_link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            width: 3.2rem;
-            min-height: 3.2rem;
-            padding: 0.35rem;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-        }
-
-        .side_nav_icon {
-            width: 1.52rem;
-            height: 1.52rem;
-            display: grid;
-            place-items: center;
-        }
-
-        .side_nav_icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.9;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            vector-effect: non-stroke;
-        }
-
-        .side_nav_tooltip {
-            position: absolute;
-            left: calc(100% + 0.72rem);
-            top: 50%;
-            transform: translate(-0.35rem, -50%);
-            opacity: 0;
-            pointer-events: none;
-            background: #141414;
-            color: #ffffff;
-            font-size: 0.86rem;
-            font-weight: 800;
-            line-height: 1;
-            white-space: nowrap;
-            padding: 0.52rem 0.64rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: opacity 0.16s ease, transform 0.16s ease;
-            z-index: 9999;
-        }
-
-        .side_nav_tooltip::before {
-            content: "";
-            position: absolute;
-            left: -0.38rem;
-            top: 50%;
-            transform: translateY(-50%);
-            border-top: 0.38rem solid transparent;
-            border-bottom: 0.38rem solid transparent;
-            border-right: 0.38rem solid #141414;
-        }
-
-        .side_nav_link:hover,
-        .side_nav_link.active {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.42);
-            transform: none;
-        }
-
-        .side_nav_link:hover .side_nav_tooltip,
-        .side_nav_link:focus-visible .side_nav_tooltip {
-            opacity: 1;
-            transform: translate(0, -50%);
-        }
-
-        /* ====================== 主内容适配布局 ====================== */
-        .main-wrapper {
-            margin-left: calc(var(--rail_width) + 2.5rem);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - var(--rail_width) - 2.5rem);
-            opacity: 0;
-            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
-        }
-
-        /* ====================== 原有页面样式 ====================== */
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            background: var(--card_bg);
-            
-            box-shadow: var(--shadow_md);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .content {
-            padding: 24px 20px;
-        }
-
-        .card {
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            line-height: 1.5;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .card-def {
-            border-left: 4px solid var(--theme_color);
-            background: rgba(13, 50, 115, 0.05);
-        }
-        .card-theorem {
-            border-left: 4px solid var(--sub_color);
-            background: rgba(68, 113, 194, 0.05);
-        }
-        .card-corollary {
-            border-left: 4px solid var(--highlight_color);
-            background: rgba(232, 160, 191, 0.05);
-        }
-
-        .card h3 {
-            font-size: 20px;
-            font-weight: 60;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
-        }
-
-        .card p, .card li {
-            font-size: 15px;
-            color: var(--text_secondary);
-            line-height: 1.5;
-            margin-bottom: 8px;
-        }
-
-        .card ul {
-            padding-left: 20px;
-        }
-
-        /* 画布区域样式 */
-        .canvas-wrapper {
-            position: relative;
-            text-align: center;
-            margin-top: 24px;
-            padding: 16px;
-            background: var(--card_bg);
-            border: 1px solid var(--border_light);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .canvas-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        canvas {
-            background: var(--card_bg);
-            border-radius: 6px;
-            touch-action: none;
-            border: 1px solid var(--border_light);
-            transition: all 0.3s ease;
-        }
-
-        .reset-btn {
-            position: absolute;
-            left: 10px;
-            bottom: 10px;
-            padding: 6px 12px;
-            background: var(--theme_color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .reset-btn:hover {
-            background: var(--sub_color);
-        }
-
-        .data-panel {
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translate(30px, -50%);
-            text-align: left;
-            font-size: 15px;
-            line-height: 1.8;
-            min-width: 200px;
-            background: transparent;
-            border: none;
-            padding: 0;
-            color: var(--text_secondary);
-        }
-        .data-panel .blue { 
-            color: var(--sub_color); 
-            font-weight: 600; 
-        }
-
-        /* 弧切换按钮样式 */
-        .arc-toggle-btn {
-            margin-left: 6px;
-            padding: 2px 6px;
-            background: var(--sub_color);
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
-        }
-        .arc-toggle-btn:hover {
-            background: var(--theme_color);
-        }
-
-        .canvas-tip {
-            margin-top: 12px;
-            font-size: 15px;
-            color: var(--text_secondary);
-            line-height: 1.4;
-        }
-
-        /* 语言切换核心规则：同一时间只显示一种语言 */
-        .zh, .en { display: none; }
-        :lang(zh-CN) .zh { display: initial; }
-        :lang(en) .en { display: initial; }
-
-        /* 夜间模式兼容原有卡片 */
-        body.dark-mode .card-def {
-            background: #162349;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-theorem {
-            background: #14293f;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card-corollary {
-            background: #2c2442;
-            color: var(--text_color_night);
-        }
-        body.dark-mode .card p, 
-        body.dark-mode .card li,
-        body.dark-mode .canvas-tip,
-        body.dark-mode .data-panel {
-            color: var(--text_color_night);
-        }
-
-        /* 响应式适配 */
-        @media (max-width: 980px), (max-aspect-ratio: 5/4) {
-            .side_nav {
-                position: sticky;
-                top: calc(var(--header_height) + 0.4rem);
-                min-height: auto;
-                grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
-                padding: 0.35rem;
-                width: 100%;
-                left: 0;
-                bottom: auto;
-            }
-            .side_nav_link {
-                width: 100%;
-                min-height: auto;
-                padding: 0.42rem 0.2rem;
-                flex-direction: column;
-                gap: 0.2rem;
-            }
-            .side_nav_tooltip {
-                position: static;
-                transform: none;
-                opacity: 1;
-                background: transparent;
-                box-shadow: none;
-                padding: 0;
-                font-size: 0.78rem;
-            }
-            .side_nav_tooltip::before { display: none; }
-            .main-wrapper {
-                margin-left: 0;
-                margin-top: 1rem;
-                width: 100%;
-            }
-        }
-    </style>
 </head>
-
 <body>
-    <!-- 顶部导航栏 -->
-    <nav class="navbar">
-        <a href="../index.html" class="logo">CircleLab</a>
-        <div class="nav-buttons">
-            <button class="lang-toggle" id="langToggleBtn">English</button>
-            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
+    <div class="bg_orb bg_orb_left"></div>
+    <div class="bg_orb bg_orb_right"></div>
+
+    <header class="site_header">
+        <div class="brand_wrap">
+            <img class="brand_logo" src="../../images/logo_standard.png" alt="CircleLab Logo">
+            <div>
+                <p class="brand_name">CircleLab</p>
+                <p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
+            </div>
         </div>
-    </nav>
 
-    <!-- 左侧边栏 -->
-    <aside class="side_nav" aria-label="Primary menu">
-        <a class="side_nav_link" href="../index.html" aria-label="Homepage">
-            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
-            <span class="side_nav_tooltip" data-zh="主页" data-en="Homepage">主页</span>
-        </a>
-        <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
-            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"></rect><path d="M9 4.5H15"></path><path d="M9 10H15"></path><path d="M9 14H13"></path><path d="M9 18H12"></path><path d="M14 14L15.5 15.5L18 13"></path></svg></span>
-            <span class="side_nav_tooltip" data-zh="测验" data-en="Quiz">测验</span>
-        </a>
-        <a class="side_nav_link active" href="./game.html" aria-label="Game">
-            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path><path d="M8.5 13.5V16.5"></path><path d="M7 15H10"></path><circle cx="15.5" cy="14.5" r="0.8" fill="currentColor"></circle><circle cx="17.8" cy="16.2" r="0.8" fill="currentColor"></circle></svg></span>
-            <span class="side_nav_tooltip" data-zh="游戏" data-en="Game">游戏</span>
-        </a>
-    </aside>
+        <div class="control_group">
+            <button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
+            <button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
+            <button id="color_toggle_btn" class="ghost_btn" type="button" data-i18n="color_mode">Color 色彩</button>
+            <button id="color_status_btn" class="ghost_btn" type="button" data-i18n="color_normal">Normal / 标准</button>
+            <div class="auth_link_group" id="auth_link_group">
+                <span class="auth_status_badge" id="auth_status_badge">
+                    <span data-i18n="logged_in">已登录：</span>
+                    <span id="logged_in_user">Developer</span>
+                </span>
+                <button class="auth_logout_btn" id="auth_logout_btn" data-i18n="logout">退出登录</button>
+            </div>
+        </div>
+    </header>
 
-    <!-- 主内容区域 -->
-    <div class="main-wrapper">
-        <div class="container">
-            <div class="header">
-                <h1>
-                    <span class="zh">02 - 同弧圆周角定理</span>
-                    <span class="en">02 - Inscribed Angle Theorem</span>
-                </h1>
+    <div class="mobile_settings_panel" id="mobile_settings_panel">
+        <div class="mobile_settings_header">
+            <span data-i18n="settings_title">设置</span>
+            <button class="mobile_settings_close" id="mobile_settings_close" aria-label="Close">×</button>
+        </div>
+        <div class="mobile_settings_content">
+            <div class="mobile_setting_group">
+                <div class="mobile_setting_group_title" data-i18n="setting_group_display">显示设置</div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_language">语言</span>
+                    <button class="mobile_setting_btn" id="mobile_lang_toggle">EN / 中</button>
+                </div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_theme">主题</span>
+                    <button class="mobile_setting_btn" id="mobile_theme_toggle" data-i18n="mode_day">夜间模式</button>
+                </div>
+                <div class="mobile_setting_item">
+                    <span data-i18n="setting_color">色彩</span>
+                    <span class="mobile_setting_status" id="mobile_color_status">标准</span>
+                </div>
             </div>
 
-            <div class="content">
-                <div class="card card-def">
-                    <h3>
-                        <span class="zh">📘 基本定义</span>
-                        <span class="en">📘 Definition</span>
-                    </h3>
-                    <p class="zh">顶点在圆上，两边与圆相交的角，叫做圆周角。</p>
-                    <p class="en">An inscribed angle is an angle formed by two chords in a circle with the vertex on the circle.</p>
-                </div>
+            <div class="mobile_setting_divider"></div>
 
-                <div class="card card-theorem">
-                    <h3>
-                        <span class="zh">📐 定理内容</span>
-                        <span class="en">📐 Theorem</span>
-                    </h3>
-                    <p class="zh">在同圆或等圆中：</p>
-                    <p class="en">In the same or congruent circles:</p>
-                    <ul>
-                        <li class="zh">同弧所对的圆周角相等</li>
-                        <li class="en">Inscribed angles subtended by the same arc are equal</li>
-                        <li class="zh">圆周角 = 所对弧的圆心角的一半</li>
-                        <li class="en">An inscribed angle is half its central angle</li>
-                    </ul>
+            <div class="mobile_setting_group">
+                <div class="mobile_setting_group_title" data-i18n="setting_group_account">账户设置</div>
+                <div id="mobile_login_status" class="mobile_login_status hidden">
+                    <p><strong data-i18n="login_status">已登录：</strong><span id="mobile_login_user">Developer</span></p>
+                    <button class="mobile_logout_btn" id="mobile_logout_btn" data-i18n="logout">退出登录</button>
                 </div>
-
-                <div class="card card-corollary">
-                    <h3>
-                        <span class="zh">📌 重要推论</span>
-                        <span class="en">📌 Corollary</span>
-                    </h3>
-                    <p class="zh">半圆所对的圆周角是直角；直径所对的圆周角等于 90°。</p>
-                    <p class="en">An angle inscribed in a semicircle is a right angle (90°).</p>
-                </div>
-
-                <div class="canvas-wrapper">
-                    <div class="canvas-container">
-                        <canvas id="canvas" width="540" height="440"></canvas>
-                        <button class="reset-btn" id="resetBtn">
-                            <span class="zh">重置</span>
-                            <span class="en">Reset</span>
-                        </button>
-                        <div class="data-panel">
-                            <div class="blue">
-                                <span class="zh">∠ACB (圆周角)：</span>
-                                <span class="en">∠ACB (Inscribed Angle)：</span>
-                                <span id="ang1">0°</span>
-                            </div>
-                            <div class="blue">
-                                <span id="arcLabelZh" class="zh">劣弧AB</span>
-                                <span id="arcLabelEn" class="en">Minor AB</span>：
-                                <span id="arc1">0</span>
-                            </div>
-                            <br>
-                            <button class="arc-toggle-btn" id="arcToggleBtn">
-                                <span class="zh">切换为优弧</span>
-                                <span class="en">Switch to Major</span>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="canvas-tip">
-                        <span class="zh">🔹 拖动圆上的点 A、B、C，观察同弧圆周角关系；当 ∠ACB = 90° 时出现垂直符号</span>
-                        <span class="en">🔹 Drag points A, B, C on the circle; right-angle symbol appears when ∠ACB = 90°</span>
-                    </p>
+                <div id="mobile_login_prompt" class="mobile_setting_item">
+                    <span data-i18n="login_prompt">登录/注册</span>
+                    <button class="mobile_setting_btn" id="mobile_login_btn" data-i18n="login">去登录</button>
                 </div>
             </div>
         </div>
     </div>
+    <div class="mobile_settings_overlay" id="mobile_settings_overlay"></div>
+
+    <div class="page_shell">
+        <aside class="side_nav fade_in_up" aria-label="Primary menu">
+            <div class="side_nav_inner">
+            <a class="side_nav_link" href="../index.html" aria-label="Homepage">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M3 10.5L12 3L21 10.5"></path>
+                        <path d="M5 9.5V20H19V9.5"></path>
+                        <path d="M10 20V14H14V20"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_home">主页</span>
+            </a>
+            <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <rect x="6" y="4" width="12" height="16" rx="2"></rect>
+                        <path d="M9 4.5H15"></path>
+                        <path d="M9 10H15"></path>
+                        <path d="M9 14H13"></path>
+                        <path d="M9 18H12"></path>
+                        <path d="M14 14L15.5 15.5L18 13"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_quiz">测验</span>
+            </a>
+            <a class="side_nav_link active" href="./game.html" aria-label="Game">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
+                        <path d="M8.5 13.5V16.5"></path>
+                        <path d="M7 15H10"></path>
+                        <circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
+                        <circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
+            </a>
+            <button class="side_nav_link" id="mobile_settings_btn" aria-label="Settings">
+                <span class="side_nav_icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                </span>
+                <span class="side_nav_tooltip" data-i18n="nav_settings">设置</span>
+            </button>
+            </div>
+        </aside>
+
+        <main class="content_area">
+            <div class="container">
+                <div class="header">
+                    <h1>
+                        <span class="zh">02 - 同弧圆周角定理</span>
+                        <span class="en">02 - Inscribed Angle Theorem</span>
+                    </h1>
+                </div>
+
+                <div class="content">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="540" height="440"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn">重置</button>
+                        <button id="arcToggleBtn" class="btn">
+                            <span class="zh">切换为优弧</span>
+                            <span class="en">Switch to Major</span>
+                        </button>
+                    </div>
+
+                    <div class="info">
+                        <div class="angle-info">
+                            <p>∠ACB: <span id="ang1">30</span>°</p>
+                            <p>
+                                <span id="arcLabelZh">劣弧AB</span>: 
+                                <span id="arc1">1.05</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="theorem">
+                        <h2>同弧圆周角定理</h2>
+                        <p>在同圆或等圆中，同弧所对的圆周角相等，且等于该弧所对圆心角的一半。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-        (function(){
-            "use strict";
+        // ==================== 同弧圆周角定理画布逻辑 ====================
+        let showMinorArc = true;
 
-            // ====================== 统一语言/主题/导航逻辑 ======================
-            let isChinese = true;
-            const langBtn = document.getElementById('langToggleBtn');
-            const themeBtn = document.getElementById('themeToggleBtn');
+        function updateArcLabels() {
+            document.getElementById('arcLabelZh').textContent = showMinorArc ? '劣弧AB' : '优弧AB';
+        }
+
+        function updateArcBtnText() {
+            const btn = document.getElementById('arcToggleBtn');
+            const zhText = showMinorArc ? '切换为优弧' : '切换为劣弧';
+            const enText = showMinorArc ? 'Switch to Major' : 'Switch to Minor';
             
-            // 弧显示模式：true=劣弧(默认)，false=优弧
-            let showMinorArc = true;
+            btn.querySelector('.zh').textContent = zhText;
+            btn.querySelector('.en').textContent = enText;
+        }
 
-            // 初始化语言
-            function initLang() {
-                document.documentElement.lang = 'zh-CN';
-                isChinese = true;
-                langBtn.textContent = "English";
-                updateThemeBtnText();
-                updateArcLabels();
-                updateArcBtnText();
-            }
+        // 弧切换按钮事件
+        document.getElementById('arcToggleBtn').addEventListener('click', () => {
+            showMinorArc = !showMinorArc;
+            updateArcLabels();
+            updateArcBtnText();
+            draw();
+        });
 
-            // 语言切换
-            function toggleLang() {
-                isChinese = !isChinese;
-                document.documentElement.lang = isChinese ? 'zh-CN' : 'en';
-                langBtn.textContent = isChinese ? "English" : "中文";
-                updateThemeBtnText();
-                updateArcLabels();
-                updateArcBtnText();
-            }
+        // ==================== 画布交互逻辑 ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resetBtn = document.getElementById('resetBtn');
 
-            // 主题切换
-            function toggleTheme() {
-                document.body.classList.toggle('dark-mode');
-                updateThemeBtnText();
-                draw();
-            }
+        const cx = 270, cy = 220;
+        const radius = 160;
+        const diamRightAngle = 0;
+        const diamLeftAngle = Math.PI;
+        const snapDistance = 8;
 
-            // 更新主题按钮文字
-            function updateThemeBtnText() {
-                const isDark = document.body.classList.contains('dark-mode');
-                themeBtn.textContent = isChinese 
-                    ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
-                    : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
-            }
+        const initialPoints = {
+            A: { angle: Math.PI / 3 },
+            B: { angle: 2 * Math.PI / 3 },
+            C: { angle: 3 * Math.PI / 2 }
+        };
 
-            // 更新弧标签
-            function updateArcLabels() {
-                document.getElementById('arcLabelZh').textContent = showMinorArc ? '劣弧AB' : '优弧AB';
-                document.getElementById('arcLabelEn').textContent = showMinorArc ? 'Minor AB' : 'Major AB';
-            }
+        let points = JSON.parse(JSON.stringify(initialPoints));
+        let dragging = null;
+        let hoverPoint = null;
 
-            // 更新弧切换按钮文字
-            function updateArcBtnText() {
-                const btn = document.getElementById('arcToggleBtn');
-                const zhText = showMinorArc ? '切换为优弧' : '切换为劣弧';
-                const enText = showMinorArc ? 'Switch to Major' : 'Switch to Minor';
-                
-                btn.querySelector('.zh').textContent = zhText;
-                btn.querySelector('.en').textContent = enText;
-            }
+        function getPosition(angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
 
-            // 绑定事件
-            langBtn.addEventListener('click', toggleLang);
-            themeBtn.addEventListener('click', toggleTheme);
+        function snapAngle(angle) {
+            const dRight = Math.abs(angle - diamRightAngle);
+            const dLeft = Math.abs(angle - diamLeftAngle);
+            const snapRad = snapDistance / radius;
+            if (dRight < snapRad) return diamRightAngle;
+            if (dLeft < snapRad) return diamLeftAngle;
+            return angle;
+        }
+
+        // 直角符号代码
+        function drawRightAngleSymbol(C, A, B) {
+            const size = 16;
+            const u = { x: A.x - C.x, y: A.y - C.y };
+            const v = { x: B.x - C.x, y: B.y - C.y };
+            const lenU = Math.hypot(u.x, u.y);
+            const lenV = Math.hypot(v.x, v.y);
+            if (lenU < 0.001 || lenV < 0.001) return;
             
-            // 弧切换按钮事件
-            document.getElementById('arcToggleBtn').addEventListener('click', () => {
-                showMinorArc = !showMinorArc;
-                updateArcLabels();
-                updateArcBtnText();
-                draw();
-            });
+            const ux = u.x / lenU;
+            const uy = u.y / lenU;
+            const vx = v.x / lenV;
+            const vy = v.y / lenV;
+            
+            const p1 = { x: C.x + ux * size, y: C.y + uy * size };
+            const p2 = { x: C.x + vx * size, y: C.y + vy * size };
+            const p1v = { x: p1.x + vx * size, y: p1.y + vy * size };
+            const p2u = { x: p2.x + ux * size, y: p2.y + uy * size };
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p1v.x, p1v.y);
+            ctx.lineTo(p2u.x, p2u.y);
+            ctx.lineTo(p2.x, p2.y);
+            
+            const isDark = document.body.classList.contains('night_mode');
+            ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
+            ctx.lineWidth = 2.0;
+            ctx.stroke();
+        }
 
-            // 页面加载初始化
-            window.addEventListener('DOMContentLoaded', initLang);
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
 
-            // ====================== 画布交互逻辑 ======================
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            const resetBtn = document.getElementById('resetBtn');
+            const isDark = document.body.classList.contains('night_mode');
+            const strokeColor = isDark ? '#e5e7eb' : '#333';
+            const fillColor = isDark ? '#e5e7eb' : '#000';
+            const dashColor = isDark ? '#94a3b8' : '#999';
 
-            const cx = 270, cy = 220;
-            const radius = 160;
-            const diamRightAngle = 0;
-            const diamLeftAngle = Math.PI;
-            const snapDistance = 8;
+            // 绘制圆
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-            const initialPoints = {
-                A: { angle: Math.PI / 3 },
-                B: { angle: 2 * Math.PI / 3 },
-                C: { angle: 3 * Math.PI / 2 }
+            // 绘制直径虚线
+            ctx.save();
+            ctx.setLineDash([5, 3]);
+            ctx.strokeStyle = dashColor;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(cx - radius, cy);
+            ctx.lineTo(cx + radius, cy);
+            ctx.stroke();
+            ctx.restore();
+
+            // 圆心
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.font = '16px Arial';
+            ctx.fillText('O', cx, cy - 18);
+
+            // 获取点坐标
+            const pos = {
+                A: getPosition(points.A.angle),
+                B: getPosition(points.B.angle),
+                C: getPosition(points.C.angle)
             };
 
-            let points = JSON.parse(JSON.stringify(initialPoints));
-            let dragging = null;
-            let hoverPoint = null;
+            // 绘制弦
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
+            ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
 
-            function getPosition(angle) {
-                return {
-                    x: cx + radius * Math.cos(angle),
-                    y: cy + radius * Math.sin(angle)
-                };
+            // 计算角度
+            let minorArcAB = Math.abs(points.B.angle - points.A.angle);
+            if (minorArcAB > Math.PI) minorArcAB = 2 * Math.PI - minorArcAB;
+            const arcAB = showMinorArc ? minorArcAB : 2 * Math.PI - minorArcAB;
+            const angleC = minorArcAB / 2;
+            const degC = Math.round(angleC * 180 / Math.PI);
+
+            // 直角符号显示
+            const isRightAngle = Math.abs(degC - 90) < 0.6;
+            if (isRightAngle) {
+                drawRightAngleSymbol(pos.C, pos.A, pos.B);
             }
 
-            function snapAngle(angle) {
-                const dRight = Math.abs(angle - diamRightAngle);
-                const dLeft = Math.abs(angle - diamLeftAngle);
-                const snapRad = snapDistance / radius;
-                if (dRight < snapRad) return diamRightAngle;
-                if (dLeft < snapRad) return diamLeftAngle;
-                return angle;
-            }
-
-            // 【已修复】原始直角符号代码，完全还原你的效果
-            function drawRightAngleSymbol(C, A, B) {
-                const size = 16;
-                const u = { x: A.x - C.x, y: A.y - C.y };
-                const v = { x: B.x - C.x, y: B.y - C.y };
-                const lenU = Math.hypot(u.x, u.y);
-                const lenV = Math.hypot(v.x, v.y);
-                if (lenU < 0.001 || lenV < 0.001) return;
-                
-                const ux = u.x / lenU;
-                const uy = u.y / lenU;
-                const vx = v.x / lenV;
-                const vy = v.y / lenV;
-                
-                const p1 = { x: C.x + ux * size, y: C.y + uy * size };
-                const p2 = { x: C.x + vx * size, y: C.y + vy * size };
-                const p1v = { x: p1.x + vx * size, y: p1.y + vy * size };
-                const p2u = { x: p2.x + ux * size, y: p2.y + uy * size };
-                
+            // 绘制点
+            for (const k in pos) {
                 ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p1v.x, p1v.y);
-                ctx.lineTo(p2u.x, p2u.y);
-                ctx.lineTo(p2.x, p2.y);
-                
-                const isDark = document.body.classList.contains('dark-mode');
-                ctx.strokeStyle = isDark ? '#f1f5f9' : '#1e293b';
-                ctx.lineWidth = 2.0;
-                ctx.stroke();
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                const isDark = document.body.classList.contains('dark-mode');
-                const strokeColor = isDark ? '#e5e7eb' : '#333';
-                const fillColor = isDark ? '#e5e7eb' : '#000';
-                const dashColor = isDark ? '#94a3b8' : '#999';
-
-                // 绘制圆
-                ctx.beginPath();
-                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = strokeColor;
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                // 绘制直径虚线
-                ctx.save();
-                ctx.setLineDash([5, 3]);
-                ctx.strokeStyle = dashColor;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(cx - radius, cy);
-                ctx.lineTo(cx + radius, cy);
-                ctx.stroke();
-                ctx.restore();
-
-                // 圆心
-                ctx.beginPath();
-                ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+                ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
                 ctx.fillStyle = fillColor;
                 ctx.fill();
-                ctx.font = '16px Arial';
-                ctx.fillText('O', cx, cy - 18);
-
-                // 获取点坐标
-                const pos = {
-                    A: getPosition(points.A.angle),
-                    B: getPosition(points.B.angle),
-                    C: getPosition(points.C.angle)
-                };
-
-                // 绘制弦
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
-                ctx.beginPath(); ctx.moveTo(pos.A.x, pos.A.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(pos.B.x, pos.B.y); ctx.lineTo(pos.C.x, pos.C.y); ctx.stroke();
-
-                // 计算角度
-                let minorArcAB = Math.abs(points.B.angle - points.A.angle);
-                if (minorArcAB > Math.PI) minorArcAB = 2 * Math.PI - minorArcAB;
-                const arcAB = showMinorArc ? minorArcAB : 2 * Math.PI - minorArcAB;
-                const angleC = minorArcAB / 2;
-                const degC = Math.round(angleC * 180 / Math.PI);
-
-                // 直角符号显示
-                const isRightAngle = Math.abs(degC - 90) < 0.6;
-                if (isRightAngle) {
-                    drawRightAngleSymbol(pos.C, pos.A, pos.B);
-                }
-
-                // 绘制点
-                for (const k in pos) {
-                    ctx.beginPath();
-                    ctx.arc(pos[k].x, pos[k].y, hoverPoint === k ? 8 : 7, 0, Math.PI * 2);
-                    ctx.fillStyle = fillColor;
-                    ctx.fill();
-                    ctx.font = '18px Arial';
-                    ctx.fillText(k, pos[k].x, pos[k].y - 18);
-                }
-
-                // 更新数据
-                document.getElementById('ang1').textContent = degC + '°';
-                document.getElementById('arc1').textContent = arcAB.toFixed(2);
+                ctx.font = '18px Arial';
+                ctx.fillText(k, pos[k].x, pos[k].y - 18);
             }
 
-            // 鼠标交互
-            function getMousePos(e) {
-                const r = canvas.getBoundingClientRect();
-                return { x: e.clientX - r.left, y: e.clientY - r.top };
-            }
+            // 更新数据
+            document.getElementById('ang1').textContent = degC + '°';
+            document.getElementById('arc1').textContent = arcAB.toFixed(2);
+        }
 
-            function checkHit(mx, my) {
-                for (const k in points) {
-                    const p = getPosition(points[k].angle);
-                    if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
-                }
-                return null;
-            }
+        // 鼠标交互
+        function getMousePos(e) {
+            const r = canvas.getBoundingClientRect();
+            return { x: e.clientX - r.left, y: e.clientY - r.top };
+        }
 
-            canvas.addEventListener('mousedown', (e) => {
+        function checkHit(mx, my) {
+            for (const k in points) {
+                const p = getPosition(points[k].angle);
+                if (Math.hypot(mx - p.x, my - p.y) < 16) return k;
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const m = getMousePos(e);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) {
                 const m = getMousePos(e);
-                dragging = checkHit(m.x, m.y);
-                if (dragging) canvas.style.cursor = 'grabbing';
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!dragging) {
-                    const m = getMousePos(e);
-                    hoverPoint = checkHit(m.x, m.y);
-                    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
-                    draw();
-                    return;
-                }
-                const m = getMousePos(e);
-                const rawAngle = Math.atan2(m.y - cy, m.x - cx);
-                points[dragging].angle = snapAngle(rawAngle);
-                draw();
-            });
-
-            window.addEventListener('mouseup', () => {
-                dragging = null;
+                hoverPoint = checkHit(m.x, m.y);
                 canvas.style.cursor = hoverPoint ? 'grab' : 'default';
-            });
-
-            canvas.addEventListener('mouseleave', () => {
-                hoverPoint = null;
                 draw();
-            });
-
-            // 重置按钮
-            resetBtn.onclick = () => {
-                points = JSON.parse(JSON.stringify(initialPoints));
-                showMinorArc = true;
-                updateArcLabels();
-                updateArcBtnText();
-                draw();
-            };
-
-            // 触摸屏支持
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
-                const m = getMousePos(fakeMouse);
-                dragging = checkHit(m.x, m.y);
-                if (dragging) canvas.style.cursor = 'grabbing';
-            }, { passive: false });
-
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!dragging) return;
-                const touch = e.touches[0];
-                const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
-                const m = getMousePos(fakeMouse);
-                let angle = Math.atan2(m.y - cy, m.x - cx);
-                points[dragging].angle = snapAngle(angle);
-                draw();
-            }, { passive: false });
-
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                dragging = null;
-                canvas.style.cursor = 'default';
-                draw();
-            });
-
-            // 初始化绘制
+                return;
+            }
+            const m = getMousePos(e);
+            const rawAngle = Math.atan2(m.y - cy, m.x - cx);
+            points[dragging].angle = snapAngle(rawAngle);
             draw();
-        })();
+        });
+
+        window.addEventListener('mouseup', () => {
+            dragging = null;
+            canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            hoverPoint = null;
+            draw();
+        });
+
+        // 重置按钮
+        resetBtn.onclick = () => {
+            points = JSON.parse(JSON.stringify(initialPoints));
+            showMinorArc = true;
+            updateArcLabels();
+            updateArcBtnText();
+            draw();
+        };
+
+        // 触摸屏支持
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+            const m = getMousePos(fakeMouse);
+            dragging = checkHit(m.x, m.y);
+            if (dragging) canvas.style.cursor = 'grabbing';
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!dragging) return;
+            const touch = e.touches[0];
+            const fakeMouse = { clientX: touch.clientX, clientY: touch.clientY };
+            const m = getMousePos(fakeMouse);
+            let angle = Math.atan2(m.y - cy, m.x - cx);
+            points[dragging].angle = snapAngle(angle);
+            draw();
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            dragging = null;
+            canvas.style.cursor = 'default';
+            draw();
+        });
+
+        // 初始化
+        updateArcLabels();
+        updateArcBtnText();
+        draw();
     </script>
-	<script src="../auth-entry.js"></script>
-	<script src="../colorblind.js"></script>
+
+    <script src="../index.js"></script>
+    <script src="../auth-entry.js"></script>
+    <script src="../colorblind.js"></script>
 </body>
 </html>
-<<<<<<< HEAD
-=======
-
->>>>>>> backup-mobile-optimization
