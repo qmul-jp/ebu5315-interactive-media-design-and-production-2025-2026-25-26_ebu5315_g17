@@ -98,9 +98,25 @@
             margin: 0.25rem 0;
         }
 
+        #mobile_settings_btn {
+            display: none;
+        }
+
         @media (max-width: 1100px) {
             .game-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .control_group {
+                display: none;
+            }
+
+            #mobile_settings_btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 
@@ -117,7 +133,7 @@
 
     <header class="site_header">
         <div class="brand_wrap">
-            <img class="brand_logo" src="../../images/logo_standard.png" alt="CircleLab Logo">
+            <img class="brand_logo_img" src="../../images/logo_standard.png" alt="CircleLab logo">
             <div>
                 <p class="brand_name">CircleLab</p>
                 <p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
@@ -127,16 +143,8 @@
         <div class="control_group">
             <button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
             <button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
-            <button id="color_toggle_btn" class="ghost_btn" type="button" data-i18n="color_mode">Color 色彩</button>
-            <button id="color_status_btn" class="ghost_btn" type="button" data-i18n="color_normal">Normal / 标准</button>
-            <div class="auth_link_group" id="auth_link_group">
-                <span class="auth_status_badge" id="auth_status_badge">
-                    <span data-i18n="logged_in">已登录：</span>
-                    <span id="logged_in_user">Developer</span>
-                </span>
-                <button class="auth_logout_btn" id="auth_logout_btn" data-i18n="logout">退出登录</button>
-            </div>
         </div>
+        <button id="mobile_settings_btn" class="mobile_settings_btn ghost_btn" type="button" data-i18n="nav_settings">设置</button>
     </header>
 
     <div class="mobile_settings_panel" id="mobile_settings_panel">
@@ -216,7 +224,7 @@
                 </span>
                 <span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
             </a>
-            <button class="side_nav_link" id="mobile_settings_btn" aria-label="Settings">
+            <a class="side_nav_link" id="mobile_settings_btn" href="../settings/settings.html" data-i18n="nav_settings" aria-label="Settings">
                 <span class="side_nav_icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -224,7 +232,7 @@
                     </svg>
                 </span>
                 <span class="side_nav_tooltip" data-i18n="nav_settings">设置</span>
-            </button>
+            </a>
             </div>
         </aside>
 

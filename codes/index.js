@@ -47,6 +47,8 @@ const default_config = {
 };
 
 const runtime_config = window.app_config || default_config;
+const NIGHT_MODE_KEY = "circlab_night_mode";
+const LANGUAGE_KEY = "circlab_language";
 
 const theme_color = runtime_config.theme_color || default_config.theme_color;
 const sub_color = runtime_config.sub_color || default_config.sub_color;
@@ -72,14 +74,41 @@ let is_chinese = typeof runtime_config.is_chinese === "boolean"
 
 let current_slide_index = 0;
 
+function load_language_preference() {
+	try {
+		const stored_value = localStorage.getItem(LANGUAGE_KEY);
+		if (stored_value === "zh" || stored_value === "en") {
+			is_chinese = stored_value !== "en";
+		}
+	} catch (error) {
+		console.warn("Failed to load language preference:", error);
+	}
+}
+
+function load_night_mode_preference() {
+	try {
+		const stored_value = localStorage.getItem(NIGHT_MODE_KEY);
+		if (stored_value === "true" || stored_value === "false") {
+			is_night = stored_value === "true";
+		}
+	} catch (error) {
+		console.warn("Failed to load night mode preference:", error);
+	}
+}
+
 const i18n_text = {
 	zh: {
 		brand_tag: "GCSE 圆几何学习",
 		nav_home: "主页",
 		nav_game: "游戏",
 		nav_quiz: "测验",
+		nav_settings: "设置",
 		mode_day: "夜间模式",
 		mode_night: "白天模式",
+		settings_title: "设置",
+		setting_group_display: "显示设置",
+		setting_language: "语言",
+		setting_theme: "主题",
 		hero_badge: "Interactive Math-Learning Website",
 		hero_title: "一站掌握圆几何核心规则",
 		hero_subtitle: "通过动画、游戏挑战与分级测验，把 GCSE 圆相关几何从“记公式”变成“会应用”。",
@@ -157,8 +186,13 @@ const i18n_text = {
 		nav_home: "Homepage",
 		nav_game: "Game",
 		nav_quiz: "Quiz",
+		nav_settings: "Settings",
 		mode_day: "Night Mode",
 		mode_night: "Day Mode",
+		settings_title: "Settings",
+		setting_group_display: "Display Settings",
+		setting_language: "Language",
+		setting_theme: "Theme",
 		hero_badge: "Interactive Math-Learning Website",
 		hero_title: "Master Circle Geometry in One Place",
 		hero_subtitle: "Use animations, challenges, and level-based quizzes to turn circle formulas into real problem-solving skills.",
@@ -253,6 +287,13 @@ const chat_fab_btn = document.getElementById("chat_fab_btn");
 const back_to_top_btn = document.getElementById("back_to_top_btn");
 const geometry_frame = document.querySelector(".geometry_frame");
 
+const mobile_settings_panel = document.getElementById("mobile_settings_panel");
+const mobile_settings_overlay = document.getElementById("mobile_settings_overlay");
+const mobile_settings_btn = document.getElementById("mobile_settings_btn");
+const mobile_settings_close = document.getElementById("mobile_settings_close");
+const mobile_lang_toggle = document.getElementById("mobile_lang_toggle");
+const mobile_theme_toggle = document.getElementById("mobile_theme_toggle");
+
 const contact_form = document.getElementById("contact_form");
 const name_input = document.getElementById("name_input");
 const email_input = document.getElementById("email_input");
@@ -317,6 +358,11 @@ function apply_language() {
 
 	language_toggle_btn.textContent = is_chinese ? "EN" : "中文";
 	mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+	try {
+		localStorage.setItem(LANGUAGE_KEY, is_chinese ? "zh" : "en");
+	} catch (error) {
+		console.warn("Failed to save language preference:", error);
+	}
 	if (back_to_top_btn) {
 		back_to_top_btn.setAttribute("aria-label", lang_dict.back_to_top);
 		back_to_top_btn.setAttribute("title", lang_dict.back_to_top);
@@ -331,6 +377,11 @@ function apply_language() {
 
 function apply_mode() {
 	body_element.classList.toggle("night_mode", is_night);
+	try {
+		localStorage.setItem(NIGHT_MODE_KEY, String(is_night));
+	} catch (error) {
+		console.warn("Failed to save night mode preference:", error);
+	}
 	const locale = get_locale();
 	const lang_dict = i18n_text[locale];
 	mode_toggle_btn.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
@@ -559,6 +610,18 @@ function open_chat_panel() {
 
 function close_chat_panel() {
 	chat_panel.classList.add("hidden_panel");
+}
+
+function open_mobile_settings() {
+	mobile_settings_panel.classList.add("open");
+	mobile_settings_overlay.classList.add("show");
+	document.body.style.overflow = "hidden";
+}
+
+function close_mobile_settings() {
+	mobile_settings_panel.classList.remove("open");
+	mobile_settings_overlay.classList.remove("show");
+	document.body.style.overflow = "";
 }
 
 let chat_history = [
@@ -822,6 +885,32 @@ function register_events() {
 	chat_send_btn.addEventListener("click", handle_send_message);
 	back_to_top_btn.addEventListener("click", scroll_to_top);
 
+	if (mobile_settings_btn) {
+		mobile_settings_btn.addEventListener("click", open_mobile_settings);
+	}
+	if (mobile_settings_close) {
+		mobile_settings_close.addEventListener("click", close_mobile_settings);
+	}
+	if (mobile_settings_overlay) {
+		mobile_settings_overlay.addEventListener("click", close_mobile_settings);
+	}
+	if (mobile_lang_toggle) {
+		mobile_lang_toggle.addEventListener("click", () => {
+			is_chinese = !is_chinese;
+			apply_language();
+			close_mobile_settings();
+		});
+	}
+	if (mobile_theme_toggle) {
+		mobile_theme_toggle.addEventListener("click", () => {
+			is_night = !is_night;
+			apply_mode();
+			const locale = get_locale();
+			const lang_dict = i18n_text[locale];
+			mobile_theme_toggle.textContent = is_night ? lang_dict.mode_night : lang_dict.mode_day;
+		});
+	}
+
 	let is_dragging_chat = false;
 	let drag_start_x = 0;
 	let drag_start_y = 0;
@@ -883,6 +972,8 @@ function register_events() {
 
 function init_homepage() {
 	set_theme_variables();
+	load_language_preference();
+	load_night_mode_preference();
 	apply_mode();
 	apply_language();
 	show_slide(0);

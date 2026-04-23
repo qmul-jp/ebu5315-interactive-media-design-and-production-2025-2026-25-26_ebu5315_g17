@@ -13,7 +13,7 @@
 
 	<header class="site_header">
 		<div class="brand_wrap">
-			<div class="brand_logo" aria-hidden="true">◯</div>
+			<img class="brand_logo_img" src="../images/logo_standard.png" alt="CircleLab logo">
 			<div>
 				<p class="brand_name">CircleLab</p>
 				<p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
@@ -24,7 +24,29 @@
 			<button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
 			<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
 		</div>
+		<button id="mobile_settings_btn" class="mobile_settings_btn ghost_btn" type="button" data-i18n="nav_settings">设置</button>
 	</header>
+
+	<div class="mobile_settings_panel" id="mobile_settings_panel">
+		<div class="mobile_settings_header">
+			<span data-i18n="settings_title">设置</span>
+			<button class="mobile_settings_close" id="mobile_settings_close" aria-label="Close">×</button>
+		</div>
+		<div class="mobile_settings_content">
+			<div class="mobile_setting_group">
+				<div class="mobile_setting_group_title" data-i18n="setting_group_display">显示设置</div>
+				<div class="mobile_setting_item">
+					<span data-i18n="setting_language">语言</span>
+					<button class="mobile_setting_btn" id="mobile_lang_toggle">EN / 中</button>
+				</div>
+				<div class="mobile_setting_item">
+					<span data-i18n="setting_theme">主题</span>
+					<button class="mobile_setting_btn" id="mobile_theme_toggle" data-i18n="mode_day">夜间模式</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="mobile_settings_overlay" id="mobile_settings_overlay"></div>
 
 	<div class="page_shell">
 		<aside class="side_nav fade_in_up" aria-label="Primary menu">
