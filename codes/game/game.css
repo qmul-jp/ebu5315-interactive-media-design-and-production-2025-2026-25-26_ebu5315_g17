@@ -1,136 +1,581 @@
-.game_stage_board {
-	height: 100%;
-	min-height: 620px;
-	border: 1px solid rgba(68, 113, 194, 0.22);
-	background: linear-gradient(155deg, rgba(255, 255, 255, 0.97), rgba(241, 247, 255, 0.9));
-	box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.55);
-	padding: 1.1rem;
-	display: grid;
-	align-content: start;
-	gap: 0.9rem;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body.night_mode .game_stage_board {
-	border-color: rgba(146, 164, 206, 0.36);
-	background: linear-gradient(155deg, rgba(23, 31, 57, 0.9), rgba(20, 28, 51, 0.84));
-	box-shadow: inset 0 0 0 10px rgba(17, 23, 43, 0.5);
+/* 核心配色变量 - 统一使用index.css的变量体系 */
+:root {
+    --theme_color: #0d3273;
+    --sub_color: #4471c2;
+    --highlight_color: #e8a0bf;
+    --bg_color: #ffffff;
+    --bg_color_night: #0f132a;
+    --text_color: #102147;
+    --text_color_night: #edf1ff;
+    --panel_color: #f4f8ff;
+    --panel_color_night: #1a237d; /* 修复：6位合法十六进制颜色 */
+    --line_color: rgba(68, 113, 194, 0.25);
+    --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
+    --ui_radius: 0px;
+    --rail_width: 92px; /* 侧边栏宽度和index保持一致 */
+    --header_height: 74px; /* 头部高度和index保持一致 */
+    
+    --text_primary: #333333;
+    --text_secondary: #666666;
+    --text_tertiary: #888888;
+    --card_bg: #ffffff;
+    --border_light: #eeeeee;
+    --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
+
+    /* 动画通用配置变量 */
+    --animate-duration: 0.4s;
+    --animate-ease: ease-out;
 }
 
-.game_stage_kicker {
-	font-size: 0.78rem;
-	font-weight: 800;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--sub_color);
+/* ====================== 入场动画关键帧 ====================== */
+/* 顶部向下淡入 */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* 左侧滑入 */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+/* 底部向上淡入 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* 纯淡入 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.game_stage_title {
-	font-size: clamp(1.35rem, 2.2vw, 1.8rem);
-	line-height: 1.15;
+/* 夜间模式配色覆盖 */
+body.dark-mode {
+    --text_primary: var(--text_color_night);
+    --text_secondary: #dddddd;
+    --text_tertiary: #bbbbbb;
+    --card_bg: var(--panel_color_night);
+    --border_light: var(--line_color);
+    --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
+    --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
+    background: var(--bg_color_night);
+    color: var(--text_color_night);
 }
 
-.game_stage_list {
-	padding-left: 1.1rem;
-	display: grid;
-	gap: 0.52rem;
-	line-height: 1.45;
+body {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background: var(--bg_color);
+    min-height: 100vh;
+    color: var(--text_color);
+    transition: background 0.3s, color 0.3s;
+    display: flex;
+    flex-direction: column;
+    /* 适配固定导航栏，防止内容被遮挡 */
+    padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
-.game_stage_tip {
-	opacity: 0.82;
-	font-size: 0.95rem;
+/* --- 顶部导航栏 - 固定定位 --- */
+.navbar {
+    position: fixed;
+    top: 0.95rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 999;
+    height: var(--header_height);
+    padding: 0 1.15rem;
+    background: var(--theme_color);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: var(--shadow_soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
 }
 
-#progress_text {
-	margin-top: 0.38rem;
-	font-weight: 700;
-	color: var(--sub_color);
+.logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    line-height: 1;
 }
 
-.level_card_grid {
-	margin-top: 0.8rem;
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.8rem;
+.logo::before {
+    content: "◯";
+    width: 2.25rem;
+    height: 2.25rem;
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, 0.72);
+    font-size: 1.2rem;
 }
 
-.level_card {
-	display: grid;
-	align-content: start;
-	gap: 0.45rem;
-	padding: 0.95rem;
-	text-decoration: none;
-	color: inherit;
-	border: 1px solid var(--line_color);
-	background: var(--panel_color);
-	transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+.nav-buttons {
+    display: flex;
+    gap: 0.6rem;
 }
 
-body.night_mode .level_card {
-	background: var(--panel_color_night);
+/* 统一按钮样式 */
+.lang-toggle, .theme-toggle {
+    min-height: 38px;
+    padding: 0.45rem 0.9rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-weight: 800;
+    transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0;
+    /* 移动端触摸优化 */
+    min-width: 44px;
 }
 
-.level_card:hover {
-	transform: translateY(-2px);
-	border-color: var(--theme_color);
-	box-shadow: 0 10px 20px rgba(13, 50, 115, 0.12);
+.lang-toggle:hover, .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
-.level_card h3 {
-	font-size: 1.05rem;
-	line-height: 1.2;
+/* --- 左侧边栏样式 - PC端固定 --- */
+.side_nav {
+    position: fixed;
+    left: 1rem;
+    top: calc(var(--header_height) + 1rem);
+    bottom: 2rem;
+    width: var(--rail_width);
+    background: var(--sub_color);
+    padding: 1.1rem 0.55rem;
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 0.55rem;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+    overflow: visible;
+    z-index: 998;
+    opacity: 0;
+    animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
 }
 
-.level_card p {
-	opacity: 0.85;
+.side_nav_link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 3.2rem;
+    min-height: 3.2rem;
+    padding: 0.35rem;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.completion_badge {
-	display: inline-flex;
-	justify-self: start;
-	margin-top: 0.25rem;
-	padding: 0.2rem 0.52rem;
-	border: 1px solid var(--line_color);
-	font-size: 0.78rem;
-	font-weight: 700;
-	opacity: 0.86;
+.side_nav_icon {
+    width: 1.52rem;
+    height: 1.52rem;
+    display: grid;
+    place-items: center;
 }
 
-.level_card.completed_level {
-	border-color: #2c8d56;
-	background: rgba(44, 141, 86, 0.13);
+.side_nav_icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-stroke;
 }
 
-.level_card.completed_level .completion_badge {
-	border-color: #2c8d56;
-	background: rgba(44, 141, 86, 0.2);
-	opacity: 1;
+.side_nav_tooltip {
+    position: absolute;
+    left: calc(100% + 0.72rem);
+    top: 50%;
+    transform: translate(-0.35rem, -50%);
+    opacity: 0;
+    pointer-events: none;
+    background: #141414;
+    color: #ffffff;
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    padding: 0.52rem 0.64rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    z-index: 9999;
 }
 
-body.night_mode .level_card.completed_level {
-	border-color: #6ad39a;
-	background: rgba(106, 211, 154, 0.18);
+.side_nav_tooltip::before {
+    content: "";
+    position: absolute;
+    left: -0.38rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 0.38rem solid transparent;
+    border-bottom: 0.38rem solid transparent;
+    border-right: 0.38rem solid #141414;
 }
 
-body.night_mode .level_card.completed_level .completion_badge {
-	border-color: #6ad39a;
-	background: rgba(106, 211, 154, 0.24);
+.side_nav_link:hover,
+.side_nav_link.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.42);
+    transform: none;
 }
 
-@media (max-width: 1180px) {
-	.game_stage_board {
-		min-height: 520px;
-	}
+.side_nav_link:hover .side_nav_tooltip,
+.side_nav_link:focus-visible .side_nav_tooltip {
+    opacity: 1;
+    transform: translate(0, -50%);
 }
 
+.side_nav_link:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.72);
+    outline-offset: 2px;
+}
+
+/* --- 主内容区域 --- */
+.main-wrapper {
+    margin-left: calc(var(--rail_width) + 2.5rem);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - var(--rail_width) - 2.5rem);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    width: 100%;
+}
+
+/* 页面头部 */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--theme_color);
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: var(--text_secondary);
+}
+
+/* 游戏网格 */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* 游戏卡片 */
+.game-card {
+    background: var(--card_bg);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text_color);
+    box-shadow: var(--shadow_md);
+    display: block;
+    border: 1px solid var(--border_light);
+    opacity: 0;
+    animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.3s forwards;
+}
+/* 几何冒险主卡片 - 独占整行 */
+.game-card.adventure-main {
+    grid-column: 1 / -1;
+}
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow_md);
+    border-color: var(--sub_color);
+}
+
+.game-card .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    color: var(--theme_color);
+}
+
+.game-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--theme_color);
+    line-height: 1.4;
+}
+
+.game-card p {
+    font-size: 0.85rem;
+    color: var(--text_secondary);
+    line-height: 1.5;
+}
+
+.game-card .number {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--theme_color) 0%, var(--sub_color) 100%);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    line-height: 35px;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.game-card .description {
+    font-size: 0.8rem;
+    color: var(--text_tertiary);
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border_light);
+}
+
+.game-card.placeholder {
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed var(--border_light);
+    color: var(--text_secondary);
+}
+
+.game-card.placeholder h3,
+.game-card.placeholder p,
+.game-card.placeholder .description {
+    color: var(--text_secondary);
+}
+
+.game-card.placeholder .number {
+    background: rgba(255,255,255,0.15);
+    color: var(--text_tertiary);
+}
+
+.game-card.placeholder:hover {
+    transform: none;
+    box-shadow: var(--shadow_sm);
+    border-color: var(--border_light);
+}
+
+/* 分割提示文本 */
+.game-section-divider {
+    grid-column: 1 / -1;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--theme_color);
+    text-align: center;
+    line-height: 1.2;
+    margin: 3rem 0 2.5rem;
+    opacity: 0;
+    animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.25s forwards;
+}
+
+/* 页脚 */
+.footer {
+    text-align: center;
+    color: var(--text_tertiary);
+    padding: 2rem;
+    margin-top: auto;
+    background: var(--card_bg);
+    box-shadow: var(--shadow_sm);
+    border-top: 1px solid var(--border_light);
+    opacity: 0;
+    animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.4s forwards;
+}
+
+.footer p {
+    margin: 0.3rem 0;
+}
+
+/* ====================== 响应式适配（全屏幕覆盖） ====================== */
+/* 1. 中等PC/平板横屏 (≤1100px)：4列 → 2列 */
+@media (max-width: 1100px) {
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+/* 2. 平板竖屏 (≤980px)：侧边栏转为顶部横排 */
 @media (max-width: 980px) {
-	.level_card_grid {
-		grid-template-columns: 1fr;
-	}
+    body {
+        padding: calc(var(--header_height) + 1rem) 0.8rem 1.5rem;
+    }
+    
+    /* 侧边栏：固定顶部，横排布局 */
+    .side_nav {
+        position: sticky;
+        top: calc(var(--header_height) + 0.8rem);
+        margin: 0 auto 1rem;
+        min-height: auto;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        padding: 0.8rem 0.5rem;
+        width: 100%;
+        max-width: 600px;
+        left: 0;
+        bottom: auto;
+        border-radius: 8px;
+    }
+
+    .side_nav_link {
+        width: 100%;
+        min-height: auto;
+        padding: 0.6rem 0.2rem;
+        flex-direction: column;
+        gap: 0.3rem;
+        border-radius: 6px;
+    }
+
+    .side_nav_icon {
+        width: 1.4rem;
+        height: 1.4rem;
+    }
+
+    /* 移动端直接显示文字，取消悬浮提示 */
+    .side_nav_tooltip {
+        position: static;
+        transform: none;
+        opacity: 1;
+        pointer-events: auto;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        font-size: 0.8rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+    .side_nav_tooltip::before {
+        display: none;
+    }
+    
+    /* 主内容全屏，取消左侧边距 */
+    .main-wrapper {
+        margin-left: 0;
+        margin-top: 0;
+        width: 100%;
+    }
 }
 
+/* 3. 手机大屏 (≤768px)：字体、间距缩小 */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    .page-header p {
+        font-size: 1rem;
+    }
+    
+    /* 导航栏自适应高度 */
+    .navbar {
+        height: auto;
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    .nav-buttons {
+        width: 100%;
+    }
+    .lang-toggle, .theme-toggle {
+        flex: 1;
+        text-align: center;
+    }
+
+    /* 分割线字体同步缩小 */
+    .game-section-divider {
+        font-size: 1.8rem;
+        margin: 2rem 0 1.5rem;
+    }
+
+    /* 卡片内边距缩小 */
+    .game-card {
+        padding: 1.5rem;
+    }
+}
+
+/* 4. 手机标准屏 (≤560px)：游戏卡片单列 */
 @media (max-width: 560px) {
-	.game_stage_board {
-		min-height: 420px;
-	}
+    .game-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+    
+    .game-card {
+        padding: 1.2rem;
+    }
+    
+    .game-card .icon {
+        font-size: 2.5rem;
+    }
+
+    /* 侧边栏小屏优化为2列 */
+    .side_nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 5. 小屏手机 (≤360px)：极致紧凑布局 */
+@media (max-width: 360px) {
+    body {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .game-card {
+        padding: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .game-section-divider {
+        font-size: 1.5rem;
+    }
 }

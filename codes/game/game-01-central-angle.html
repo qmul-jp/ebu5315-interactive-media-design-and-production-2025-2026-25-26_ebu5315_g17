@@ -80,18 +80,17 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            /* 核心修改：顶部内边距适配固定导航栏，防止内容被遮挡 */
             padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* --- 顶部导航栏 - 固定定位，不随滚动移动 --- */
+        /* --- 顶部导航栏 --- */
         .navbar {
-            position: fixed; /* 改为固定定位 */
+            position: fixed;
             top: 0.95rem;
             left: 1rem;
             right: 1rem;
-            z-index: 999; /* 最高层级，永远置顶 */
+            z-index: 999;
             height: var(--header_height);
             padding: 0 1.15rem;
             background: var(--theme_color);
@@ -102,7 +101,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0; /* 固定定位取消外边距 */
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -151,7 +149,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- 左侧边栏 - 固定定位，保持不变 --- */
+        /* --- 左侧边栏 --- */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -166,7 +164,7 @@
             gap: 0.55rem;
             box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
             overflow: visible;
-            z-index: 998; /* 层级低于导航栏 */
+            z-index: 998;
             opacity: 0;
             animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
         }
@@ -247,7 +245,7 @@
             transform: translate(0, -50%);
         }
 
-        /* 主内容包装器 - 适配导航栏，避免重叠 */
+        /* 主内容包装器 */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -258,7 +256,7 @@
             animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
         }
 
-        /* ==================== 原有圆心角页面样式（保留+适配） ==================== */
+        /* ==================== 页面核心样式 ==================== */
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -329,6 +327,7 @@
             padding-left: 20px;
         }
 
+        /* 画布自适应核心 */
         .canvas-wrapper {
             position: relative;
             text-align: center;
@@ -343,9 +342,12 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            max-width: 100%;
         }
 
         canvas {
+            max-width: 100%;
+            height: auto;
             background: var(--bg_color);
             border-radius: 6px;
             touch-action: none;
@@ -365,11 +367,13 @@
             cursor: pointer;
             font-size: 14px;
             transition: 0.2s;
+            z-index: 10;
         }
         .reset-btn:hover {
             background: var(--sub_color);
         }
 
+        /* 数据面板：PC端右侧，移动端底部 */
         .data-panel {
             position: absolute;
             left: 100%;
@@ -405,82 +409,102 @@
         :lang(zh-CN) .zh { display: initial; }
         :lang(en) .en { display: initial; }
 
-        /* 响应式适配 - 同game.html */
+        /* ==================== 全端响应式适配 ==================== */
+        /* 平板/小屏电脑 ≤980px */
         @media (max-width: 980px) {
             body {
-                padding: 0.85rem 0.8rem 1.5rem;
+                padding: calc(var(--header_height) + 1rem) 0.8rem 1.5rem;
             }
             
+            /* 侧边栏转为顶部横排 */
             .side_nav {
                 position: sticky;
-                top: calc(var(--header_height) + 0.4rem);
+                top: calc(var(--header_height) + 0.8rem);
+                margin: 0 auto 1rem;
                 min-height: auto;
                 grid-template-columns: repeat(3, 1fr);
-                align-items: center;
-                justify-items: stretch;
-                padding: 0.35rem;
+                padding: 0.8rem;
                 width: 100%;
+                max-width: 600px;
                 left: 0;
                 bottom: auto;
+                border-radius: 8px;
             }
 
             .side_nav_link {
                 width: 100%;
                 min-height: auto;
-                padding: 0.42rem 0.2rem;
+                padding: 0.6rem;
                 flex-direction: column;
-                gap: 0.2rem;
-            }
-
-            .side_nav_icon {
-                width: 1.32rem;
-                height: 1.32rem;
+                gap: 0.3rem;
+                border-radius: 6px;
             }
 
             .side_nav_tooltip {
                 position: static;
                 transform: none;
                 opacity: 1;
-                pointer-events: auto;
                 background: transparent;
                 box-shadow: none;
-                padding: 0;
-                font-size: 0.78rem;
-                line-height: 1.15;
-                text-align: center;
+                font-size: 0.8rem;
             }
-
-            .side_nav_tooltip::before {
-                display: none;
-            }
+            .side_nav_tooltip::before { display: none; }
             
+            /* 主内容全屏 */
             .main-wrapper {
                 margin-left: 0;
-                margin-top: 1rem;
+                margin-top: 0;
                 width: 100%;
+            }
+
+            /* 数据面板移动端底部展示 */
+            .data-panel {
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
+                margin: 16px 0 0;
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                text-align: center;
             }
         }
 
+        /* 手机 ≤768px */
         @media (max-width: 768px) {
+            /* 导航栏垂直排列 */
             .navbar {
                 height: auto;
-                padding: 0.8rem 0.9rem;
-                align-items: start;
+                padding: 1rem;
                 flex-direction: column;
+                gap: 0.8rem;
             }
-            
-            .nav-buttons {
-                width: 100%;
+            .nav-buttons { width: 100%; }
+            .lang-toggle, .theme-toggle { flex: 1; }
+
+            /* 字体/间距适配 */
+            .content { padding: 16px; }
+            .card { padding: 14px; }
+            .header h1 { font-size: 20px; }
+            .card h3 { font-size: 18px; }
+
+            .data-panel {
+                flex-direction: column;
+                gap: 8px;
             }
-            
-            .lang-toggle, .theme-toggle {
-                flex: 1;
-            }
+        }
+
+        /* 小屏手机 ≤480px */
+        @media (max-width: 480px) {
+            body { padding-left: 0.5rem; padding-right: 0.5rem; }
+            .canvas-wrapper { padding: 12px; }
+            .reset-btn { padding: 5px 10px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏（同game.html） -->
+    <!-- 顶部导航栏 -->
     <nav class="navbar">
         <a href="../index.html" class="logo">CircleLab</a>
         <div class="nav-buttons">
@@ -489,7 +513,7 @@
         </div>
     </nav>
 
-    <!-- 左侧侧边栏（同game.html，游戏页面高亮） -->
+    <!-- 左侧侧边栏 -->
     <aside class="side_nav" aria-label="Primary menu">
         <a class="side_nav_link" href="../index.html" aria-label="Homepage">
             <span class="side_nav_icon" aria-hidden="true">
@@ -528,7 +552,7 @@
         </a>
     </aside>
 
-    <!-- 主内容区域（原有页面内容，适配导航栏） -->
+    <!-- 主内容区域 -->
     <div class="main-wrapper">
         <div class="container">
             <div class="header">
@@ -598,7 +622,7 @@
     </div>
 
     <script>
-        // ==================== 统一导航栏交互（同game.html） ====================
+        // ==================== 导航栏交互 ====================
         let isChinese = true;
         const langBtn = document.getElementById('langToggleBtn');
         const themeBtn = document.getElementById('themeToggleBtn');
@@ -621,7 +645,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             updateThemeBtnText();
-            draw(); // 重绘画布适配主题
+            draw();
         }
 
         // 更新主题按钮文字
@@ -638,7 +662,7 @@
         langBtn.addEventListener('click', toggleLang);
         themeBtn.addEventListener('click', toggleTheme);
 
-        // ==================== 原有圆心角画布逻辑（无修改） ====================
+        // ==================== 画布逻辑 + 移动端触摸适配 ====================
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const resetBtn = document.getElementById('resetBtn');
@@ -668,11 +692,7 @@
         function getMinorAngle(a1, a2) {
             let diff = Math.abs(a2 - a1);
             if (diff > Math.PI) diff = 2 * Math.PI - diff;
-            diff = Math.abs(diff);
-            return {
-                rad: diff,
-                deg: Math.round(diff * 180 / Math.PI)
-            };
+            return { rad: diff, deg: Math.round(diff * 180 / Math.PI) };
         }
 
         function getArcLength(rad) {
@@ -699,13 +719,10 @@
             ctx.fillStyle = fillColor;
             ctx.fill();
             ctx.font = '16px Arial';
-            ctx.fillStyle = fillColor;
             ctx.fillText('O', cx + 12, cy + 5);
 
             const pos = {};
-            for (let key in points) {
-                pos[key] = getPosition(points[key].angle);
-            }
+            for (let key in points) pos[key] = getPosition(points[key].angle);
 
             ctx.lineWidth = 1.5;
             ctx.strokeStyle = isDark ? '#94a3b8' : '#666';
@@ -723,8 +740,6 @@
                 ctx.arc(p.x, p.y, hoverPoint === k ? 8 : 7, 0, 2 * Math.PI);
                 ctx.fillStyle = fillColor;
                 ctx.fill();
-                ctx.font = '18px Arial';
-                ctx.fillStyle = fillColor;
                 ctx.fillText(k, p.x, p.y - 18);
             });
 
@@ -734,10 +749,12 @@
             document.getElementById('arc2').textContent = getArcLength(getMinorAngle(points.C.angle, points.D.angle).rad);
         }
 
-        // 画布鼠标交互
+        // 统一获取鼠标/触摸位置
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
-            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
         function checkHit(mx, my) {
@@ -749,16 +766,16 @@
             return null;
         }
 
+        // 鼠标事件
         canvas.addEventListener('mousedown', (e) => {
             const m = getMousePos(e);
             dragging = checkHit(m.x, m.y);
-            if (dragging) canvas.style.cursor = 'grabbing';
+            canvas.style.cursor = dragging ? 'grabbing' : 'default';
         });
 
         window.addEventListener('mousemove', (e) => {
             if (!dragging) {
-                const m = getMousePos(e);
-                hoverPoint = checkHit(m.x, m.y);
+                hoverPoint = checkHit(getMousePos(e).x, getMousePos(e).y);
                 canvas.style.cursor = hoverPoint ? 'grab' : 'default';
                 draw();
                 return;
@@ -770,6 +787,22 @@
 
         window.addEventListener('mouseup', () => dragging = null);
         canvas.addEventListener('mouseleave', () => { hoverPoint = null; draw(); });
+
+        // 移动端触摸事件
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dragging = checkHit(getMousePos(e).x, getMousePos(e).y);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!dragging) return;
+            const m = getMousePos(e);
+            points[dragging].angle = Math.atan2(m.y - cy, m.x - cx);
+            draw();
+        });
+
+        canvas.addEventListener('touchend', () => dragging = null);
         resetBtn.onclick = () => { points = JSON.parse(JSON.stringify(initialPoints)); draw(); };
 
         // 初始化

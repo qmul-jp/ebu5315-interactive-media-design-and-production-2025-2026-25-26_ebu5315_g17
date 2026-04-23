@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Game</title>
+    <link rel="stylesheet" href="adventure_doubao.css">
+</head>
+<body>
+    <!-- 主界面 -->
+    <div id="start-screen" class="start-screen">
+        <!-- 主界面 左上角音效按钮 -->
+        <button id="sound-btn-main" class="sound-btn">🔊</button>
+        <!-- 右上角语言按钮 -->
+        <button class="lang-btn">English</button>
+
+        <!-- 主界面 左侧导航三按钮 -->
+        <div class="quick-nav">
+            <a href="../index.html" class="nav-btn" data-tip-key="home">🏠</a>
+            <a href="../quiz/quiz.html" class="nav-btn" data-tip-key="quiz">📝</a>
+            <a href="./game.html" class="nav-btn" data-tip-key="gameCenter">🎮</a>
+        </div>
+
+        <!-- 中下方 新游戏+继续游戏 按钮 -->
+        <div class="menu-buttons">
+            <button id="new-game-btn" class="menu-btn">新游戏</button>
+            <button id="continue-btn" class="menu-btn disabled">继续游戏</button>
+        </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="game-screen" class="game-screen hidden">
+        <!-- 左上角 返回主界面按钮 + 右移后的音效按钮 -->
+        <button id="back-btn" class="back-btn">返回主界面</button>
+        <button id="sound-btn" class="sound-btn">🔊</button>
+
+        <!-- 游戏界面 右上角 语言切换按钮（和主界面位置完全一致） -->
+        <button class="lang-btn">English</button>
+        
+        <!-- 游戏界面 左侧导航三按钮 -->
+        <div class="quick-nav">
+            <a href="../index.html" class="nav-btn" data-tip-key="home">🏠</a>
+            <a href="../quiz/quiz.html" class="nav-btn" data-tip-key="quiz">📝</a>
+            <a href="./game.html" class="nav-btn" data-tip-key="gameCenter">🎮</a>
+        </div>
+
+        <!-- 中上方题目文本框 -->
+        <div id="question-box" class="question-box">
+            <p id="question-text">准备挑战！</p>
+        </div>
+        <!-- 正中心交互圆画布 -->
+        <canvas id="gameCanvas" class="game-canvas"></canvas>
+
+        <!-- 确认答案按钮 - 独立放置，交互圆正下方 -->
+        <button id="confirm-btn" class="confirm-btn hidden">确认答案</button>
+
+        <!-- 主角：修改为 warrior.gif -->
+        <div class="character warrior">
+            <img src="graph/warrior.gif" alt="主角">
+            <div class="status" id="warrior-status">❤️ 生命：3 | ⚔️ 攻击：5</div>
+        </div>
+        <!-- 敌怪：右中间 -->
+        <div class="character enemy">
+            <img src="graph/enemy-skeleton.png" alt="敌怪">
+            <div class="status" id="enemy-status">💀 生命：10</div>
+        </div>
+
+        
+        <!-- 结果弹窗 -->
+        <div id="result-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="result-text"></h2>
+                <button id="restart-btn" class="restart-btn">重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="adventure_doubao.js"></script>
+</body>
+</html>

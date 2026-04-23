@@ -328,7 +328,7 @@
             padding-left: 20px;
         }
 
-        /* 画布区域 */
+        /* 画布区域 - 核心自适应优化 */
         .canvas-wrapper {
             position: relative;
             text-align: center;
@@ -343,9 +343,12 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            max-width: 100%;
         }
 
         canvas {
+            max-width: 100%;
+            height: auto;
             background: var(--card_bg);
             border-radius: 6px;
             touch-action: none;
@@ -367,6 +370,7 @@
             font-size: 14px;
             transition: 0.2s;
             font-weight: 600;
+            z-index: 10;
         }
         .reset-btn:hover {
             background: var(--sub_color);
@@ -419,26 +423,35 @@
             color: var(--text_color_night);
         }
 
-        /* 响应式适配 */
+        /* ====================== 全端响应式适配 ====================== */
+        /* 平板/小屏电脑 ≤980px */
         @media (max-width: 980px) {
+            body {
+                padding: calc(var(--header_height) + 1rem) 0.8rem 1.5rem;
+            }
+            
             .side_nav {
                 position: sticky;
-                top: calc(var(--header_height) + 0.4rem);
+                top: calc(var(--header_height) + 0.8rem);
+                margin: 0 auto 1rem;
                 min-height: auto;
                 grid-template-columns: repeat(3, 1fr);
                 align-items: center;
                 justify-items: stretch;
-                padding: 0.35rem;
+                padding: 0.8rem;
                 width: 100%;
+                max-width: 600px;
                 left: 0;
                 bottom: auto;
+                border-radius: 8px;
             }
             .side_nav_link {
                 width: 100%;
                 min-height: auto;
-                padding: 0.42rem 0.2rem;
+                padding: 0.6rem;
                 flex-direction: column;
-                gap: 0.2rem;
+                gap: 0.3rem;
+                border-radius: 6px;
             }
             .side_nav_tooltip {
                 position: static;
@@ -447,31 +460,55 @@
                 background: transparent;
                 box-shadow: none;
                 padding: 0;
-                font-size: 0.78rem;
+                font-size: 0.8rem;
                 color: #fff;
             }
             .side_nav_tooltip::before { display: none; }
             .main-wrapper {
                 margin-left: 0;
-                margin-top: 1rem;
+                margin-top: 0;
                 width: 100%;
             }
-        }
 
-        @media (max-width: 700px) {
+            /* 数据面板移动端移至底部居中 */
             .data-panel {
                 position: static;
                 transform: none;
-                margin-top: 16px;
+                margin: 16px auto 0;
                 text-align: center;
             }
-            .canvas-container {
-                width: 100%;
-            }
-            canvas {
-                width: 100%;
+        }
+
+        /* 手机 ≤768px */
+        @media (max-width: 768px) {
+            /* 导航栏垂直排列 */
+            .navbar {
                 height: auto;
+                padding: 1rem;
+                flex-direction: column;
+                gap: 0.8rem;
             }
+            .nav-buttons { 
+                width: 100%; 
+                justify-content: center;
+            }
+            .lang-toggle, .theme-toggle { 
+                flex: 1; 
+            }
+
+            /* 内容间距适配 */
+            .content { padding: 16px; }
+            .card { padding: 14px; }
+            .header h1 { font-size: 20px; }
+            .card h3 { font-size: 18px; }
+
+            .canvas-wrapper { padding: 12px; }
+        }
+
+        /* 小屏手机 ≤480px */
+        @media (max-width: 480px) {
+            body { padding-left: 0.5rem; padding-right: 0.5rem; }
+            .reset-btn { padding: 5px 10px; font-size: 13px; }
         }
     </style>
 </head>

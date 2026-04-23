@@ -11,8 +11,9 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 — 与整体风格完全对齐 */
+        /* 核心配色变量 + 响应式变量 */
         :root {
+            /* 主题色 */
             --theme_color: #0d3273;
             --sub_color: #4471c2;
             --highlight_color: #e8a0bf;
@@ -27,7 +28,10 @@
             --ui_radius: 0px;
             --rail_width: 92px;
             --header_height: 74px;
-            
+            --animate-duration: 0.4s;
+            --animate-ease: ease-out;
+
+            /* 文本变量 */
             --text_primary: #333333;
             --text_secondary: #666666;
             --text_tertiary: #888888;
@@ -36,18 +40,21 @@
             --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
             --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
 
-            --animate-duration: 0.4s;
-            --animate-ease: ease-out;
+            /* 响应式基础变量 */
+            --base-padding: 1.5rem;
+            --base-font: 15px;
+            --title-font: 24px;
+            --card-padding: 16px 20px;
         }
 
-        /* 入场动画 */
+        /* 入场动画（修复原BUG） */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: translateX(0); }
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -78,12 +85,12 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            /* 修正内边距，防止被固定导航栏遮挡 */
-            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
+            padding: calc(var(--header_height) + var(--base-padding)) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
+            font-size: var(--base-font);
         }
 
-        /* ====================== 顶部导航栏 固定定位 ====================== */
+        /* ====================== 顶部导航栏 ====================== */
         .navbar {
             position: fixed;
             top: 0.95rem;
@@ -100,7 +107,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            margin-bottom: 0;
             opacity: 0;
             animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
         }
@@ -149,7 +155,7 @@
             transform: translateY(-2px);
         }
 
-        /* ====================== 左侧边栏 保持固定不变 ====================== */
+        /* ====================== 左侧边栏 ====================== */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -245,7 +251,7 @@
             transform: translate(0, -50%);
         }
 
-        /* ====================== 主内容适配布局 ====================== */
+        /* ====================== 主内容适配 ====================== */
         .main-wrapper {
             margin-left: calc(var(--rail_width) + 2.5rem);
             flex: 1;
@@ -277,7 +283,7 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: var(--title-font);
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -288,7 +294,7 @@
 
         .card {
             border-radius: 8px;
-            padding: 16px 20px;
+            padding: var(--card-padding);
             margin-bottom: 16px;
             line-height: 1.5;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -318,7 +324,7 @@
         }
 
         .card p, .card li {
-            font-size: 15px;
+            font-size: var(--base-font);
             color: var(--text_secondary);
             line-height: 1.5;
             margin-bottom: 8px;
@@ -343,6 +349,7 @@
         .canvas-container {
             position: relative;
             display: inline-block;
+            max-width: 100%;
         }
 
         canvas {
@@ -352,6 +359,8 @@
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
             display: block;
+            max-width: 100%;
+            height: auto !important;
         }
 
         .reset-btn {
@@ -367,6 +376,7 @@
             font-size: 14px;
             transition: 0.2s;
             font-weight: 600;
+            z-index: 10;
         }
         .reset-btn:hover {
             background: var(--sub_color);
@@ -387,7 +397,7 @@
             color: var(--text_secondary);
             pointer-events: none;
         }
-        /* 核心颜色定义：对角分组配色 */
+        /* 对角分组配色 */
         .angle1 { 
             color: #165DFF; 
             font-weight: 700; 
@@ -396,7 +406,6 @@
             color: #FF6B6B;
             font-weight: 700;
         }
-        /* 深色模式完美适配 */
         body.dark-mode .angle1 { color: #60a5fa; }
         body.dark-mode .angle2 { color: #f87171; }
 
@@ -407,12 +416,12 @@
 
         .canvas-tip {
             margin-top: 12px;
-            font-size: 15px;
+            font-size: var(--base-font);
             color: var(--text_secondary);
             line-height: 1.4;
         }
 
-        /* 夜间模式卡片微调 */
+        /* 夜间模式卡片 */
         body.dark-mode .card-def {
             background: #162349;
             color: var(--text_color_night);
@@ -432,7 +441,8 @@
             color: var(--text_color_night);
         }
 
-        /* 响应式适配 */
+        /* ====================== 响应式适配 ====================== */
+        /* 平板/横屏手机 (≤980px) */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
@@ -471,19 +481,87 @@
             }
         }
 
-        @media (max-width: 700px) {
+        /* 手机端 (≤768px) */
+        @media (max-width: 768px) {
+            :root {
+                --header_height: 60px;
+                --base-padding: 1rem;
+                --title-font: 20px;
+                --card-padding: 12px 16px;
+            }
+
+            /* 顶部导航栏适配 */
+            .navbar {
+                padding: 0 0.8rem;
+                top: 0.5rem;
+                left: 0.5rem;
+                right: 0.5rem;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .logo::before {
+                width: 1.8rem;
+                height: 1.8rem;
+                font-size: 1rem;
+            }
+            .lang-toggle, .theme-toggle {
+                padding: 0.4rem 0.6rem;
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            /* 内容适配 */
+            .content {
+                padding: 16px 12px;
+            }
+            .card h3 {
+                font-size: 18px;
+            }
+
+            /* 画布+数据面板适配 */
             .data-panel {
                 position: static;
                 transform: none;
                 margin-top: 16px;
                 text-align: center;
+                font-size: 14px;
             }
             .canvas-container {
                 width: 100%;
             }
-            canvas {
-                width: 100%;
-                height: auto;
+            .canvas-wrapper {
+                padding: 12px;
+            }
+            .reset-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+        }
+
+        /* 超小屏手机 (≤480px) */
+        @media (max-width: 480px) {
+            :root {
+                --header_height: 52px;
+                --base-font: 14px;
+                --title-font: 18px;
+            }
+
+            .nav-buttons {
+                gap: 0.3rem;
+            }
+            .side_nav {
+                gap: 0.2rem;
+            }
+            .side_nav_icon {
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+            .content {
+                padding: 12px 8px;
+            }
+            .canvas-tip {
+                font-size: 13px;
             }
         }
     </style>
@@ -554,7 +632,6 @@
                     <div class="canvas-container">
                         <canvas id="canvas" width="540" height="440"></canvas>
                         <button class="reset-btn" id="resetBtn" data-zh="↻ 重置图形" data-en="↻ Reset"></button>
-                        <!-- 核心修改：对角文字精准配色 -->
                         <div class="data-panel">
                             <div class="angle1"><span data-zh="∠DAB：" data-en="∠DAB："></span><span id="angA">0</span>°</div>
                             <div class="angle2"><span data-zh="∠ABC：" data-en="∠ABC："></span><span id="angB">0</span>°</div>
@@ -621,21 +698,20 @@
             
             const cx = 270, cy = 220;
             const radius = 160;
-            const LABEL_OFFSET = 24;          // 标签向外偏移量
+            const LABEL_OFFSET = 24;
             
-            // 初始角度 (顺时针顺序 A-B-C-D，构成圆内接四边形)
             const initialAngles = {
-                A: 5 * Math.PI / 4,    // 左下
-                B: 7 * Math.PI / 4,    // 右下
-                C: Math.PI / 4,        // 右上
-                D: 3 * Math.PI / 4     // 左上
+                A: 5 * Math.PI / 4,
+                B: 7 * Math.PI / 4,
+                C: Math.PI / 4,
+                D: 3 * Math.PI / 4
             };
 
             let points = { ...initialAngles };
             let dragging = null;
             let hoverPoint = null;
 
-            // ---------- 辅助函数：角度转坐标 ----------
+            // 角度转坐标
             function getPosition(angle) {
                 return {
                     x: cx + radius * Math.cos(angle),
@@ -643,7 +719,7 @@
                 };
             }
 
-            // 标签坐标 (沿径向向外)
+            // 标签坐标
             function getLabelPosition(angle, offset = LABEL_OFFSET) {
                 const dirX = Math.cos(angle);
                 const dirY = Math.sin(angle);
@@ -653,7 +729,7 @@
                 };
             }
 
-            // 计算顶点处的内角 (M为顶点，P、Q为相邻两点)
+            // 计算内角
             function angleAtVertex(M, P, Q) {
                 const m = getPosition(points[M]);
                 const p = getPosition(points[P]);
@@ -668,7 +744,7 @@
                 return Math.acos(cos) * 180 / Math.PI;
             }
 
-            // 计算所有内角
+            // 计算所有角度
             function calculateAngles() {
                 const DAB = angleAtVertex('A', 'D', 'B');
                 const ABC = angleAtVertex('B', 'A', 'C');
@@ -701,7 +777,7 @@
                 ctx.lineWidth = 2.2;
                 ctx.stroke();
                 
-                // 恢复 虚线十字辅助线（水平+垂直直径）
+                // 虚线辅助线
                 ctx.save();
                 ctx.setLineDash([5, 4]);
                 ctx.beginPath();
@@ -725,7 +801,7 @@
                 ctx.fillStyle = fillColor;
                 ctx.fillText('O', cx + 12, cy - 8);
                 
-                // 获取四个点坐标
+                // 四个点坐标
                 const pos = {
                     A: getPosition(points.A),
                     B: getPosition(points.B),
@@ -744,7 +820,7 @@
                 ctx.lineWidth = 2.0;
                 ctx.stroke();
                 
-                // 绘制顶点标记 (圆点)
+                // 绘制顶点
                 const keys = ['A', 'B', 'C', 'D'];
                 keys.forEach(k => {
                     const p = pos[k];
@@ -758,7 +834,7 @@
                     ctx.shadowBlur = 0;
                 });
                 
-                // 标签绘制在圆外侧 (沿径向偏移)
+                // 绘制标签
                 keys.forEach(k => {
                     const angle = points[k];
                     const labelPos = getLabelPosition(angle);
@@ -777,7 +853,7 @@
                 document.getElementById('sum2').textContent = angles.ABC + angles.CDA;
             }
 
-            // ---------- 鼠标/触摸交互 ----------
+            // ---------- 交互事件 ----------
             function getCanvasCoords(e) {
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
@@ -849,7 +925,7 @@
                 draw();
             }
 
-            // 事件绑定
+            // 绑定事件
             canvas.addEventListener('mousedown', onDragStart);
             window.addEventListener('mousemove', onDragMove);
             window.addEventListener('mouseup', onDragEnd);
@@ -861,10 +937,8 @@
             canvas.addEventListener('touchcancel', onDragEnd);
             
             resetBtn.addEventListener('click', resetPoints);
-            
             window.addEventListener('resize', () => draw());
             
-            // 初始化绘制
             draw();
         })();
     </script>

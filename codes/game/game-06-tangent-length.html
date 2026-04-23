@@ -11,7 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* 核心配色变量 */
+        /* 核心配色变量 + 响应式基础变量 */
         :root {
             --theme_color: #0d3273;
             --sub_color: #4471c2;
@@ -38,8 +38,12 @@
 
             --animate-duration: 0.4s;
             --animate-ease: ease-out;
+            --base-padding: 1.5rem;
+            --base-font: 15px;
+            --title-font: 24px;
         }
 
+        /* 动画 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -76,9 +80,9 @@
             transition: background 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            /* 修正内边距，防止被固定导航栏遮挡 */
-            padding: calc(var(--header_height) + 1.5rem) 1rem 2rem;
+            padding: calc(var(--header_height) + var(--base-padding)) 1rem 2rem;
             animation: fadeIn 0.5s ease-out forwards;
+            font-size: var(--base-font);
         }
 
         /* 导航栏 - 固定定位 */
@@ -147,7 +151,7 @@
             transform: translateY(-2px);
         }
 
-        /* 侧边栏 - 保持固定不变 */
+        /* 侧边栏 */
         .side_nav {
             position: fixed;
             left: 1rem;
@@ -270,7 +274,7 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: var(--title-font);
             font-weight: 600;
         }
 
@@ -306,7 +310,7 @@
         }
 
         .card p, .card li {
-            font-size: 15px;
+            font-size: var(--base-font);
             color: var(--text_secondary);
         }
 
@@ -333,7 +337,9 @@
             border: 1px solid var(--border_light);
             transition: all 0.3s ease;
             max-width: 100%;
-            height: auto;
+            height: auto !important;
+            display: block;
+            margin: 0 auto;
         }
 
         .control-bar {
@@ -404,8 +410,9 @@
 
         .canvas-tip {
             margin-top: 16px;
-            font-size: 15px;
+            font-size: var(--base-font);
             color: var(--text_secondary);
+            text-align: center;
         }
 
         body.dark-mode .card-def { background: #162349; }
@@ -416,7 +423,8 @@
         body.dark-mode .canvas-tip,
         body.dark-mode .data-panel { color: var(--text_color_night); }
 
-        /* 响应式 */
+        /* ====================== 响应式适配 ====================== */
+        /* 平板/横屏手机 */
         @media (max-width: 980px) {
             .side_nav {
                 position: sticky;
@@ -453,15 +461,86 @@
             }
         }
 
-        @media (max-width: 700px) {
+        /* 手机端 */
+        @media (max-width: 768px) {
+            :root {
+                --header_height: 60px;
+                --base-padding: 1rem;
+                --title-font: 20px;
+            }
+
+            /* 顶部导航适配 */
+            .navbar {
+                padding: 0 0.8rem;
+                top: 0.5rem;
+                left: 0.5rem;
+                right: 0.5rem;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .logo::before {
+                width: 1.8rem;
+                height: 1.8rem;
+                font-size: 1rem;
+            }
+            .lang-toggle, .theme-toggle {
+                padding: 0.4rem 0.6rem;
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            /* 内容区域适配 */
+            .content {
+                padding: 20px 16px;
+            }
+            .card h3 {
+                font-size: 18px;
+            }
+            .canvas-wrapper {
+                padding: 16px;
+                margin-top: 32px;
+            }
+
+            /* 数据面板：移动端转为下方居中 */
             .data-panel {
                 position: static;
-                margin-top: 16px;
+                margin: 16px auto 0;
                 text-align: center;
+                max-width: 280px;
             }
+
+            /* 控制栏垂直排列 */
             .control-bar {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
+                width: 100%;
+            }
+            .control-left {
+                justify-content: center;
+                width: 100%;
+            }
+        }
+
+        /* 超小屏手机 */
+        @media (max-width: 480px) {
+            :root {
+                --header_height: 52px;
+                --base-font: 14px;
+                --title-font: 18px;
+            }
+
+            .nav-buttons {
+                gap: 0.3rem;
+            }
+            .content {
+                padding: 16px 12px;
+            }
+            .canvas-tip {
+                font-size: 13px;
+            }
+            .control-left {
+                gap: 12px;
             }
         }
     </style>
