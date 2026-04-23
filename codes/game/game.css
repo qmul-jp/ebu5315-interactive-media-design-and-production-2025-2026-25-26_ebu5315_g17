@@ -14,10 +14,14 @@
     --text_color: #102147;
     --text_color_night: #edf1ff;
     --panel_color: #f4f8ff;
-    --panel_color_night: #1a237d; /* 修复：6位合法十六进制颜色 */
+    --panel_color_night: #1a223d;
     --line_color: rgba(68, 113, 194, 0.25);
     --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
     --ui_radius: 0px;
+    --body_bg_day_orb_left: #e9f0ff;
+    --body_bg_day_orb_right: #ffeaf2;
+    --body_bg_night_orb_left: rgba(62, 84, 138, 0.16);
+    --body_bg_night_orb_right: rgba(120, 102, 128, 0.12);
     --rail_width: 92px; /* 侧边栏宽度和index保持一致 */
     --header_height: 74px; /* 头部高度和index保持一致 */
     
@@ -75,6 +79,7 @@
 }
 
 /* 夜间模式配色覆盖 */
+body.night_mode,
 body.dark-mode {
     --text_primary: var(--text_color_night);
     --text_secondary: #dddddd;
@@ -83,15 +88,21 @@ body.dark-mode {
     --border_light: var(--line_color);
     --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
     --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
-    background: var(--bg_color_night);
+    background:
+        radial-gradient(circle at 12% 8%, var(--body_bg_night_orb_left) 0%, rgba(62, 84, 138, 0) 32%),
+        radial-gradient(circle at 88% 16%, var(--body_bg_night_orb_right) 0%, rgba(120, 102, 128, 0) 32%),
+        var(--bg_color_night);
     color: var(--text_color_night);
 }
 
 body {
     font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-    background: var(--bg_color);
+    background:
+        radial-gradient(circle at 12% 12%, var(--body_bg_day_orb_left) 0%, rgba(233, 240, 255, 0) 28%),
+        radial-gradient(circle at 88% 18%, var(--body_bg_day_orb_right) 0%, rgba(255, 234, 242, 0) 28%),
+        var(--bg_color);
     min-height: 100vh;
-    color: var(--text_color);
+    color: var(--text_primary);
     transition: background 0.3s, color 0.3s;
     display: flex;
     flex-direction: column;
@@ -145,6 +156,17 @@ body {
 .nav-buttons {
     display: flex;
     gap: 0.6rem;
+}
+
+.logo::before {
+    display: none;
+}
+
+.brand_logo_img {
+    width: 2.25rem;
+    height: 2.25rem;
+    object-fit: contain;
+    display: block;
 }
 
 /* 统一按钮样式 */
@@ -414,6 +436,17 @@ body {
     margin: 3rem 0 2.5rem;
     opacity: 0;
     animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.25s forwards;
+}
+
+body.night_mode .page-header h1,
+body.night_mode .game-card .icon,
+body.night_mode .game-card h3,
+body.night_mode .game-section-divider,
+body.dark-mode .page-header h1,
+body.dark-mode .game-card .icon,
+body.dark-mode .game-card h3,
+body.dark-mode .game-section-divider {
+    color: var(--highlight_color);
 }
 
 /* 页脚 */
