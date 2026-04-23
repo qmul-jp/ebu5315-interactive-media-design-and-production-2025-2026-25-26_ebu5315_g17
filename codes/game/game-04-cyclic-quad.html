@@ -1,429 +1,947 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CircleLab | 圆内接四边形</title>
-    <link rel="stylesheet" href="../index.css">
-    <link rel="stylesheet" href="../auth-entry.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>04 · 圆内接四边形定理 | CircleLab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 核心配色变量 + 响应式变量 */
+        :root {
+            /* 主题色 */
+            --theme_color: #0d3273;
+            --sub_color: #4471c2;
+            --highlight_color: #e8a0bf;
+            --bg_color: #ffffff;
+            --bg_color_night: #0f132a;
+            --text_color: #102147;
+            --text_color_night: #edf1ff;
+            --panel_color: #f4f8ff;
+            --panel_color_night: #1a234d;
+            --line_color: rgba(68, 113, 194, 0.25);
+            --shadow_soft: 0 16px 36px rgba(13, 50, 115, 0.14);
+            --ui_radius: 0px;
+            --rail_width: 92px;
+            --header_height: 74px;
+            --animate-duration: 0.4s;
+            --animate-ease: ease-out;
+
+            /* 文本变量 */
+            --text_primary: #333333;
+            --text_secondary: #666666;
+            --text_tertiary: #888888;
+            --card_bg: #ffffff;
+            --border_light: #eeeeee;
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.12);
+
+            /* 响应式基础变量 */
+            --base-padding: 1.5rem;
+            --base-font: 15px;
+            --title-font: 24px;
+            --card-padding: 16px 20px;
+        }
+
+        /* 入场动画（修复原BUG） */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        /* 夜间模式变量覆盖 */
+        body.dark-mode {
+            --text_primary: var(--text_color_night);
+            --text_secondary: #dddddd;
+            --text_tertiary: #bbbbbb;
+            --card_bg: var(--panel_color_night);
+            --border_light: var(--line_color);
+            --shadow_sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow_md: 0 4px 12px rgba(0,0,0,0.25);
+            background: var(--bg_color_night);
+            color: var(--text_color_night);
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+            background: var(--bg_color);
+            min-height: 100vh;
+            color: var(--text_color);
+            transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            padding: calc(var(--header_height) + var(--base-padding)) 1rem 2rem;
+            animation: fadeIn 0.5s ease-out forwards;
+            font-size: var(--base-font);
+        }
+
+        /* ====================== 顶部导航栏 ====================== */
+        .navbar {
+            position: fixed;
+            top: 0.95rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 999;
+            height: var(--header_height);
+            padding: 0 1.15rem;
+            background: var(--theme_color);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--shadow_soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeInDown var(--animate-duration) var(--animate-ease) forwards;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            line-height: 1;
+        }
+
+        .logo::before {
+            content: "◯";
+            width: 2.25rem;
+            height: 2.25rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.72);
+            font-size: 1.2rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .lang-toggle, .theme-toggle {
+            min-height: 38px;
+            padding: 0.45rem 0.9rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 0px;
+        }
+
+        .lang-toggle:hover, .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ====================== 左侧边栏 ====================== */
+        .side_nav {
+            position: fixed;
+            left: 1rem;
+            top: calc(var(--header_height) + 1rem);
+            bottom: 2rem;
+            width: var(--rail_width);
+            background: var(--sub_color);
+            padding: 1.1rem 0.55rem;
+            display: grid;
+            align-content: start;
+            justify-items: center;
+            gap: 0.55rem;
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.24);
+            overflow: visible;
+            z-index: 240;
+            opacity: 0;
+            animation: slideInLeft var(--animate-duration) var(--animate-ease) 0.1s forwards;
+        }
+
+        .side_nav_link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 3.2rem;
+            min-height: 3.2rem;
+            padding: 0.35rem;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .side_nav_icon {
+            width: 1.52rem;
+            height: 1.52rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .side_nav_icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vector-effect: non-stroke;
+        }
+
+        .side_nav_tooltip {
+            position: absolute;
+            left: calc(100% + 0.72rem);
+            top: 50%;
+            transform: translate(-0.35rem, -50%);
+            opacity: 0;
+            pointer-events: none;
+            background: #141414;
+            color: #ffffff;
+            font-size: 0.86rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+            padding: 0.52rem 0.64rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            z-index: 9999;
+        }
+
+        .side_nav_tooltip::before {
+            content: "";
+            position: absolute;
+            left: -0.38rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border-top: 0.38rem solid transparent;
+            border-bottom: 0.38rem solid transparent;
+            border-right: 0.38rem solid #141414;
+        }
+
+        .side_nav_link:hover,
+        .side_nav_link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.42);
+            transform: none;
+        }
+
+        .side_nav_link:hover .side_nav_tooltip,
+        .side_nav_link:focus-visible .side_nav_tooltip {
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
+
+        /* ====================== 主内容适配 ====================== */
+        .main-wrapper {
+            margin-left: calc(var(--rail_width) + 2.5rem);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--rail_width) - 2.5rem);
+            opacity: 0;
+            animation: fadeInUp var(--animate-duration) var(--animate-ease) 0.2s forwards;
+        }
+
+        /* 页面卡片样式 */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--card_bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow_md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--theme_color), var(--sub_color));
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: var(--title-font);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            padding: 24px 20px;
+        }
+
+        .card {
+            border-radius: 8px;
+            padding: var(--card-padding);
+            margin-bottom: 16px;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .card-def {
+            border-left: 4px solid var(--theme_color);
+            background: rgba(13, 50, 115, 0.05);
+        }
+        .card-theorem {
+            border-left: 4px solid var(--sub_color);
+            background: rgba(68, 113, 194, 0.05);
+        }
+        .card-corollary {
+            border-left: 4px solid var(--highlight_color);
+            background: rgba(232, 160, 194, 0.05);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .card p, .card li {
+            font-size: var(--base-font);
+            color: var(--text_secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+
+        /* 画布区域 */
+        .canvas-wrapper {
+            position: relative;
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--card_bg);
+            border: 1px solid var(--border_light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        canvas {
+            background: var(--card_bg);
+            border-radius: 6px;
+            touch-action: none;
+            border: 1px solid var(--border_light);
+            transition: all 0.3s ease;
+            display: block;
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .reset-btn {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            padding: 6px 12px;
+            background: var(--theme_color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            font-weight: 600;
+            z-index: 10;
+        }
+        .reset-btn:hover {
+            background: var(--sub_color);
+        }
+
+        .data-panel {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translate(30px, -50%);
+            text-align: left;
+            font-size: 15px;
+            line-height: 1.8;
+            min-width: 200px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: var(--text_secondary);
+            pointer-events: none;
+        }
+        /* 对角分组配色 */
+        .angle1 { 
+            color: #165DFF; 
+            font-weight: 700; 
+        }
+        .angle2 {
+            color: #FF6B6B;
+            font-weight: 700;
+        }
+        body.dark-mode .angle1 { color: #60a5fa; }
+        body.dark-mode .angle2 { color: #f87171; }
+
+        .data-panel .green {
+            color: var(--highlight_color);
+            font-weight: 600;
+        }
+
+        .canvas-tip {
+            margin-top: 12px;
+            font-size: var(--base-font);
+            color: var(--text_secondary);
+            line-height: 1.4;
+        }
+
+        /* 夜间模式卡片 */
+        body.dark-mode .card-def {
+            background: #162349;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card-theorem {
+            background: #14293f;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card-corollary {
+            background: #2c2442;
+            color: var(--text_color_night);
+        }
+        body.dark-mode .card p, 
+        body.dark-mode .card li,
+        body.dark-mode .canvas-tip,
+        body.dark-mode .data-panel {
+            color: var(--text_color_night);
+        }
+
+        /* ====================== 响应式适配 ====================== */
+        /* 平板/横屏手机 (≤980px) */
+        @media (max-width: 980px) {
+            .side_nav {
+                position: sticky;
+                top: calc(var(--header_height) + 0.4rem);
+                min-height: auto;
+                grid-template-columns: repeat(3, 1fr);
+                align-items: center;
+                justify-items: stretch;
+                padding: 0.35rem;
+                width: 100%;
+                left: 0;
+                bottom: auto;
+            }
+            .side_nav_link {
+                width: 100%;
+                min-height: auto;
+                padding: 0.42rem 0.2rem;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .side_nav_tooltip {
+                position: static;
+                transform: none;
+                opacity: 1;
+                background: transparent;
+                box-shadow: none;
+                padding: 0;
+                font-size: 0.78rem;
+                color: #fff;
+            }
+            .side_nav_tooltip::before { display: none; }
+            .main-wrapper {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+        }
+
+        /* 手机端 (≤768px) */
+        @media (max-width: 768px) {
+            :root {
+                --header_height: 60px;
+                --base-padding: 1rem;
+                --title-font: 20px;
+                --card-padding: 12px 16px;
+            }
+
+            /* 顶部导航栏适配 */
+            .navbar {
+                padding: 0 0.8rem;
+                top: 0.5rem;
+                left: 0.5rem;
+                right: 0.5rem;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .logo::before {
+                width: 1.8rem;
+                height: 1.8rem;
+                font-size: 1rem;
+            }
+            .lang-toggle, .theme-toggle {
+                padding: 0.4rem 0.6rem;
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            /* 内容适配 */
+            .content {
+                padding: 16px 12px;
+            }
+            .card h3 {
+                font-size: 18px;
+            }
+
+            /* 画布+数据面板适配 */
+            .data-panel {
+                position: static;
+                transform: none;
+                margin-top: 16px;
+                text-align: center;
+                font-size: 14px;
+            }
+            .canvas-container {
+                width: 100%;
+            }
+            .canvas-wrapper {
+                padding: 12px;
+            }
+            .reset-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+        }
+
+        /* 超小屏手机 (≤480px) */
+        @media (max-width: 480px) {
+            :root {
+                --header_height: 52px;
+                --base-font: 14px;
+                --title-font: 18px;
+            }
+
+            .nav-buttons {
+                gap: 0.3rem;
+            }
+            .side_nav {
+                gap: 0.2rem;
+            }
+            .side_nav_icon {
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+            .content {
+                padding: 12px 8px;
+            }
+            .canvas-tip {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <div class="bg_orb bg_orb_left"></div>
-    <div class="bg_orb bg_orb_right"></div>
-
-    <header class="site_header">
-        <div class="brand_wrap">
-            <img class="brand_logo" src="../../images/logo_standard.png" alt="CircleLab Logo">
-            <div>
-                <p class="brand_name">CircleLab</p>
-                <p class="brand_tag" data-i18n="brand_tag">GCSE Circle Geometry</p>
-            </div>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <a href="../index.html" class="logo">CircleLab</a>
+        <div class="nav-buttons">
+            <button class="lang-toggle" id="langToggleBtn">English</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 夜间模式</button>
         </div>
+    </nav>
 
-        <div class="control_group">
-            <button id="language_toggle_btn" class="ghost_btn" type="button">EN</button>
-            <button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
-            <button id="color_toggle_btn" class="ghost_btn" type="button" data-i18n="color_mode">Color 色彩</button>
-            <button id="color_status_btn" class="ghost_btn" type="button" data-i18n="color_normal">Normal / 标准</button>
-            <div class="auth_link_group" id="auth_link_group">
-                <span class="auth_status_badge" id="auth_status_badge">
-                    <span data-i18n="logged_in">已登录：</span>
-                    <span id="logged_in_user">Developer</span>
-                </span>
-                <button class="auth_logout_btn" id="auth_logout_btn" data-i18n="logout">退出登录</button>
-            </div>
-        </div>
-    </header>
+    <!-- 左侧边栏 -->
+    <aside class="side_nav" aria-label="Primary menu">
+        <a class="side_nav_link" href="../index.html" aria-label="Homepage">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3L21 10.5"></path><path d="M5 9.5V20H19V9.5"></path><path d="M10 20V14H14V20"></path></svg></span>
+            <span class="side_nav_tooltip" data-zh="主页" data-en="Homepage">主页</span>
+        </a>
+        <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"></rect><path d="M9 4.5H15"></path><path d="M9 10H15"></path><path d="M9 14H13"></path><path d="M9 18H12"></path><path d="M14 14L15.5 15.5L18 13"></path></svg></span>
+            <span class="side_nav_tooltip" data-zh="测验" data-en="Quiz">测验</span>
+        </a>
+        <a class="side_nav_link active" href="./game.html" aria-label="Game">
+            <span class="side_nav_icon"><svg viewBox="0 0 24 24"><path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path><path d="M8.5 13.5V16.5"></path><path d="M7 15H10"></path><circle cx="15.5" cy="14.5" r="0.8" fill="currentColor"></circle><circle cx="17.8" cy="16.2" r="0.8" fill="currentColor"></circle></svg></span>
+            <span class="side_nav_tooltip" data-zh="游戏" data-en="Game">游戏</span>
+        </a>
+    </aside>
 
-    <div class="mobile_settings_panel" id="mobile_settings_panel">
-        <div class="mobile_settings_header">
-            <span data-i18n="settings_title">设置</span>
-            <button class="mobile_settings_close" id="mobile_settings_close" aria-label="Close">×</button>
-        </div>
-        <div class="mobile_settings_content">
-            <div class="mobile_setting_group">
-                <div class="mobile_setting_group_title" data-i18n="setting_group_display">显示设置</div>
-                <div class="mobile_setting_item">
-                    <span data-i18n="setting_language">语言</span>
-                    <button class="mobile_setting_btn" id="mobile_lang_toggle">EN / 中</button>
-                </div>
-                <div class="mobile_setting_item">
-                    <span data-i18n="setting_theme">主题</span>
-                    <button class="mobile_setting_btn" id="mobile_theme_toggle" data-i18n="mode_day">夜间模式</button>
-                </div>
-                <div class="mobile_setting_item">
-                    <span data-i18n="setting_color">色彩</span>
-                    <span class="mobile_setting_status" id="mobile_color_status">标准</span>
-                </div>
+    <!-- 主内容区域 -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>
+                    <span data-zh="04 · 圆内接四边形定理" data-en="04 · Cyclic Quadrilateral Theorem"></span>
+                </h1>
             </div>
 
-            <div class="mobile_setting_divider"></div>
-
-            <div class="mobile_setting_group">
-                <div class="mobile_setting_group_title" data-i18n="setting_group_account">账户设置</div>
-                <div id="mobile_login_status" class="mobile_login_status hidden">
-                    <p><strong data-i18n="login_status">已登录：</strong><span id="mobile_login_user">Developer</span></p>
-                    <button class="mobile_logout_btn" id="mobile_logout_btn" data-i18n="logout">退出登录</button>
-                </div>
-                <div id="mobile_login_prompt" class="mobile_setting_item">
-                    <span data-i18n="login_prompt">登录/注册</span>
-                    <button class="mobile_setting_btn" id="mobile_login_btn" data-i18n="login">去登录</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="mobile_settings_overlay" id="mobile_settings_overlay"></div>
-
-    <div class="page_shell">
-        <aside class="side_nav fade_in_up" aria-label="Primary menu">
-            <div class="side_nav_inner">
-            <a class="side_nav_link" href="../index.html" aria-label="Homepage">
-                <span class="side_nav_icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                        <path d="M3 10.5L12 3L21 10.5"></path>
-                        <path d="M5 9.5V20H19V9.5"></path>
-                        <path d="M10 20V14H14V20"></path>
-                    </svg>
-                </span>
-                <span class="side_nav_tooltip" data-i18n="nav_home">主页</span>
-            </a>
-            <a class="side_nav_link" href="../quiz/quiz.html" aria-label="Quiz">
-                <span class="side_nav_icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                        <rect x="6" y="4" width="12" height="16" rx="2"></rect>
-                        <path d="M9 4.5H15"></path>
-                        <path d="M9 10H15"></path>
-                        <path d="M9 14H13"></path>
-                        <path d="M9 18H12"></path>
-                        <path d="M14 14L15.5 15.5L18 13"></path>
-                    </svg>
-                </span>
-                <span class="side_nav_tooltip" data-i18n="nav_quiz">测验</span>
-            </a>
-            <a class="side_nav_link active" href="./game.html" aria-label="Game">
-                <span class="side_nav_icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                        <path d="M7 10H17A4 4 0 0 1 20.8 15L20 18.2A1.8 1.8 0 0 1 17.1 19.2L14.8 17.5H9.2L6.9 19.2A1.8 1.8 0 0 1 4 18.2L3.2 15A4 4 0 0 1 7 10Z"></path>
-                        <path d="M8.5 13.5V16.5"></path>
-                        <path d="M7 15H10"></path>
-                        <circle cx="15.5" cy="14.5" r="0.8" fill="currentColor" stroke="none"></circle>
-                        <circle cx="17.8" cy="16.2" r="0.8" fill="currentColor" stroke="none"></circle>
-                    </svg>
-                </span>
-                <span class="side_nav_tooltip" data-i18n="nav_game">游戏</span>
-            </a>
-            <button class="side_nav_link" id="mobile_settings_btn" aria-label="Settings">
-                <span class="side_nav_icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                    </svg>
-                </span>
-                <span class="side_nav_tooltip" data-i18n="nav_settings">设置</span>
-            </button>
-            </div>
-        </aside>
-
-        <main class="content_area">
-            <div class="container">
-                <div class="header">
-                    <h1>
-                        <span class="zh">04 - 圆内接四边形定理</span>
-                        <span class="en">04 - Cyclic Quadrilateral Theorem</span>
-                    </h1>
+            <div class="content">
+                <!-- 定义卡片 -->
+                <div class="card card-def">
+                    <h3><span data-zh="📘 基本定义" data-en="📘 Definition"></span></h3>
+                    <p data-zh="四个顶点都在同一个圆上，且按顺时针依次为 A、B、C、D 的四边形，叫做圆内接四边形。" 
+                       data-en="A quadrilateral with vertices A, B, C, D in clockwise order on a circle is called a cyclic quadrilateral."></p>
                 </div>
 
-                <div class="content">
+                <!-- 定理卡片 -->
+                <div class="card card-theorem">
+                    <h3><span data-zh="📐 定理内容" data-en="📐 Theorem"></span></h3>
+                    <p data-zh="<strong>在任意一个圆中：</strong>" data-en="<strong>In any circle:</strong>"></p>
+                    <ul>
+                        <li data-zh="圆内接四边形的对角互补，即对角之和等于 180°" 
+                            data-en="The opposite angles of a cyclic quadrilateral are supplementary, summing to 180°."></li>
+                    </ul>
+                </div>
+
+                <!-- 推论卡片 -->
+                <div class="card card-corollary">
+                    <h3><span data-zh="📌 重要推论" data-en="📌 Corollary"></span></h3>
+                    <p data-zh="如果一个四边形的一组对角互补，那么这个四边形内接于一个圆。" 
+                       data-en="If a pair of opposite angles of a quadrilateral are supplementary, the quadrilateral is cyclic."></p>
+                </div>
+
+                <!-- 交互画布区 -->
+                <div class="canvas-wrapper">
                     <div class="canvas-container">
                         <canvas id="canvas" width="540" height="440"></canvas>
-                    </div>
-
-                    <div class="controls">
-                        <button id="resetBtn" class="btn">重置</button>
-                    </div>
-
-                    <div class="info">
-                        <div class="angle-info">
-                            <p>∠A: <span id="angA">90</span>°</p>
-                            <p>∠B: <span id="angB">90</span>°</p>
-                        </div>
-                        <div class="angle-info">
-                            <p>∠C: <span id="angC">90</span>°</p>
-                            <p>∠D: <span id="angD">90</span>°</p>
-                        </div>
-                        <div class="angle-info">
-                            <p>∠A + ∠C: <span id="sum1">180</span>°</p>
-                            <p>∠B + ∠D: <span id="sum2">180</span>°</p>
+                        <button class="reset-btn" id="resetBtn" data-zh="↻ 重置图形" data-en="↻ Reset"></button>
+                        <div class="data-panel">
+                            <div class="angle1"><span data-zh="∠DAB：" data-en="∠DAB："></span><span id="angA">0</span>°</div>
+                            <div class="angle2"><span data-zh="∠ABC：" data-en="∠ABC："></span><span id="angB">0</span>°</div>
+                            <div class="angle1"><span data-zh="∠BCD：" data-en="∠BCD："></span><span id="angC">0</span>°</div>
+                            <div class="angle2"><span data-zh="∠CDA：" data-en="∠CDA："></span><span id="angD">0</span>°</div>
+                            <br>
+                            <div class="green"><span data-zh="∠DAB + ∠BCD = " data-en="∠DAB + ∠BCD = "></span><span id="sum1">180</span>°</div>
+                            <div class="green"><span data-zh="∠ABC + ∠CDA = " data-en="∠ABC + ∠CDA = "></span><span id="sum2">180</span>°</div>
                         </div>
                     </div>
-
-                    <div class="theorem">
-                        <h2>圆内接四边形定理</h2>
-                        <p>圆内接四边形的对角互补，即对角之和等于180°。</p>
-                    </div>
+                    <p class="canvas-tip" data-zh="🔹 拖动圆上的点 A、B、C、D · 标签显示在圆外侧 · 对角之和恒为180°" 
+                       data-en="🔹 Drag A, B, C, D · Labels outside the circle · Opposite angles sum to 180°"></p>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>
-        // ==================== 圆内接四边形定理画布逻辑 ====================
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const resetBtn = document.getElementById('resetBtn');
-        
-        const cx = 270, cy = 220;
-        const radius = 160;
-        const LABEL_OFFSET = 24;          // 标签向外偏移量
-        
-        // 初始角度 (顺时针顺序 A-B-C-D，构成圆内接四边形)
-        const initialAngles = {
-            A: 5 * Math.PI / 4,    // 左下
-            B: 7 * Math.PI / 4,    // 右下
-            C: Math.PI / 4,        // 右上
-            D: 3 * Math.PI / 4     // 左上
-        };
+        (function(){
+            "use strict";
 
-        let points = { ...initialAngles };
-        let dragging = null;
-        let hoverPoint = null;
+            // ---------- 国际化 & 主题 ----------
+            let isChinese = true;
+            const langBtn = document.getElementById('langToggleBtn');
+            const themeBtn = document.getElementById('themeToggleBtn');
+            
+            function applyLanguage() {
+                const i18nElements = document.querySelectorAll('[data-zh][data-en]');
+                i18nElements.forEach(el => {
+                    el.textContent = isChinese ? el.dataset.zh : el.dataset.en;
+                });
+                langBtn.textContent = isChinese ? "English" : "中文";
+                updateThemeButtonText();
+            }
 
-        // 辅助函数：角度转坐标
-        function getPosition(angle) {
-            return {
-                x: cx + radius * Math.cos(angle),
-                y: cy + radius * Math.sin(angle)
+            function updateThemeButtonText() {
+                const isDark = document.body.classList.contains('dark-mode');
+                themeBtn.textContent = isChinese 
+                    ? (isDark ? "☀️ 白天模式" : "🌙 夜间模式")
+                    : (isDark ? "☀️ Light Mode" : "🌙 Dark Mode");
+            }
+
+            function toggleLanguage() {
+                isChinese = !isChinese;
+                applyLanguage();
+                draw();
+            }
+
+            function toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+                updateThemeButtonText();
+                draw();
+            }
+
+            langBtn.addEventListener('click', toggleLanguage);
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            applyLanguage();
+
+            // ---------- 画布与几何参数 ----------
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            const cx = 270, cy = 220;
+            const radius = 160;
+            const LABEL_OFFSET = 24;
+            
+            const initialAngles = {
+                A: 5 * Math.PI / 4,
+                B: 7 * Math.PI / 4,
+                C: Math.PI / 4,
+                D: 3 * Math.PI / 4
             };
-        }
 
-        // 标签坐标 (沿径向向外)
-        function getLabelPosition(angle, offset = LABEL_OFFSET) {
-            const dirX = Math.cos(angle);
-            const dirY = Math.sin(angle);
-            return {
-                x: cx + (radius + offset) * dirX,
-                y: cy + (radius + offset) * dirY
-            };
-        }
+            let points = { ...initialAngles };
+            let dragging = null;
+            let hoverPoint = null;
 
-        // 计算顶点处的内角 (M为顶点，P、Q为相邻两点)
-        function angleAtVertex(M, P, Q) {
-            const m = getPosition(points[M]);
-            const p = getPosition(points[P]);
-            const q = getPosition(points[Q]);
-            const v1 = { x: p.x - m.x, y: p.y - m.y };
-            const v2 = { x: q.x - m.x, y: q.y - m.y };
-            const dot = v1.x * v2.x + v1.y * v2.y;
-            const mag1 = Math.hypot(v1.x, v1.y);
-            const mag2 = Math.hypot(v2.x, v2.y);
-            if (mag1 === 0 || mag2 === 0) return 0;
-            const cos = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
-            return Math.acos(cos) * 180 / Math.PI;
-        }
+            // 角度转坐标
+            function getPosition(angle) {
+                return {
+                    x: cx + radius * Math.cos(angle),
+                    y: cy + radius * Math.sin(angle)
+                };
+            }
 
-        // 计算所有内角
-        function calculateAngles() {
-            const DAB = angleAtVertex('A', 'D', 'B');
-            const ABC = angleAtVertex('B', 'A', 'C');
-            const BCD = angleAtVertex('C', 'B', 'D');
-            const CDA = angleAtVertex('D', 'C', 'A');
-            return {
-                DAB: Math.round(DAB),
-                ABC: Math.round(ABC),
-                BCD: Math.round(BCD),
-                CDA: Math.round(CDA)
-            };
-        }
+            // 标签坐标
+            function getLabelPosition(angle, offset = LABEL_OFFSET) {
+                const dirX = Math.cos(angle);
+                const dirY = Math.sin(angle);
+                return {
+                    x: cx + (radius + offset) * dirX,
+                    y: cy + (radius + offset) * dirY
+                };
+            }
 
-        // 主绘制函数
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const isDark = document.body.classList.contains('night_mode');
-            const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
-            const fillColor = isDark ? '#f8fafc' : '#0f172a';
-            const dashColor = isDark ? '#94a3b8' : '#64748b';
-            const lineColor = isDark ? '#cbd5e1' : '#475569';
-            
-            // 绘制圆
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = 2.2;
-            ctx.stroke();
-            
-            // 虚线十字辅助线（水平+垂直直径）
-            ctx.save();
-            ctx.setLineDash([5, 4]);
-            ctx.beginPath();
-            ctx.moveTo(cx - radius, cy);
-            ctx.lineTo(cx + radius, cy);
-            ctx.strokeStyle = dashColor;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(cx, cy - radius);
-            ctx.lineTo(cx, cy + radius);
-            ctx.stroke();
-            ctx.restore();
-            
-            // 圆心
-            ctx.beginPath();
-            ctx.arc(cx, cy, 4.5, 0, 2 * Math.PI);
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-            ctx.font = '500 14px "Segoe UI", sans-serif';
-            ctx.fillStyle = fillColor;
-            ctx.fillText('O', cx + 12, cy - 8);
-            
-            // 获取四个点坐标
-            const pos = {
-                A: getPosition(points.A),
-                B: getPosition(points.B),
-                C: getPosition(points.C),
-                D: getPosition(points.D)
-            };
-            
-            // 绘制四边形
-            ctx.beginPath();
-            ctx.moveTo(pos.A.x, pos.A.y);
-            ctx.lineTo(pos.B.x, pos.B.y);
-            ctx.lineTo(pos.C.x, pos.C.y);
-            ctx.lineTo(pos.D.x, pos.D.y);
-            ctx.closePath();
-            ctx.strokeStyle = lineColor;
-            ctx.lineWidth = 2.0;
-            ctx.stroke();
-            
-            // 绘制顶点标记 (圆点)
-            const keys = ['A', 'B', 'C', 'D'];
-            keys.forEach(k => {
-                const p = pos[k];
+            // 计算内角
+            function angleAtVertex(M, P, Q) {
+                const m = getPosition(points[M]);
+                const p = getPosition(points[P]);
+                const q = getPosition(points[Q]);
+                const v1 = { x: p.x - m.x, y: p.y - m.y };
+                const v2 = { x: q.x - m.x, y: q.y - m.y };
+                const dot = v1.x * v2.x + v1.y * v2.y;
+                const mag1 = Math.hypot(v1.x, v1.y);
+                const mag2 = Math.hypot(v2.x, v2.y);
+                if (mag1 === 0 || mag2 === 0) return 0;
+                const cos = Math.max(-1, Math.min(1, dot / (mag1 * mag2)));
+                return Math.acos(cos) * 180 / Math.PI;
+            }
+
+            // 计算所有角度
+            function calculateAngles() {
+                const DAB = angleAtVertex('A', 'D', 'B');
+                const ABC = angleAtVertex('B', 'A', 'C');
+                const BCD = angleAtVertex('C', 'B', 'D');
+                const CDA = angleAtVertex('D', 'C', 'A');
+                return {
+                    DAB: Math.round(DAB),
+                    ABC: Math.round(ABC),
+                    BCD: Math.round(BCD),
+                    CDA: Math.round(CDA)
+                };
+            }
+
+            // 主绘制函数
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                const strokeColor = isDark ? '#e2e8f0' : '#1e293b';
+                const fillColor = isDark ? '#f8fafc' : '#0f172a';
+                const dashColor = isDark ? '#94a3b8' : '#64748b';
+                const lineColor = isDark ? '#cbd5e1' : '#475569';
+                
+                // 绘制圆
                 ctx.beginPath();
-                const pointRadius = (hoverPoint === k) ? 9 : 7;
-                ctx.arc(p.x, p.y, pointRadius, 0, 2 * Math.PI);
+                ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2.2;
+                ctx.stroke();
+                
+                // 虚线辅助线
+                ctx.save();
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                ctx.moveTo(cx - radius, cy);
+                ctx.lineTo(cx + radius, cy);
+                ctx.strokeStyle = dashColor;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - radius);
+                ctx.lineTo(cx, cy + radius);
+                ctx.stroke();
+                ctx.restore();
+                
+                // 圆心
+                ctx.beginPath();
+                ctx.arc(cx, cy, 4.5, 0, 2 * Math.PI);
                 ctx.fillStyle = fillColor;
-                ctx.shadowColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
-                ctx.shadowBlur = 6;
                 ctx.fill();
-                ctx.shadowBlur = 0;
-            });
-            
-            // 标签绘制在圆外侧 (沿径向偏移)
-            keys.forEach(k => {
-                const angle = points[k];
-                const labelPos = getLabelPosition(angle);
-                ctx.font = 'bold 17px "Segoe UI", "Trebuchet MS", sans-serif';
+                ctx.font = '500 14px "Segoe UI", sans-serif';
                 ctx.fillStyle = fillColor;
-                ctx.fillText(k, labelPos.x, labelPos.y);
-            });
-            
-            // 更新数据面板
-            const angles = calculateAngles();
-            document.getElementById('angA').textContent = angles.DAB;
-            document.getElementById('angB').textContent = angles.ABC;
-            document.getElementById('angC').textContent = angles.BCD;
-            document.getElementById('angD').textContent = angles.CDA;
-            document.getElementById('sum1').textContent = angles.DAB + angles.BCD;
-            document.getElementById('sum2').textContent = angles.ABC + angles.CDA;
-        }
-
-        // 鼠标/触摸交互
-        function getCanvasCoords(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            let clientX, clientY;
-            if (e.touches) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+                ctx.fillText('O', cx + 12, cy - 8);
+                
+                // 四个点坐标
+                const pos = {
+                    A: getPosition(points.A),
+                    B: getPosition(points.B),
+                    C: getPosition(points.C),
+                    D: getPosition(points.D)
+                };
+                
+                // 绘制四边形
+                ctx.beginPath();
+                ctx.moveTo(pos.A.x, pos.A.y);
+                ctx.lineTo(pos.B.x, pos.B.y);
+                ctx.lineTo(pos.C.x, pos.C.y);
+                ctx.lineTo(pos.D.x, pos.D.y);
+                ctx.closePath();
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 2.0;
+                ctx.stroke();
+                
+                // 绘制顶点
+                const keys = ['A', 'B', 'C', 'D'];
+                keys.forEach(k => {
+                    const p = pos[k];
+                    ctx.beginPath();
+                    const pointRadius = (hoverPoint === k) ? 9 : 7;
+                    ctx.arc(p.x, p.y, pointRadius, 0, 2 * Math.PI);
+                    ctx.fillStyle = fillColor;
+                    ctx.shadowColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+                    ctx.shadowBlur = 6;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+                
+                // 绘制标签
+                keys.forEach(k => {
+                    const angle = points[k];
+                    const labelPos = getLabelPosition(angle);
+                    ctx.font = 'bold 17px "Segoe UI", "Trebuchet MS", sans-serif';
+                    ctx.fillStyle = fillColor;
+                    ctx.fillText(k, labelPos.x, labelPos.y);
+                });
+                
+                // 更新数据面板
+                const angles = calculateAngles();
+                document.getElementById('angA').textContent = angles.DAB;
+                document.getElementById('angB').textContent = angles.ABC;
+                document.getElementById('angC').textContent = angles.BCD;
+                document.getElementById('angD').textContent = angles.CDA;
+                document.getElementById('sum1').textContent = angles.DAB + angles.BCD;
+                document.getElementById('sum2').textContent = angles.ABC + angles.CDA;
             }
-            return {
-                x: (clientX - rect.left) * scaleX,
-                y: (clientY - rect.top) * scaleY
-            };
-        }
 
-        function hitTest(mx, my) {
-            const threshold = 24;
-            for (let k of ['A', 'B', 'C', 'D']) {
-                const p = getPosition(points[k]);
-                const dist = Math.hypot(mx - p.x, my - p.y);
-                if (dist < threshold) return k;
+            // ---------- 交互事件 ----------
+            function getCanvasCoords(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                let clientX, clientY;
+                if (e.touches) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
             }
-            return null;
-        }
 
-        function onDragStart(e) {
-            e.preventDefault();
-            const coord = getCanvasCoords(e);
-            dragging = hitTest(coord.x, coord.y);
-            if (dragging) {
-                canvas.style.cursor = 'grabbing';
+            function hitTest(mx, my) {
+                const threshold = 24;
+                for (let k of ['A', 'B', 'C', 'D']) {
+                    const p = getPosition(points[k]);
+                    const dist = Math.hypot(mx - p.x, my - p.y);
+                    if (dist < threshold) return k;
+                }
+                return null;
             }
-        }
 
-        function onDragMove(e) {
-            if (!dragging) {
+            function onDragStart(e) {
+                e.preventDefault();
                 const coord = getCanvasCoords(e);
-                hoverPoint = hitTest(coord.x, coord.y);
-                canvas.style.cursor = hoverPoint ? 'grab' : 'default';
-                draw();
-                return;
+                dragging = hitTest(coord.x, coord.y);
+                if (dragging) {
+                    canvas.style.cursor = 'grabbing';
+                }
             }
-            e.preventDefault();
-            const coord = getCanvasCoords(e);
-            let angle = Math.atan2(coord.y - cy, coord.x - cx);
-            points[dragging] = angle;
-            draw();
-        }
 
-        function onDragEnd(e) {
-            if (dragging) {
-                dragging = null;
-                canvas.style.cursor = 'default';
+            function onDragMove(e) {
+                if (!dragging) {
+                    const coord = getCanvasCoords(e);
+                    hoverPoint = hitTest(coord.x, coord.y);
+                    canvas.style.cursor = hoverPoint ? 'grab' : 'default';
+                    draw();
+                    return;
+                }
+                e.preventDefault();
+                const coord = getCanvasCoords(e);
+                let angle = Math.atan2(coord.y - cy, coord.x - cx);
+                points[dragging] = angle;
                 draw();
             }
-        }
 
-        function onMouseLeave() {
-            hoverPoint = null;
-            if (!dragging) canvas.style.cursor = 'default';
+            function onDragEnd(e) {
+                if (dragging) {
+                    dragging = null;
+                    canvas.style.cursor = 'default';
+                    draw();
+                }
+            }
+
+            function onMouseLeave() {
+                hoverPoint = null;
+                if (!dragging) canvas.style.cursor = 'default';
+                draw();
+            }
+
+            function resetPoints() {
+                points = { ...initialAngles };
+                draw();
+            }
+
+            // 绑定事件
+            canvas.addEventListener('mousedown', onDragStart);
+            window.addEventListener('mousemove', onDragMove);
+            window.addEventListener('mouseup', onDragEnd);
+            canvas.addEventListener('mouseleave', onMouseLeave);
+            
+            canvas.addEventListener('touchstart', onDragStart, { passive: false });
+            canvas.addEventListener('touchmove', onDragMove, { passive: false });
+            canvas.addEventListener('touchend', onDragEnd);
+            canvas.addEventListener('touchcancel', onDragEnd);
+            
+            resetBtn.addEventListener('click', resetPoints);
+            window.addEventListener('resize', () => draw());
+            
             draw();
-        }
-
-        function resetPoints() {
-            points = { ...initialAngles };
-            draw();
-        }
-
-        // 事件绑定
-        canvas.addEventListener('mousedown', onDragStart);
-        window.addEventListener('mousemove', onDragMove);
-        window.addEventListener('mouseup', onDragEnd);
-        canvas.addEventListener('mouseleave', onMouseLeave);
-        
-        canvas.addEventListener('touchstart', onDragStart, { passive: false });
-        canvas.addEventListener('touchmove', onDragMove, { passive: false });
-        canvas.addEventListener('touchend', onDragEnd);
-        canvas.addEventListener('touchcancel', onDragEnd);
-        
-        resetBtn.addEventListener('click', resetPoints);
-        
-        window.addEventListener('resize', () => draw());
-        
-        // 初始化
-        draw();
+        })();
     </script>
-
-    <script src="../index.js"></script>
-    <script src="../auth-entry.js"></script>
-    <script src="../colorblind.js"></script>
+	<script src="../colorblind.js"></script>
 </body>
 </html>

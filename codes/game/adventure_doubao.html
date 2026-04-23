@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Adventure Game</title>
+    <link rel="stylesheet" href="adventure_doubao.css">
+</head>
+<body>
+    <!-- 主界面 -->
+    <div id="start-screen" class="start-screen">
+        <button id="sound-btn-main" class="sound-btn">🔊</button>
+        <button class="lang-btn"></button>
+
+        <div class="quick-nav">
+            <a href="../index.html" class="nav-btn" data-tip-key="home">🏠</a>
+            <a href="../quiz/quiz.html" class="nav-btn" data-tip-key="quiz">📝</a>
+            <a href="./game.html" class="nav-btn" data-tip-key="gameCenter">🎮</a>
+        </div>
+
+        <div class="menu-buttons">
+            <button id="new-game-btn" class="menu-btn"></button>
+            <button id="continue-btn" class="menu-btn disabled"></button>
+        </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="game-screen" class="game-screen hidden">
+        <button id="back-btn" class="back-btn"></button>
+        <button id="sound-btn" class="sound-btn">🔊</button>
+        <button class="lang-btn"></button>
+        
+        <div class="quick-nav">
+            <a href="../index.html" class="nav-btn" data-tip-key="home">🏠</a>
+            <a href="../quiz/quiz.html" class="nav-btn" data-tip-key="quiz">📝</a>
+            <a href="./game.html" class="nav-btn" data-tip-key="gameCenter">🎮</a>
+        </div>
+
+        <div id="question-box" class="question-box">
+            <p id="question-text"></p>
+        </div>
+        <canvas id="gameCanvas" class="game-canvas"></canvas>
+
+        <button id="confirm-btn" class="confirm-btn hidden"></button>
+
+        <div class="character warrior">
+            <img src="graph/warrior.gif" alt="">
+            <div class="status" id="warrior-status"></div>
+        </div>
+        <div class="character enemy">
+            <img src="graph/enemy-skeleton.png" alt="">
+            <div class="status" id="enemy-status"></div>
+        </div>
+
+        <div id="result-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="result-text"></h2>
+                <button id="restart-btn" class="restart-btn"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="adventure_doubao.js"></script>
+</body>
+</html>
