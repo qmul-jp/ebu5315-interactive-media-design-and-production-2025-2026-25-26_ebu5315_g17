@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CircleLab | 设置</title>
+	<link rel="stylesheet" href="../index.css">
+	<link rel="stylesheet" href="./settings.css">
+</head>
+<body>
+	<div class="bg_orb bg_orb_left"></div>
+	<div class="bg_orb bg_orb_right"></div>
+
+	<header class="site_header settings_header">
+		<div class="brand_wrap">
+			<img class="brand_logo_img" src="../../images/logo_standard.png" alt="CircleLab logo">
+			<div>
+				<p class="brand_name">CircleLab</p>
+				<p class="brand_tag" data-i18n="brand_tag">移动端设置</p>
+			</div>
+		</div>
+
+		<a class="ghost_btn back_btn" href="../index.html" data-i18n="back_home">← 返回主页</a>
+	</header>
+
+	<main class="settings_shell">
+		<section class="settings_hero fade_in_up">
+			<p class="hero_kicker" data-i18n="settings_kicker">Mobile Settings</p>
+			<h1 data-i18n="settings_title">设置</h1>
+			<p class="settings_desc" data-i18n="settings_desc">把语言、主题和色彩模式统一放在这里，切换后会同步到首页、测验和游戏页。</p>
+		</section>
+
+		<section class="settings_card fade_in_up delay_1">
+			<div class="section_head">
+				<h2 data-i18n="setting_group_display">显示设置</h2>
+				<p data-i18n="setting_group_display_desc">语言和昼夜模式会在各页面间同步。</p>
+			</div>
+
+			<div class="control_group settings_controls">
+				<button id="language_toggle_btn" class="ghost_btn" type="button">EN / 中</button>
+				<button id="mode_toggle_btn" class="ghost_btn" type="button" data-i18n="mode_day">夜间模式</button>
+			</div>
+		</section>
+
+		<section class="settings_card fade_in_up delay_2">
+			<div class="section_head">
+				<h2 data-i18n="setting_group_color">色彩模式</h2>
+				<p data-i18n="setting_group_color_desc">为色弱和高对比浏览提供不同的颜色滤镜。</p>
+			</div>
+
+			<div class="control_group settings_controls" aria-label="color mode controls"></div>
+		</section>
+
+		<section class="settings_card fade_in_up delay_3">
+			<div class="section_head">
+				<h2 data-i18n="settings_quick_links">快速跳转</h2>
+				<p data-i18n="settings_quick_links_desc">返回到你正在学习的页面。</p>
+			</div>
+
+			<div class="settings_links">
+				<a class="secondary_btn" href="../index.html" data-i18n="nav_home">主页</a>
+				<a class="secondary_btn" href="../quiz/quiz.html" data-i18n="nav_quiz">测验</a>
+				<a class="secondary_btn" href="../game/game.html" data-i18n="nav_game">游戏</a>
+			</div>
+		</section>
+	</main>
+
+	<script src="./settings.js"></script>
+	<script src="../colorblind.js"></script>
+</body>
+</html>

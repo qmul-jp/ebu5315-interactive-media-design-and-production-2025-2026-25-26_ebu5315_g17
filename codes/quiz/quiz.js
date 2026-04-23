@@ -57,6 +57,8 @@ const SMART_SCORE_RULES = {
 };
 
 const PREFS_KEY = "circlelab_quiz_preferences_v1";
+const LANGUAGE_KEY = "circlab_language";
+const NIGHT_MODE_KEY = "circlab_night_mode";
 const LEVEL_STATS_KEY = "circlelab_quiz_level_stats_v1";
 const SESSION_KEY = "circlelab_quiz_session_v1";
 
@@ -64,6 +66,7 @@ const i18n_text = {
   zh: {
     brand_tag: "GCSE 圆几何测验",
     back_home: "← 返回",
+    nav_settings: "设置",
     mode_day: "夜间模式",
     mode_night: "白天模式",
     quiz_kicker: "Level-based Quiz",
@@ -128,6 +131,7 @@ const i18n_text = {
   en: {
     brand_tag: "GCSE Circle Geometry Quiz",
     back_home: "← Back",
+    nav_settings: "Settings",
     mode_day: "Night Mode",
     mode_night: "Day Mode",
     quiz_kicker: "Level-based Quiz",
@@ -377,6 +381,7 @@ function get_preferences_payload() {
 
 function save_preferences() {
   safe_storage_set(PREFS_KEY, JSON.stringify(get_preferences_payload()));
+  safe_storage_set(LANGUAGE_KEY, is_chinese ? "zh" : "en");
 }
 
 function load_preferences() {
@@ -399,6 +404,16 @@ function load_preferences() {
     }
   } catch (error) {
     console.warn("Failed to parse saved preferences:", error);
+  }
+
+  const shared_language = safe_storage_get(LANGUAGE_KEY);
+  if (shared_language === "zh" || shared_language === "en") {
+    is_chinese = shared_language !== "en";
+  }
+
+  const shared_night = safe_storage_get(NIGHT_MODE_KEY);
+  if (shared_night === "true" || shared_night === "false") {
+    is_night = shared_night === "true";
   }
 }
 
@@ -635,6 +650,7 @@ function apply_language() {
 
 function apply_mode() {
   body_element.classList.toggle("night_mode", is_night);
+  safe_storage_set(NIGHT_MODE_KEY, String(is_night));
   mode_toggle_btn.textContent = is_night ? get_text("mode_night") : get_text("mode_day");
 }
 
